@@ -3,10 +3,10 @@
 #++++++++++++++++++++++++++++++++++++++
 
 FROM centos:7.2.1511
-MAINTAINER palmtale m@glad.so
+MAINTAINER Palm Tale <m@glad.so>
 LABEL vendor=Glad.So
-LABEL so.glad.layout=1
-LABEL so.glad.version=0.0.1
+
+ADD scripts.tar /
 
 # Init
 RUN set -x \
