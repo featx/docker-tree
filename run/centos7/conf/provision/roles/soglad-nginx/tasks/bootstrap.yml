@@ -10,7 +10,7 @@
 
 - name: Enable nginx main config
   file:
-    src:  '/opt/docker/etc/nginx/main.conf'
+    src:  '/usr/local/etc/nginx/main.conf'
     dest: '/etc/nginx/conf.d/10-docker.conf'
     state: link
     force: yes
@@ -22,7 +22,7 @@
 
 - name: Replace default nginx.conf [RedHat family]
   file:
-    src:  '/opt/docker/etc/nginx/nginx.conf'
+    src:  '/usr/local/etc/nginx/nginx.conf'
     dest: '/etc/nginx/nginx.conf'
     state: link
     force: yes
@@ -44,7 +44,7 @@
     owner: "root"
     group: "root"
   with_items:
-    - { path: '/opt/docker/etc/nginx/ssl',            state: 'directory', mode: '0750' }
-    - { path: '/opt/docker/etc/nginx/ssl/server.crt', state: 'file',      mode: '0640' }
-    - { path: '/opt/docker/etc/nginx/ssl/server.csr', state: 'file',      mode: '0640' }
-    - { path: '/opt/docker/etc/nginx/ssl/server.key', state: 'file',      mode: '0640' }
+    - { path: '/usr/local/etc/nginx/ssl',            state: 'directory', mode: '0750' }
+    - { path: '/usr/local/etc/nginx/ssl/server.crt', state: 'file',      mode: '0640' }
+    - { path: '/usr/local/etc/nginx/ssl/server.csr', state: 'file',      mode: '0640' }
+    - { path: '/usr/local/etc/nginx/ssl/server.key', state: 'file',      mode: '0640' }
