@@ -75,7 +75,7 @@ function runEntrypoints() {
     ###############
     if [ -f "$CONF_HOME/bin/entrypoint.d/default.sh" ]; then
         echo "Executing default entrypoint"
-        . $CONF_HOME/bin/entrypoint.d/default.sh
+        . ${CONF_HOME}/bin/entrypoint.d/default.sh
     fi
 
     exit
@@ -85,9 +85,9 @@ function runEntrypoints() {
  # Run "bootstrap" provisioning
  ##
 function runProvisionBootstrap() {
-    mkdir -p $CONF_HOME/bin/registry/
+    mkdir -p ${CONF_HOME}/bin/registry/
 
-    for FILE in $CONF_HOME/provision/bootstrap.d/*.sh; do
+    for FILE in ${CONF_HOME}/provision/bootstrap.d/*.sh; do
         # run custom scripts, only once
         . "$FILE"
         rm -f -- "$FILE"
@@ -103,9 +103,9 @@ function runProvisionBootstrap() {
  # Run "onbuild" provisioning
  ##
 function runProvisionOnBuild() {
-    mkdir -p $CONF_HOME/bin/registry/
+    mkdir -p ${CONF_HOME}/bin/registry/
 
-    for FILE in $CONF_HOME/provision/onbuild.d/*.sh; do
+    for FILE in ${CONF_HOME}/provision/onbuild.d/*.sh; do
         # run custom scripts
         . "$FILE"
     done
@@ -117,7 +117,7 @@ function runProvisionOnBuild() {
  # Run "entrypoint" provisioning
  ##
 function runProvisionEntrypoint() {
-    for FILE in $CONF_HOME/provision/entrypoint.d/*.sh; do
+    for FILE in ${CONF_HOME}/provision/entrypoint.d/*.sh; do
         # run custom scripts
         . "$FILE"
     done
@@ -202,7 +202,7 @@ function runDockerProvision() {
 
     # Only run playbook if there is one
     if [ -s "${ANSIBLE_PLAYBOOK}" ]; then
-        bash $CONF_HOME/bin/provision.sh "${ANSIBLE_PLAYBOOK}" "${ANSIBLE_TAG}"
+        bash ${CONF_HOME}/bin/provision.sh "${ANSIBLE_PLAYBOOK}" "${ANSIBLE_TAG}"
 
         # Remove dynamic playbook file
         if [ "${ANSIBLE_DYNAMIC_PLAYBOOK}" -eq 1 ]; then
@@ -217,5 +217,5 @@ function runDockerProvision() {
  ##
 function startSupervisord() {
     cd /
-    exec supervisord -c $CONF_HOME/etc/supervisor.conf --logfile /dev/null --pidfile /dev/null --user root
+    exec supervisord -c ${CONF_HOME}/etc/supervisor.conf --logfile /dev/null --pidfile /dev/null --user root
 }
