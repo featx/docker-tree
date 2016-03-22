@@ -2,11 +2,9 @@
 # CentOS 7 Base Docker container
 #++++++++++++++++++++++++++++++++++++++
 
-FROM artisan/boot:centos7
+FROM soglad/boot:centos7
 MAINTAINER palmtale<m@glad.so>
 LABEL vendor=Glad.so
-LABEL so.glad.layout=1
-LABEL so.glad.version=0.0.1
 
 ENV APPLICATION_USER  soglad
 ENV APPLICATION_GROUP soglad
@@ -17,7 +15,12 @@ ENV CONF_HOME  /usr/local/
 # Install services
 RUN /usr/local/bin/yum-install \
         cronie \
-        supervisor
+        supervisor \
+        syslog-ng \
+        logrotate \
+        openssh-server \
+        dnsmasq \
+        postfix
 
 # Install tools
 RUN /usr/local/bin/yum-install \
@@ -34,8 +37,8 @@ RUN /usr/local/bin/yum-install \
 
 # Deploy scripts/configurations
 COPY conf/ $CONF_HOME
-RUN bash $CONF_HOME/bin/control.sh provision.role webdevops-base \
-    && bash $CONF_HOME/bin/control.sh provision.role.finish webdevops-cleanup \
+RUN bash $CONF_HOME/bin/control.sh provision.role soglad-base \
+    && bash $CONF_HOME/bin/control.sh provision.role.finish soglad-cleanup \
     && bash $CONF_HOME/bin/bootstrap.sh
 
 ENTRYPOINT ["$CONF_HOME/bin/entrypoint.sh"]
