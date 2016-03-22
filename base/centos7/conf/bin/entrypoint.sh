@@ -11,7 +11,7 @@ trap 'echo sigkill ; exit' SIGKILL
 # sanitize input and set task
 TASK="$(echo $1| sed 's/[^-_a-zA-Z0-9]*//g')"
 
-source /opt/docker/bin/config.sh
+source $CONF_HOME/bin/config.sh
 
 rootCheck
 

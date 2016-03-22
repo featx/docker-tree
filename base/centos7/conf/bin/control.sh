@@ -5,7 +5,7 @@ set -o errtrace  # trace ERR through 'time command' and other functions
 set -o nounset   ## set -u : exit the script if you try to use an uninitialised variable
 set -o errexit   ## set -e : exit the script if any statement returns a non-true return value
 
-source /opt/docker/bin/config.sh
+source $CONF_HOME/bin/config.sh
 
 rootCheck
 
@@ -80,7 +80,7 @@ case "$CONTROL_COMMAND" in
     ## ------------------------------------------
 
     "service.enable")
-        SERVICE_FILE="/opt/docker/etc/supervisor.d/$1.conf"
+        SERVICE_FILE="$CONF_HOME/etc/supervisor.d/$1.conf"
         if [ -f "$SERVICE_FILE" ]; then
             sed -i '/autostart = /c\autostart = true' -- "$SERVICE_FILE"
         else
@@ -90,7 +90,7 @@ case "$CONTROL_COMMAND" in
         ;;
 
     "service.disable")
-        SERVICE_FILE="/opt/docker/etc/supervisor.d/$1.conf"
+        SERVICE_FILE="$CONF_HOME/etc/supervisor.d/$1.conf"
         if [ -f "$SERVICE_FILE" ]; then
             sed -i '/autostart = /c\autostart = false' -- "$SERVICE_FILE"
         else
@@ -104,12 +104,12 @@ case "$CONTROL_COMMAND" in
     ## ------------------------------------------
 
     "version.get")
-        cat /opt/docker/VERSION
+        cat $CONF_HOME/VERSION
         ;;
 
     "version.require.min")
         EXPECTED_VERSION="$1"
-        CURRENT_VERSION="$(cat /opt/docker/VERSION)"
+        CURRENT_VERSION="$(cat $CONF_HOME/VERSION)"
         if [ "$CURRENT_VERSION" -lt "$EXPECTED_VERSION" ]; then
             echo "-----------------------------------------------------------"
             echo "--- This docker image is not up2date!"
@@ -125,7 +125,7 @@ case "$CONTROL_COMMAND" in
 
     "version.require.max")
         EXPECTED_VERSION="$1"
-        CURRENT_VERSION="$(cat /opt/docker/VERSION)"
+        CURRENT_VERSION="$(cat $CONF_HOME/VERSION)"
         if [ "$CURRENT_VERSION"  -gt "$EXPECTED_VERSION" ]; then
             echo "-----------------------------------------------------------"
             echo "--- This docker image is too new!"
@@ -139,7 +139,7 @@ case "$CONTROL_COMMAND" in
 
 
     "buildtime.get")
-        cat /opt/docker/BUILDTIME
+        cat $CONF_HOME/BUILDTIME
         ;;
 
     *)

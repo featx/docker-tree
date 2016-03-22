@@ -11,7 +11,7 @@
 
 - name: Enable syslog-n config
   file:
-    src:  '/opt/docker/etc/syslog-ng/syslog-ng.conf'
+    src:  '/usr/local/etc/syslog-ng/syslog-ng.conf'
     dest: '/etc/syslog-ng/syslog-ng.conf'
     state: link
     force: yes
