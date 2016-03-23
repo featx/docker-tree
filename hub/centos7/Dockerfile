@@ -8,24 +8,24 @@ LABEL vendor=Glad.so
 
 ENV WEB_ALIAS_DOMAIN   *.vm
 ENV CONF_HOME /usr/local
-
-#Install golang 1.4.x
-RUN /usr/local/bin/yum-install golang
-
-ENV GOROOT_BOOTSTRAP=/usr
-ENV GOROOT=/usr/local/src/github.com/golang/go
-ENV GOPATH=/usr/local
+ENV GOROOT_BOOTSTRAP=$CONF_HOME/src/github.com/golang/go1.4
+ENV GOROOT=$CONF_HOME/src/github.com/golang/go
+ENV GOPATH=$CONF_HOME
 
 # Compile and Install go 1.6
 WORKDIR $CONF_HOME/src/github.com/golang
 RUN git clone https://github.com/golang/go.git
+RUN cp -r go go1.4
+WORKDIR $CONF_HOME/src/github.com/golang/go1.4
+RUN git checkout release-branch.go1.4
+WORKDIR $CONF_HOME/src/github.com/golang/go1.4/src
+RUN ./make.bash
 WORKDIR $GOROOT
 RUN git checkout release-branch.go1.6
 WORKDIR $GOROOT/src
 RUN ./make.bash
 RUN export PATH=$PATH:$GOROOT/bin
 
-VOLUME ['/data/hubs']
 # Git to solve the dependencies
 WORKDIR $CONF_HOME/src/golang.org/x
 RUN git clone https://github.com/golang/net.git
