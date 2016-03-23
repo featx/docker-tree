@@ -26,7 +26,7 @@ WORKDIR $GOROOT
 RUN git checkout release-branch.go1.6
 WORKDIR $GOROOT/src
 RUN ./make.bash
-RUN export PATH=$PATH:$GOROOT/bin
+ENV PATH $PATH:$GOROOT/bin
 
 # Git to solve the dependencies
 WORKDIR $CONF_HOME/src/golang.org/x

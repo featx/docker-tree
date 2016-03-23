@@ -1,5 +1,5 @@
 #++++++++++++++++++++++++++++++++++++++
-# Boot CentOS 7 Docker container
+# CentOS 7 Boot Docker container
 #++++++++++++++++++++++++++++++++++++++
 
 FROM centos:7.2.1511

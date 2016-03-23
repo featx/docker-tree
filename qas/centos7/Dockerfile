@@ -1,3 +1,7 @@
+#++++++++++++++++++++++++++++++++++++++
+# CentOS 7 Qas Docker container
+#++++++++++++++++++++++++++++++++++++++
+
 FROM soglad/base:centos7
 MAINTAINER palmtale<m@glad.so>
 LABEL vendor=Glad.so

@@ -1,5 +1,5 @@
 #++++++++++++++++++++++++++++++++++++++
-# CentOS 7 Hub Docker container
+# CentOS 7 CII Docker container
 #++++++++++++++++++++++++++++++++++++++
 
 FROM soglad/base:centos7
