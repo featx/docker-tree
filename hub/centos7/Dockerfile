@@ -8,12 +8,13 @@ LABEL vendor=Glad.so
 
 ENV WEB_ALIAS_DOMAIN   *.vm
 ENV CONF_HOME /usr/local
-ENV GOROOT_BOOTSTRAP=/usr
-ENV GOROOT=/usr/local/src/github.com/golang/go
-ENV GOPATH=/usr/local
 
 #Install golang 1.4.x
 RUN /usr/local/bin/yum-install golang
+
+ENV GOROOT_BOOTSTRAP=/usr
+ENV GOROOT=/usr/local/src/github.com/golang/go
+ENV GOPATH=/usr/local
 
 # Compile and Install go 1.6
 WORKDIR $CONF_HOME/src/github.com/golang
