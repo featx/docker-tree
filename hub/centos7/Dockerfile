@@ -12,6 +12,8 @@ ENV GOROOT_BOOTSTRAP=$CONF_HOME/src/github.com/golang/go1.4
 ENV GOROOT=$CONF_HOME/src/github.com/golang/go
 ENV GOPATH=$CONF_HOME
 
+RUN /usr/local/bin/yum-install gcc make
+
 # Compile and Install go 1.6
 WORKDIR $CONF_HOME/src/github.com/golang
 RUN git clone https://github.com/golang/go.git
