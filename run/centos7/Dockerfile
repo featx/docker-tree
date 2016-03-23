@@ -11,10 +11,8 @@ ENV WEB_DOCUMENT_INDEX index.php
 ENV WEB_ALIAS_DOMAIN   *.vm
 ENV CONF_HOME /usr/local
 
-# Install nginx
-/usr/local/bin/yum-install pcre-devel \
-                           zlib-devel \
-                           openssl-devel
+# Compile and Install nginx
+RUN /usr/local/bin/yum-install pcre-devel zlib-devel openssl-devel
 WORKDIR /usr/local/src/github.com/nginx
 RUN git clone https://github.com/nginx/nginx.git
 WORKDIR /usr/local/src/github.com/nginx/nginx
