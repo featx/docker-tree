@@ -17,7 +17,7 @@ RUN /usr/local/bin/yum-install golang
 
 # Compile and Install go 1.6
 WORKDIR $CONF_HOME/src/github.com/golang
-RUN git clone http://github.com/golang/go.git
+RUN git clone https://github.com/golang/go.git
 WORKDIR $GOROOT
 RUN git checkout release-branch.go1.6
 WORKDIR $GOROOT/src
