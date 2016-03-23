@@ -10,7 +10,7 @@ ENV WEB_ALIAS_DOMAIN   *.vm
 ENV CONF_HOME /usr/local
 
 #Install openjdk
-RUN /usr/local/bin/yum-update && /usr/local/bin/yum-install install -y wget curl zip java && rm -rf /var/lib/apt/lists/*
+RUN /usr/local/bin/yum-upgrade && /usr/local/bin/yum-install install -y wget curl zip java && rm -rf /var/lib/apt/lists/*
 
 # Install jenkins
 #RUN wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo
