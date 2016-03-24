@@ -39,8 +39,16 @@ RUN git checkout release-branch.go1.6
 #Install gogits/gogs
 WORKDIR $CONF_HOME
 RUN go get github.com/gogits/gogs
-EXPOSE 9009
+WORKDIR $CONF_HOME/src/github.com/gogits/gogs
+RUN go build
+COPY app.ini $CONF_HOME/src/github.com/gogits/gogs/custom/conf
 
 #Install docker/distribution
 RUN go get github.com/docker/distribution
-EXPOSE 9010
+WORKDIR $CONF_HOME/src/github.com/docker/distribution
+RUN git checkout v2.3.1
+RUN go get github.com/docker/distribution/cmd/registry
+RUN make
+
+VOLUME ['/data/gits','/data/docker']
+EXPOSE 22 3000 5000
