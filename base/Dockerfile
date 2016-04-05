@@ -1,8 +1,8 @@
 #++++++++++++++++++++++++++++++++++++++
-# CentOS 7 Base Docker container
+# Alpine 3 Base Docker container
 #++++++++++++++++++++++++++++++++++++++
 
-FROM soglad/boot:centos7
+FROM soglad/boot:alpine3
 MAINTAINER Palm Tale <m@glad.so>
 LABEL vendor=Glad.So
 
@@ -13,33 +13,23 @@ ENV APPLICATION_GID   1000
 ENV CONF_HOME  /usr/local
 
 # Install services
-RUN /usr/local/bin/yum-install \
-        cronie \
+RUN /usr/local/bin/apk-install \
         supervisor \
         syslog-ng \
         logrotate \
-        openssh-server \
-        dnsmasq \
-        postfix
-
-# Install tools
-RUN /usr/local/bin/yum-install
-        epel-release \
-        sudo \
-        zip \
-        unzip \
-        bzip2 \
         wget \
         curl \
-        net-tools \
-        rsync \
-        git \
-        vim \
-        python-devel \
-        python-pip \
-        python-setuptools \
-        python-simplejson \
-        ansible
+        sed
+
+# Install tools
+RUN /usr/local/bin/apk-install \
+        python \
+        python-dev \
+        py-setuptools \
+        py-crypto \
+        py-pip \
+    && pip install --upgrade pip \
+    && pip install ansible
 
 
 # Deploy scripts/configurations
