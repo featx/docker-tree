@@ -3,8 +3,8 @@
 #++++++++++++++++++++++++++++++++++++++
 
 FROM soglad/boot:centos7
-MAINTAINER palmtale<m@glad.so>
-LABEL vendor=Glad.so
+MAINTAINER Palm Tale <m@glad.so>
+LABEL vendor=Glad.So
 
 ENV APPLICATION_USER  soglad
 ENV APPLICATION_GROUP soglad
@@ -23,7 +23,8 @@ RUN /usr/local/bin/yum-install \
         postfix
 
 # Install tools
-RUN /usr/local/bin/yum-install \
+RUN /usr/local/bin/yum-install
+        epel-release \
         sudo \
         zip \
         unzip \
@@ -33,7 +34,13 @@ RUN /usr/local/bin/yum-install \
         net-tools \
         rsync \
         git \
-        vim
+        vim \
+        python-devel \
+        python-pip \
+        python-setuptools \
+        python-simplejson \
+        ansible
+
 
 # Deploy scripts/configurations
 COPY conf/ $CONF_HOME
