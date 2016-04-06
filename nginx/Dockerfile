@@ -12,7 +12,7 @@ ENV WEB_ALIAS_DOMAIN   *.vm
 ENV CONF_HOME /usr/local
 
 # Compile and Install nginx
-RUN /usr/local/bin/apk-install pcre-dev zlib-dev openssl-dev
+RUN /usr/local/bin/apk-install pcre-dev zlib-dev openssl-dev make git
 WORKDIR /usr/local/src/github.com/nginx
 RUN git clone https://github.com/nginx/nginx.git
 WORKDIR /usr/local/src/github.com/nginx/nginx
