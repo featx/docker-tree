@@ -16,10 +16,11 @@ RUN /usr/local/bin/apk-install pcre-dev zlib-dev openssl-dev g++ make git
 WORKDIR /usr/local/src/github.com/nginx
 RUN git clone https://github.com/nginx/nginx.git
 WORKDIR /usr/local/src/github.com/nginx/nginx
+COPY conf/nginx.h $CONF_HOME/
 RUN git checkout release-1.9.12 \
-    && rm -rf /usr/local/src/github.com/nginx/nginx/src/core/nginx.h
-COPY conf/nginx.h /usr/local/src/github.com/nginx/nginx/src/core/
-RUN auto/configure --prefix=/usr/local/nginx --sbin-path=/usr/sbin/nginx \
+    && rm -rf /usr/local/src/github.com/nginx/nginx/src/core/nginx.h \
+    && mv $CONF_HOME/nginx.h /usr/local/src/github.com/nginx/nginx/src/core/ \
+    && auto/configure --prefix=/usr/local/nginx --sbin-path=/usr/sbin/nginx \
     --conf-path=/etc/nginx/nginx.conf  --error-log-path=/var/log/nginx/error.log \
     --http-log-path=/var/log/nginx/access.log --with-pcre --with-http_ssl_module \
     --with-http_realip_module --with-http_addition_module --with-http_sub_module \

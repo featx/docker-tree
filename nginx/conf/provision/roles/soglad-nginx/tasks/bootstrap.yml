@@ -1,18 +1,19 @@
 ---
 
-- name: Enable nginx main config
-  file:
-    src:  '/usr/local/etc/nginx/main.conf'
-    dest: '/etc/nginx/conf.d/10-docker.conf'
-    state: link
-    force: yes
+- name: Diable nginx demonize mode
+  lineinfile:
+    dest:   /etc/nginx/nginx.conf
+    regexp: '[\s;]*{{ item.key }}[\s]*'
+    line:   '{{ item.key }} {{ item.value }};'
+  with_items:
+   - { key: 'daemon', value: "off" }
 
 - name: Remove default vhost
   file:
     path:  "/etc/nginx/sites-enabled/default"
     state: absent
 
-- name: Replace default nginx.conf [Alpine family]
+- name: Replace default nginx.conf [RedHat/Alpine family]
   file:
     src:  '/usr/local/etc/nginx/nginx.conf'
     dest: '/etc/nginx/nginx.conf'
@@ -24,8 +25,6 @@
   file:
     path:    "{{ DOCUMENT_ROOT }}"
     state:   directory
-    owner:   "{{ APPLICATION_USER }}"
-    group:   "{{ APPLICATION_GROUP }}"
     recurse: yes
 
 - name: Fix rights of ssl files

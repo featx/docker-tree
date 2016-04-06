@@ -13,7 +13,7 @@ ENV GOROOT_BOOTSTRAP=$CONF_HOME/src/github.com/golang/go1.4
 ENV GOROOT=$CONF_HOME/src/github.com/golang/go
 ENV GOPATH=$CONF_HOME
 
-RUN /usr/local/bin/apk-install gcc make git
+RUN /usr/local/bin/apk-install g++ make git
 
 # Compile and Install go 1.6
 WORKDIR $CONF_HOME/src/github.com/golang
@@ -27,8 +27,7 @@ WORKDIR $GOROOT
 RUN git checkout release-branch.go1.6
 WORKDIR $GOROOT/src
 RUN ./make.bash \
-    && apk del gcc make git \
-    && rm -rf $GOROOT_BOOTSTRAP
+
 ENV PATH $PATH:$GOROOT/bin
 
 # Git to solve the dependencies
@@ -37,4 +36,6 @@ RUN git clone https://github.com/golang/net.git \
     && git clone https://github.com/golang/crypto.git \
     && git clone https://github.com/golang/text.git
 WORKDIR $CONF_HOME/src/golang.org/x/net
-RUN git checkout release-branch.go1.6
+RUN git checkout release-branch.go1.6 \
+    && apk del g++ make git \
+    && rm -rf $GOROOT_BOOTSTRAP
