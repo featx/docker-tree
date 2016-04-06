@@ -12,17 +12,14 @@ ENV APPLICATION_UID   1000
 ENV APPLICATION_GID   1000
 ENV DOCKER_CONF_HOME  /usr/local
 
-# Install services
+# Install services and tools
 RUN /usr/local/bin/apk-install \
         supervisor \
         syslog-ng \
         logrotate \
         wget \
         curl \
-        sed
-
-# Install tools
-RUN /usr/local/bin/apk-install \
+        sed \
         python \
         python-dev \
         py-setuptools \
@@ -30,7 +27,6 @@ RUN /usr/local/bin/apk-install \
         py-pip \
     && pip install --upgrade pip \
     && pip install ansible
-
 
 # Deploy scripts/configurations
 COPY conf/ $DOCKER_CONF_HOME

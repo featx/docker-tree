@@ -16,12 +16,20 @@ RUN /usr/local/bin/apk-install pcre-dev zlib-dev openssl-dev g++ make git
 WORKDIR /usr/local/src/github.com/nginx
 RUN git clone https://github.com/nginx/nginx.git
 WORKDIR /usr/local/src/github.com/nginx/nginx
-RUN git checkout release-1.9.12
-RUN rm -rf /usr/local/src/github.com/nginx/nginx/src/core/nginx.h
+RUN git checkout release-1.9.12 \
+    && rm -rf /usr/local/src/github.com/nginx/nginx/src/core/nginx.h
 COPY conf/nginx.h /usr/local/src/github.com/nginx/nginx/src/core/
-RUN auto/configure --prefix=/usr/local/nginx --sbin-path=/usr/sbin/nginx --conf-path=/usr/local/etc/nginx/nginx.conf  --error-log-path=/var/log/nginx/error.log --http-log-path=/var/log/nginx/access.log --with-pcre --with-http_ssl_module --with-http_realip_module --with-http_addition_module --with-http_sub_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gunzip_module --with-http_gzip_static_module --with-http_random_index_module --with-http_secure_link_module --with-http_stub_status_module --with-mail --with-mail_ssl_module --with-ipv6 --pid-path=/run/nginx.pid
-RUN make && make install
-RUN apk del g++ make git
+RUN auto/configure --prefix=/usr/local/nginx --sbin-path=/usr/sbin/nginx \
+    --conf-path=/etc/nginx/nginx.conf  --error-log-path=/var/log/nginx/error.log \
+    --http-log-path=/var/log/nginx/access.log --with-pcre --with-http_ssl_module \
+    --with-http_realip_module --with-http_addition_module --with-http_sub_module \
+    --with-http_dav_module --with-http_flv_module --with-http_mp4_module \
+    --with-http_gunzip_module --with-http_gzip_static_module --with-http_random_index_module \
+    --with-http_secure_link_module --with-http_stub_status_module --with-mail \
+    --with-mail_ssl_module --with-ipv6 --pid-path=/run/nginx.pid \
+    && make && make install \
+    && apk del g++ make git \
+    && rm -rf /usr/local/src/*
 
 # Deploy scripts/configurations
 COPY conf/ $CONF_HOME
