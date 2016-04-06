@@ -5,7 +5,7 @@ set -o errtrace  # trace ERR through 'time command' and other functions
 set -o nounset   ## set -u : exit the script if you try to use an uninitialised variable
 set -o errexit   ## set -e : exit the script if any statement returns a non-true return value
 
-source $CONF_HOME/bin/config.sh
+source /usr/local/bin/config.sh
 
 rootCheck
 
@@ -21,12 +21,17 @@ case "$CONTROL_COMMAND" in
     ## main roles
     "provision.role")
         provisionRoleAdd "provision.main.bootstrap"  "$1"
+        provisionRoleAdd "provision.main.build"      "$1"
         provisionRoleAdd "provision.main.onbuild"    "$1"
         provisionRoleAdd "provision.main.entrypoint" "$1"
         ;;
 
     "provision.role.bootstrap")
         provisionRoleAdd "provision.main.bootstrap" "$1"
+        ;;
+
+    "provision.role.build")
+        provisionRoleAdd "provision.main.build" "$1"
         ;;
 
     "provision.role.onbuild")
@@ -40,12 +45,17 @@ case "$CONTROL_COMMAND" in
     ## startup roles
     "provision.role.startup")
         provisionRoleAdd "provision.startup.bootstrap"  "$1"
+        provisionRoleAdd "provision.startup.build"      "$1"
         provisionRoleAdd "provision.startup.onbuild"    "$1"
         provisionRoleAdd "provision.startup.entrypoint" "$1"
         ;;
 
     "provision.role.startup.bootstrap")
         provisionRoleAdd "provision.startup.bootstrap" "$1"
+        ;;
+
+    "provision.role.startup.build")
+        provisionRoleAdd "provision.startup.build" "$1"
         ;;
 
     "provision.role.startup.onbuild")
@@ -59,12 +69,17 @@ case "$CONTROL_COMMAND" in
     ## startup roles
     "provision.role.finish")
         provisionRoleAdd "provision.finish.bootstrap"  "$1"
+        provisionRoleAdd "provision.finish.build"      "$1"
         provisionRoleAdd "provision.finish.onbuild"    "$1"
         provisionRoleAdd "provision.finish.entrypoint" "$1"
         ;;
 
     "provision.role.finish.bootstrap")
         provisionRoleAdd "provision.finish.bootstrap" "$1"
+        ;;
+
+    "provision.role.finish.build")
+        provisionRoleAdd "provision.finish.build" "$1"
         ;;
 
     "provision.role.finish.onbuild")
@@ -80,7 +95,7 @@ case "$CONTROL_COMMAND" in
     ## ------------------------------------------
 
     "service.enable")
-        SERVICE_FILE="$CONF_HOME/etc/supervisor.d/$1.conf"
+        SERVICE_FILE="/usr/local/etc/supervisor.d/$1.conf"
         if [ -f "$SERVICE_FILE" ]; then
             sed -i '/autostart = /c\autostart = true' -- "$SERVICE_FILE"
         else
@@ -90,7 +105,7 @@ case "$CONTROL_COMMAND" in
         ;;
 
     "service.disable")
-        SERVICE_FILE="$CONF_HOME/etc/supervisor.d/$1.conf"
+        SERVICE_FILE="/usr/local/etc/supervisor.d/$1.conf"
         if [ -f "$SERVICE_FILE" ]; then
             sed -i '/autostart = /c\autostart = false' -- "$SERVICE_FILE"
         else
@@ -104,12 +119,12 @@ case "$CONTROL_COMMAND" in
     ## ------------------------------------------
 
     "version.get")
-        cat $CONF_HOME/VERSION
+        cat /usr/local/VERSION
         ;;
 
     "version.require.min")
         EXPECTED_VERSION="$1"
-        CURRENT_VERSION="$(cat $CONF_HOME/VERSION)"
+        CURRENT_VERSION="$(cat /usr/local/VERSION)"
         if [ "$CURRENT_VERSION" -lt "$EXPECTED_VERSION" ]; then
             echo "-----------------------------------------------------------"
             echo "--- This docker image is not up2date!"
@@ -125,7 +140,7 @@ case "$CONTROL_COMMAND" in
 
     "version.require.max")
         EXPECTED_VERSION="$1"
-        CURRENT_VERSION="$(cat $CONF_HOME/VERSION)"
+        CURRENT_VERSION="$(cat /usr/local/VERSION)"
         if [ "$CURRENT_VERSION"  -gt "$EXPECTED_VERSION" ]; then
             echo "-----------------------------------------------------------"
             echo "--- This docker image is too new!"
@@ -139,7 +154,7 @@ case "$CONTROL_COMMAND" in
 
 
     "buildtime.get")
-        cat $CONF_HOME/BUILDTIME
+        cat /usr/local/BUILDTIME
         ;;
 
     *)

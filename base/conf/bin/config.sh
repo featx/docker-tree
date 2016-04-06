@@ -2,8 +2,8 @@
 
 shopt -s nullglob
 
-PROVISION_REGISTRY_PATH="$CONF_HOME/etc/.registry"
-PROVISION_REGISTRY_PATH="$CONF_HOME/etc/.registry"
+PROVISION_REGISTRY_PATH="/usr/local/etc/.registry"
+PROVISION_REGISTRY_PATH="/usr/local/etc/.registry"
 
 ###
  # Check if current user is root
@@ -63,19 +63,17 @@ function runEntrypoints() {
     # Try to find entrypoint
     ###############
 
-    ENTRYPOINT_SCRIPT="$CONF_HOME/bin/entrypoint.d/${TASK}.sh"
+    ENTRYPOINT_SCRIPT="/usr/local/bin/entrypoint.d/${TASK}.sh"
 
     if [ -f "$ENTRYPOINT_SCRIPT" ]; then
-        echo "Executing entrypoint \"$(basename $ENTRYPOINT_SCRIPT .sh)\""
         . "$ENTRYPOINT_SCRIPT"
     fi
 
     ###############
     # Run default
     ###############
-    if [ -f "$CONF_HOME/bin/entrypoint.d/default.sh" ]; then
-        echo "Executing default entrypoint"
-        . ${CONF_HOME}/bin/entrypoint.d/default.sh
+    if [ -f "/usr/local/bin/entrypoint.d/default.sh" ]; then
+        . /usr/local/bin/entrypoint.d/default.sh
     fi
 
     exit
@@ -85,9 +83,7 @@ function runEntrypoints() {
  # Run "bootstrap" provisioning
  ##
 function runProvisionBootstrap() {
-    mkdir -p ${CONF_HOME}/bin/registry/
-
-    for FILE in ${CONF_HOME}/provision/bootstrap.d/*.sh; do
+    for FILE in /usr/local/provision/bootstrap.d/*.sh; do
         # run custom scripts, only once
         . "$FILE"
         rm -f -- "$FILE"
@@ -100,12 +96,23 @@ function runProvisionBootstrap() {
 }
 
 ###
+ # Run "build" provisioning
+ ##
+function runProvisionBuild() {
+    for FILE in /usr/local/provision/build.d/*.sh; do
+        # run custom scripts, only once
+        . "$FILE"
+        rm -f -- "$FILE"
+    done
+
+    runDockerProvision build
+}
+
+###
  # Run "onbuild" provisioning
  ##
 function runProvisionOnBuild() {
-    mkdir -p ${CONF_HOME}/bin/registry/
-
-    for FILE in ${CONF_HOME}/provision/onbuild.d/*.sh; do
+    for FILE in /usr/local/provision/onbuild.d/*.sh; do
         # run custom scripts
         . "$FILE"
     done
@@ -117,7 +124,7 @@ function runProvisionOnBuild() {
  # Run "entrypoint" provisioning
  ##
 function runProvisionEntrypoint() {
-    for FILE in ${CONF_HOME}/provision/entrypoint.d/*.sh; do
+    for FILE in /usr/local/provision/entrypoint.d/*.sh; do
         # run custom scripts
         . "$FILE"
     done
@@ -166,7 +173,7 @@ function buildProvisionRoleList() {
  #
  ##
 function runDockerProvision() {
-    ANSIBLE_PLAYBOOK="$CONF_HOME/provision/playbook.yml"
+    ANSIBLE_PLAYBOOK="/usr/local/provision/playbook.yml"
     ANSIBLE_TAG="$1"
     ANSIBLE_DYNAMIC_PLAYBOOK=0
 
@@ -202,7 +209,7 @@ function runDockerProvision() {
 
     # Only run playbook if there is one
     if [ -s "${ANSIBLE_PLAYBOOK}" ]; then
-        bash ${CONF_HOME}/bin/provision.sh "${ANSIBLE_PLAYBOOK}" "${ANSIBLE_TAG}"
+        bash /usr/local/bin/provision.sh "${ANSIBLE_PLAYBOOK}" "${ANSIBLE_TAG}"
 
         # Remove dynamic playbook file
         if [ "${ANSIBLE_DYNAMIC_PLAYBOOK}" -eq 1 ]; then
@@ -217,5 +224,5 @@ function runDockerProvision() {
  ##
 function startSupervisord() {
     cd /
-    exec supervisord -c ${CONF_HOME}/etc/supervisor.conf --logfile /dev/null --pidfile /dev/null --user root
+    exec /usr/local/bin/service.d/supervisor.sh
 }
