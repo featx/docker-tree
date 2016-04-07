@@ -95,7 +95,7 @@ case "$CONTROL_COMMAND" in
     ## ------------------------------------------
 
     "service.enable")
-        SERVICE_FILE="/usr/local/etc/supervisor.d/$1.conf"
+        SERVICE_FILE="/usr/local/etc/supervisor/$1.conf"
         if [ -f "$SERVICE_FILE" ]; then
             sed -i '/autostart = /c\autostart = true' -- "$SERVICE_FILE"
         else
@@ -105,7 +105,7 @@ case "$CONTROL_COMMAND" in
         ;;
 
     "service.disable")
-        SERVICE_FILE="/usr/local/etc/supervisor.d/$1.conf"
+        SERVICE_FILE="/usr/local/etc/supervisor/$1.conf"
         if [ -f "$SERVICE_FILE" ]; then
             sed -i '/autostart = /c\autostart = false' -- "$SERVICE_FILE"
         else

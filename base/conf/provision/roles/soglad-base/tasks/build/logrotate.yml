@@ -3,8 +3,8 @@
 - name: Register logrotate configurations
   file:
     src:  '{{ item }}'
-    dest: '/etc/logrotate.d/{{ item | basename }}'
+    dest: '/etc/logrotate/{{ item | basename }}'
     state: link
     force: yes
   with_fileglob:
-    - /usr/local/etc/logrotate.d/*
+    - /usr/local/etc/logrotate/*

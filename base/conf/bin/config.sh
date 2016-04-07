@@ -63,7 +63,7 @@ function runEntrypoints() {
     # Try to find entrypoint
     ###############
 
-    ENTRYPOINT_SCRIPT="/usr/local/bin/entrypoint.d/${TASK}.sh"
+    ENTRYPOINT_SCRIPT="/usr/local/bin/entrypoint/${TASK}.sh"
 
     if [ -f "$ENTRYPOINT_SCRIPT" ]; then
         . "$ENTRYPOINT_SCRIPT"
@@ -72,8 +72,8 @@ function runEntrypoints() {
     ###############
     # Run default
     ###############
-    if [ -f "/usr/local/bin/entrypoint.d/default.sh" ]; then
-        . /usr/local/bin/entrypoint.d/default.sh
+    if [ -f "/usr/local/bin/entrypoint/default.sh" ]; then
+        . /usr/local/bin/entrypoint/default.sh
     fi
 
     exit
@@ -83,7 +83,7 @@ function runEntrypoints() {
  # Run "bootstrap" provisioning
  ##
 function runProvisionBootstrap() {
-    for FILE in /usr/local/provision/bootstrap.d/*.sh; do
+    for FILE in /usr/local/provision/bootstrap/*.sh; do
         # run custom scripts, only once
         . "$FILE"
         rm -f -- "$FILE"
@@ -99,7 +99,7 @@ function runProvisionBootstrap() {
  # Run "build" provisioning
  ##
 function runProvisionBuild() {
-    for FILE in /usr/local/provision/build.d/*.sh; do
+    for FILE in /usr/local/provision/build/*.sh; do
         # run custom scripts, only once
         . "$FILE"
         rm -f -- "$FILE"
@@ -112,7 +112,7 @@ function runProvisionBuild() {
  # Run "onbuild" provisioning
  ##
 function runProvisionOnBuild() {
-    for FILE in /usr/local/provision/onbuild.d/*.sh; do
+    for FILE in /usr/local/provision/onbuild/*.sh; do
         # run custom scripts
         . "$FILE"
     done
@@ -124,7 +124,7 @@ function runProvisionOnBuild() {
  # Run "entrypoint" provisioning
  ##
 function runProvisionEntrypoint() {
-    for FILE in /usr/local/provision/entrypoint.d/*.sh; do
+    for FILE in /usr/local/provision/entrypoint/*.sh; do
         # run custom scripts
         . "$FILE"
     done
@@ -224,5 +224,5 @@ function runDockerProvision() {
  ##
 function startSupervisord() {
     cd /
-    exec /usr/local/bin/service.d/supervisor.sh
+    exec /usr/local/bin/service/supervisor.sh
 }

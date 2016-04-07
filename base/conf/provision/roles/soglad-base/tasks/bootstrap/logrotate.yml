@@ -13,4 +13,4 @@
     state: link
     force: yes
   with_fileglob:
-    - /usr/local/etc/logrotate.d/*
+    - /usr/local/etc/logrotate/*
