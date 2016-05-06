@@ -4,13 +4,13 @@
 
 FROM alpine:3.3
 MAINTAINER palmtale<m@glad.so>
-LABEL vendor=Glad.so
+LABEL vendor=Soglad
 
-ENV NODE_VERSION=v5.10.1
+ENV NODE_VERSION=v6.0.0
 ENV NPM_VERSION=3
 ENV NODE_HOME=/usr/local
 ENV NPM_CONFIG_LOGLEVEL info
-ENV CONFIG_FLAGS="--fully-static --without-npm" DEL_PKGS="libgcc libstdc++" RM_DIRS=/usr/include
+ENV CONFIG_FLAGS="--fully-static" DEL_PKGS="libgcc libstdc++" RM_DIRS=/usr/include
 
 # gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
@@ -46,3 +46,4 @@ RUN set -ex \
   && rm -rf /etc/ssl /node-${NODE_VERSION}.tar.gz /SHASUMS256.txt.asc /node-${NODE_VERSION} ${RM_DIRS} \
       ${NODE_HOME}/share/man /tmp/* /var/cache/apk/* /root/.npm /root/.node-gyp /root/.gnupg \
       ${NODE_HOME}/lib/node_modules/npm/man ${NODE_HOME}/lib/node_modules/npm/doc ${NODE_HOME}/lib/node_modules/npm/html
+CMD ["node", "-v"]

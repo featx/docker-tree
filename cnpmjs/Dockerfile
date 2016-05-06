@@ -9,11 +9,12 @@ LABEL vendor=Glad.so
 ENV HOME=/usr/local
 ENV VERSION=2.10.0
 
-WORKDIR $HOME
-RUN apk add -U git && git clone https://github.com/cnpm/cnpmjs.org.git
-WORKDIR $HOME/cnpmjs.org
-RUN git checkout $VERSION && rm -rf $HOME/cnpmjs.org/config/index.js
-COPY config.js $HOME/cnpmjs.org/config/index.js
-RUN make install && apk del git
-EXPOSE 7001,7002
-CMD ["npm"]
+RUN apk add -U git \
+    && mkdir $HOME/cnpm && cd $HOME/cnpm && git clone https://github.com/cnpm/cnpmjs.org.git \
+    && cd $HOME/cnpm/cnpmjs.org/ && git checkout $VERSION
+COPY config.js $HOME/cnpmjs.org/config/
+WORKDIR $HOME/cnpm/cnpmjs.org
+RUN export NODE_ENV=production && npm install --build-from-source --registry=https://registry.npm.taobao.org --disturl=https://npm.taobao.org/mirrors/node && apk del git
+EXPOSE 7001
+EXPOSE 7002
+ENTRYPOINT npm run start
