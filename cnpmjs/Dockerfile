@@ -12,7 +12,7 @@ ENV NODE_ENV production
 
 # TODO The datadir is configured in config.js,
 #      But dont know how to set variable for some ENV,
-       hard code for now
+#      hard code for now
 ENV DATA_DIR /var/data/cnpmjs
 
 RUN apk add -U git \
