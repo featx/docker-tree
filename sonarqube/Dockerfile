@@ -9,9 +9,6 @@ MAINTAINER palmtale<m@glad.so>
 ENV SONAR_VERSION=5.5 \
     SONARQUBE_HOME=/usr/local/sonarqube
 
-# Http port
-EXPOSE 9000
-
 RUN set -x \
     && apk add --no-cache gnupg unzip curl \
     # pub   2048R/D26468DE 2015-05-25
@@ -26,11 +23,19 @@ RUN set -x \
     && unzip sonarqube.zip \
     && mv sonarqube-$SONAR_VERSION sonarqube \
     && rm sonarqube.zip* \
+    && mv $SONARQUBE_HOME/bin/linux-x86-64/lib/libwrapper.so $SONARQUBE_HOME/ \
+    && mv $SONARQUBE_HOME/bin/linux-x86-64/wrapper $SONARQUBE_HOME/ \
     && rm -rf $SONARQUBE_HOME/conf/* \
+    && rm -rf $SONARQUBE_HOME/bin/* \
+    && mkdir $SONARQUBE_HOME/bin/lib \
+    && mv $SONARQUBE_HOME/wrapper $SONARQUBE_HOME/bin/ \
+    && mv $SONARQUBE_HOME/libwrapper.so $SONARQUBE_HOME/bin/lib/ \
     && apk del gnupg unzip curl
 
 VOLUME ["$SONARQUBE_HOME/data", "$SONARQUBE_HOME/extensions"]
 
-WORKDIR $SONARQUBE_HOME
 COPY conf/* $SONARQUBE_HOME/conf/
-ENTRYPOINT ["./bin/linux-x86-64/sonar.sh"]
+COPY bin/sonar.sh $SONARQUBE_HOME/bin/
+WORKDIR $SONARQUBE_HOME
+EXPOSE 9000
+ENTRYPOINT ["./bin/sonar.sh"]

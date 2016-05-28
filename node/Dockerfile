@@ -1,5 +1,5 @@
 #++++++++++++++++++++++++++++++++++++++
-# Alpine 3 Node.js Docker container
+# Node.js Docker container in Alpine
 #++++++++++++++++++++++++++++++++++++++
 
 FROM alpine:3.3

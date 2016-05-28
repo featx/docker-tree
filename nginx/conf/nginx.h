@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) Igor Sysoev
  * Copyright (C) Nginx, Inc.
@@ -9,9 +8,9 @@
 #define _NGINX_H_INCLUDED_
 
 
-#define nginx_version      1009012
+#define nginx_version      1000001
 #define NGINX_VERSION      "SoGlad"
-#define NGINX_VER          "Server@" NGINX_VERSION
+#define NGINX_VER          "Server-" NGINX_VERSION
 
 #ifdef NGX_BUILD
 #define NGINX_VER_BUILD    NGINX_VER " (" NGX_BUILD ")"
@@ -19,7 +18,7 @@
 #define NGINX_VER_BUILD    NGINX_VER
 #endif
 
-#define NGINX_VAR          "NGINX"
+#define NGINX_VAR          "SOGLAD"
 #define NGX_OLDPID_EXT     ".oldbin"
 
 

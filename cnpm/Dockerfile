@@ -1,5 +1,5 @@
 #++++++++++++++++++++++++++++++++++++++#
-# CNPM Docker container based on Alpine #
+# CNPM Docker container in Alpine #
 #+++++++++++++++++++++++++++++++++++++++#
 
 FROM soglad/node:alpine
