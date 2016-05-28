@@ -1,10 +1,13 @@
-FROM java:8-alpine
+#++++++++++++++++++++++++++++++++++++++
+# SonarQube Docker container in Alpine
+#++++++++++++++++++++++++++++++++++++++
 
+FROM java:8-jre-alpine
 LABEL vendor=Glad.so
-MAINTAINER palmtale <m@glad.so>
+MAINTAINER palmtale<m@glad.so>
 
 ENV SONAR_VERSION=5.5 \
-    SONARQUBE_HOME=/usr/local/sonarqube \
+    SONARQUBE_HOME=/usr/local/sonarqube
 
 # Http port
 EXPOSE 9000
@@ -16,8 +19,7 @@ RUN set -x \
     # uid                  sonarsource_deployer (Sonarsource Deployer) <infra@sonarsource.com>
     # sub   2048R/06855C1D 2015-05-25
     && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys F1182E81C792928921DBCAB4CFCA4A29D26468DE \
-    && mkdir $SONARQUBE_HOME \
-    && cd $SONARQUBE_HOME \
+    && cd /usr/local \
     && curl -o sonarqube.zip -fSL https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-$SONAR_VERSION.zip \
     && curl -o sonarqube.zip.asc -fSL https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-$SONAR_VERSION.zip.asc \
     && gpg --batch --verify sonarqube.zip.asc sonarqube.zip \

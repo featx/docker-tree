@@ -2,9 +2,9 @@
 # Alpine 3 Nginx Docker container
 #++++++++++++++++++++++++++++++++++++++
 
-FROM soglad/base:alpine3
-MAINTAINER palmtale<m@glad.so>
+FROM alpine:3.3
 LABEL vendor=Glad.so
+MAINTAINER palmtale<m@glad.so>
 
 ENV WEB_DOCUMENT_ROOT  /home/soglad/
 ENV WEB_DOCUMENT_INDEX index.php
