@@ -38,9 +38,7 @@ RUN cd $NGINX_SRC_HOME/nginx \
                    --with-mail --with-mail_ssl_module \
                    --with-ipv6 \
     && make && make install \
-    && rm -rf $NGINX_SRC_HOME/* \
-    && rm -rf $NGINX_HOME/html \
-    && rm -rf /etc/nginx/nginx.conf \
+    && rm -rf $NGINX_SRC_HOME/* $NGINX_HOME/html /etc/nginx/nginx.conf \
     && mkdir /etc/nginx/conf.d \
     && apk del git make gcc g++ linux-headers paxctl libgcc libstdc++ gnupg \
     && rm -rf /var/cache/apk/*

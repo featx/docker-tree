@@ -2,7 +2,7 @@
 # CNPM Docker container in Alpine #
 #+++++++++++++++++++++++++++++++++++++++#
 
-FROM soglad/node:alpine
+FROM soglad/node
 LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 

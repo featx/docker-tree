@@ -7,7 +7,10 @@ LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
 ENV SONAR_VERSION=5.5 \
-    SONARQUBE_HOME=/usr/local/sonarqube
+    SONARQUBE_HOME=/usr/local/sonarqube \
+    SONARQUBE_JDBC_USERNAME=sonar \
+    SONARQUBE_JDBC_PASSWORD=sonar \
+    SONARQUBE_JDBC_URL=jdbc:h2:tcp://localhost:9092/sonar
 
 RUN set -x \
     && apk add --no-cache gnupg unzip curl \
@@ -23,19 +26,18 @@ RUN set -x \
     && unzip sonarqube.zip \
     && mv sonarqube-$SONAR_VERSION sonarqube \
     && rm sonarqube.zip* \
-    && mv $SONARQUBE_HOME/bin/linux-x86-64/lib/libwrapper.so $SONARQUBE_HOME/ \
-    && mv $SONARQUBE_HOME/bin/linux-x86-64/wrapper $SONARQUBE_HOME/ \
-    && rm -rf $SONARQUBE_HOME/conf/* \
-    && rm -rf $SONARQUBE_HOME/bin/* \
-    && mkdir $SONARQUBE_HOME/bin/lib \
-    && mv $SONARQUBE_HOME/wrapper $SONARQUBE_HOME/bin/ \
-    && mv $SONARQUBE_HOME/libwrapper.so $SONARQUBE_HOME/bin/lib/ \
-    && apk del gnupg unzip curl
+    && apk del gnupg unzip curl \
+    && rm -rf $SONARQUBE_HOME/conf/* $SONARQUBE_HOME/bin/* /root/.gnupg /var/cache/apk/*
 
-VOLUME ["$SONARQUBE_HOME/data", "$SONARQUBE_HOME/extensions"]
 
-COPY conf/* $SONARQUBE_HOME/conf/
-COPY bin/sonar.sh $SONARQUBE_HOME/bin/
+#VOLUME ["$SONARQUBE_HOME/data", "$SONARQUBE_HOME/extensions"]
+
+COPY run.sh $SONARQUBE_HOME/bin/
 WORKDIR $SONARQUBE_HOME
 EXPOSE 9000
-ENTRYPOINT ["./bin/sonar.sh"]
+ENTRYPOINT ["./bin/run.sh"]
+
+# invoke: docker run -v /var/data/docker/sonardata:/usr/local/sonarqube/data
+#                    -v /var/data/docker/sonarext:/usr/local/sonarqube/extensions
+#                    -v /var/data/docker/sonarlogs:/usr/local/sonarqube/logs
+# -p xxxx:9000 -p xxxx:9001 --name sonar soglad/sonarqube:alpine start

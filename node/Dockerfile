@@ -3,14 +3,15 @@
 #++++++++++++++++++++++++++++++++++++++
 
 FROM alpine:3.3
-LABEL vendor=Glad.so
-MAINTAINER palmtale<m@glad.so>
+#LABEL vendor=Glad.so
+#MAINTAINER palmtale<m@glad.so>
 
-ENV NODE_VERSION=v6.2.0
-ENV NPM_VERSION=3
-ENV NODE_HOME=/usr/local
-ENV NPM_CONFIG_LOGLEVEL info
-ENV CONFIG_FLAGS="--fully-static" DEL_PKGS="libgcc libstdc++" RM_DIRS=/usr/include
+ENV NODE_VERSION=v6.2.0 \
+    NPM_VERSION=3 \
+    NODE_HOME=/usr/local \
+    CONFIG_FLAGS="--fully-static" \
+    DEL_PKGS="libgcc libstdc++" \
+    RM_DIRS=/usr/include
 
 # gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
@@ -33,8 +34,12 @@ RUN set -ex \
   && grep node-${NODE_VERSION}.tar.gz SHASUMS256.txt.asc | sha256sum -c - \
   && tar -zxf node-${NODE_VERSION}.tar.gz \
   && cd /node-${NODE_VERSION} \
+  && export GYP_DEFINES="linux_use_gold_flags=0" \
   && ./configure --prefix=${NODE_HOME} ${CONFIG_FLAGS} \
-  && make -j$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) \
+  && NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) \
+  && make -j${NPROC} -C out mksnapshot BUILDTYPE=Release \
+  && paxctl -cm out/Release/mksnapshot \
+  && make -j${NPROC} \
   && make install \
   && paxctl -cm ${NODE_HOME}/bin/node \
   && cd / \
