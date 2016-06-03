@@ -2,7 +2,7 @@
 # rethinkdb Docker container in Alpine #
 #+++++++++++++++++++++++++++++++++++++++#
 
-FROM alpine:3.3
+FROM alpine
 LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
