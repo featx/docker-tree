@@ -6,87 +6,28 @@ FROM alpine
 LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
-ENV GOSU_VERSION 1.7
+ENV MARIADB_VERSION=10.1 \
+    MARIADB_HOME=/usr/local
 
-RUN addgroup -S mysql && adduser -S -g mysql mysql
+RUN addgroup -S mysql && adduser -S -g mysql mysql \
+    && set -x \
+		&& apk add --no-cache openssl libevent zlib readline \
+		   make gcc g++ git zip tar bison libtool ncurses-dev zlib-dev cmake jemalloc \
+			 linux-headers paxctl libgcc libstdc++ gnupg autoconf automake \
+    && cd $MARIADB_HOME && git clone https://github.com/MariaDB/server && cd server \
+		&& ./BUILD/autorun.sh && ./configure --prefix=$MARIADB_HOME --enable-assembler \
+    --with-extra-charsets=complex  --enable-thread-safe-client  --with-big-tables \
+    --with-plugin-maria --with-aria-tmp-tables --without-plugin-innodb_plugin \
+    --with-mysqld-ldflags=-static --with-client-ldflags=-static --with-readline \
+    --with-ssl --with-plugins=max-no-ndb --with-embedded-server --with-libevent \
+    --with-mysqld-ldflags=-all-static  --with-client-ldflags=-all-static \
+    --with-zlib-dir=bundled --enable-local-infile && make && make install \
+		&& apk del make gcc g++ git zip tar bison libtool ncurses-dev zlib-dev cmake jemalloc \
+		linux-headers paxctl libgcc libstdc++ gnupg autoconf automake \
+		&& rm -rf $MARIADB_HOME/server /var/cache/apk/* \
+		&& chown -R mysql:mysql $MARIADB_HOME \
+    && ./scripts/mysql_install_db --user=mysql
 
-# add gosu for easy step-down from root
-RUN set -x \
-	&& apk add --no-cache ca-certificates wget gnupg pwgen \
-	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
-	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc" \
-	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
-	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
-	&& rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
-	&& chmod +x /usr/local/bin/gosu \
-	&& gosu nobody true \
-	&& apk del ca-certificates wget gnupg \
-  && mkdir /docker-entrypoint-initdb.d
-
-RUN mkdir /docker-entrypoint-initdb.d
-
-# install "pwgen" for randomizing passwords
-#RUN apt-get update && apt-get install -y pwgen && rm -rf /var/lib/apt/lists/*
-
-# Key fingerprint = 1993 69E5 404B D5FC 7D2F  E43B CBCB 082A 1BB9 43DB
-# MariaDB Package Signing Key <package-signing-key@mariadb.org>
-# Key fingerprint = 430B DF5C 56E7 C94E 848E  E60C 1C4C BDCD CD2E FD2A
-# Percona MySQL Development Team <mysql-dev@percona.com>
-RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 199369E5404BD5FC7D2FE43BCBCB082A1BB943DB \
-	&& apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 430BDF5C56E7C94E848EE60C1C4CBDCDCD2EFD2A
-
-RUN echo "deb http://repo.percona.com/apt jessie main" > /etc/apt/sources.list.d/percona.list \
-	&& { \
-		echo 'Package: *'; \
-		echo 'Pin: release o=Percona Development Team'; \
-		echo 'Pin-Priority: 998'; \
-	} > /etc/apt/preferences.d/percona
-
-ENV MARIADB_MAJOR 10.1
-ENV MARIADB_VERSION 10.1.14+maria-1~jessie
-
-RUN echo "deb http://ftp.osuosl.org/pub/mariadb/repo/$MARIADB_MAJOR/debian jessie main" > /etc/apt/sources.list.d/mariadb.list \
-	&& { \
-		echo 'Package: *'; \
-		echo 'Pin: release o=MariaDB'; \
-		echo 'Pin-Priority: 999'; \
-	} > /etc/apt/preferences.d/mariadb
-# add repository pinning to make sure dependencies from this MariaDB repo are preferred over Debian dependencies
-#  libmariadbclient18 : Depends: libmysqlclient18 (= 5.5.42+maria-1~wheezy) but 5.5.43-0+deb7u1 is to be installed
-
-# the "/var/lib/mysql" stuff here is because the mysql-server postinst doesn't have an explicit way to disable the mysql_install_db codepath besides having a database already "configured" (ie, stuff in /var/lib/mysql/mysql)
-# also, we set debconf keys to make APT a little quieter
-RUN { \
-		echo mariadb-server-$MARIADB_MAJOR mysql-server/root_password password 'unused'; \
-		echo mariadb-server-$MARIADB_MAJOR mysql-server/root_password_again password 'unused'; \
-	} | debconf-set-selections \
-	&& apt-get update \
-	&& apt-get install -y \
-		mariadb-server=$MARIADB_VERSION \
-# percona-xtrabackup is installed at the same time so that `mysql-common` is only installed once from just mariadb repos
-		percona-xtrabackup \
-		socat \
-	&& rm -rf /var/lib/apt/lists/* \
-# comment out any "user" entires in the MySQL config ("docker-entrypoint.sh" or "--user" will handle user switching)
-	&& sed -ri 's/^user\s/#&/' /etc/mysql/my.cnf /etc/mysql/conf.d/* \
-# purge and re-create /var/lib/mysql with appropriate ownership
-	&& rm -rf /var/lib/mysql && mkdir -p /var/lib/mysql /var/run/mysqld \
-	&& chown -R mysql:mysql /var/lib/mysql /var/run/mysqld \
-# ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
-	&& chmod 777 /var/run/mysqld
-
-# comment out a few problematic configuration values
-# don't reverse lookup hostnames, they are usually another container
-RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/mysql/my.cnf \
-	&& echo 'skip-host-cache\nskip-name-resolve' | awk '{ print } $1 == "[mysqld]" && c == 0 { c = 1; system("cat") }' /etc/mysql/my.cnf > /tmp/my.cnf \
-	&& mv /tmp/my.cnf /etc/mysql/my.cnf
-
-VOLUME /var/lib/mysql
-
-COPY docker-entrypoint.sh /usr/local/bin/
-RUN ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
-ENTRYPOINT ["docker-entrypoint.sh"]
-
+VOLUME ["/usr/local/etc", "/usr/local/data"]
 EXPOSE 3306
-CMD ["mysqld"]
+CMD ["mysqld_safe", "--user=mysql"]

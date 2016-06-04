@@ -3,8 +3,8 @@
 #++++++++++++++++++++++++++++++++++++++
 
 FROM alpine
-#LABEL vendor=Glad.so
-#MAINTAINER palmtale<m@glad.so>
+LABEL vendor=Glad.so
+MAINTAINER palmtale<m@glad.so>
 
 ENV NODE_VERSION=v6.2.0 \
     NPM_VERSION=3 \
