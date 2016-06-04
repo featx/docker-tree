@@ -11,7 +11,7 @@ fi
 
 if [ ! -f ${DATA_DIR}/ibdata1 ]; then
 
-    mysql_install_db --datadir="${DATA_DIR}"
+    mysql_install_db --user=mysql --datadir="${DATA_DIR}"
 
     mysqld_safe --defaults-file=${BASE_DIR}/my.cnf &
     sleep 10s
@@ -25,7 +25,6 @@ if [ ! -f ${DATA_DIR}/ibdata1 ]; then
     sleep 10s
     killall -9 mysqld
     killall -9 mysqld_safe
-    chown -R mysql:mysql ${BASE_DIR}
 fi
 
-mysqld --defaults-file=${BASE_DIR}/my.cnf
+mysqld --user=mysql

@@ -13,13 +13,12 @@ ENV BASE_DIR=/usr/mysql \
 		DB_PASS=soglad
 
 COPY m* $BASE_DIR/
-RUN addgroup -S mysql && adduser -S -g mysql mysql \
-    && apk -U upgrade && apk -U add mariadb mariadb-client \
+RUN apk -U upgrade && apk -U add mariadb mariadb-client \
 		&& rm -rf /tmp/src/* /var/cache/apk/* /etc/mysql/my.cnf \
-		&& mv $BASE_DIR/my.cnf /etc/mysql/ && chmod o-r /etc/mysql/my.cnf \
+		&& mv $BASE_DIR/my.cnf /etc/mysql/ \
 		&& mv $BASE_DIR/mysql.sh /usr/bin/ && chmod u+x /usr/bin/mysql.sh
 
-#USER mysql
+
 VOLUME ["/usr/mysql"]
 EXPOSE 3306
 CMD ["mysql.sh"]
