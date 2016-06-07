@@ -10,12 +10,15 @@ ENV RUST_VERSION=1.9.0 \
     RUST_HOME=/usr/local
 
 RUN set -ex \
-    && apk add --no-cache g++ gcc make python ca-certificates file curl git tar \
-    && cd $RUST_HOME && curl -fSL https://static.rust-lang.org/dist/rustc-$RUST_VERSION-src.tar.gz -o rustc.tar.gz \
-    && tar -zxf rustc.tar.gz && cd rustc-$RUST_VERSION \
-    && ./configure --prefix=$RUST_HOME \
-    && make && make install \
-    && apk del g++ gcc make python2 curl git tar ca-certificates \
-    && rm -rf /var/cache/apk/* $RUST_HOME/rustc.tar.gz
+    && apk add --no-cache make gcc g++ libc-dev \
+    ca-certificates file curl tar \
+    && export DOWNLOAD_URL=https://static.rust-lang.org/dist/rust-$RUST_VERSION-x86_64-unknown-linux-gnu.tar.gz \
+    && cd $RUST_HOME \
+    && curl -fsOSL $DOWNLOAD_URL \
+    && curl -s $DOWNLOAD_URL.sha256 | sha256sum -c - && mkdir -p $RUST_HOME/rust \
+    && tar -C $RUST_HOME/rust -zxf rust-$RUST_VERSION-x86_64-unknown-linux-gnu.tar.gz --strip-components=1 \
+    && cd $RUST_HOME/rust && ./install.sh \
+    && apk del g++ gcc make libc-dev curl tar ca-certificates \
+    && rm -rf /var/cache/apk/* $RUST_HOME/rust-$RUST_VERSION-x86_64-unknown-linux-gnu.tar.gz
 
-CMD["rustc"]
+CMD ["rustc"]
