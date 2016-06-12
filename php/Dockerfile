@@ -14,16 +14,14 @@ ENV PHP_HOME=/usr/local \
 --with-mysql --with-mysqli --with-pdo-mysql --with-iconv \
 --with-openssl --with-gd --with-libedit  --with-zlib --with-curl \
 --with-mcrypt --with-mhash --enable-xml --enable-bcmath \
---enable-mbstring --enable-mbregex --enable-gd-native-ttf \
+--enable-mbstring --enable-mbregex --enable-gd-native-ttf --enable-mysqlnd \
 --enable-sockets --enable-zip --enable-soap --enable-pdo --enable-debug \
 --with-freetype-dir=/usr/local --with-jpeg-dir=/usr/local \
 --with-png-dir=/usr/local --with-libxml-dir=/usr/local \
 --with-vpx-dir=/usr/local --with-xpm-dir=/usr/local"
 
 RUN set -x \
-#   Copied the official version, but I think should be root.
-#	  && addgroup -g 82 -S www-data \
-#	  && adduser -u 82 -D -S -G www-data www-data \
+
 #       Download and Verify
     && apk add --no-cache --virtual .persistent-deps curl ca-certificates \
     && apk add --no-cache --virtual .build-deps autoconf g++ gcc make re2c file \
@@ -33,6 +31,7 @@ RUN set -x \
     && curl -fSL http://php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror -o php-${PHP_VERSION}.tar.xz \
     && curl -fSL http://php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror -o php-${PHP_VERSION}.tar.xz.asc \
     && curl -fkSL https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar -o composer \
+    && curl -fkSL https://xdebug.org/files/xdebug-2.4.0.tgz -o xdebug.tgz && tar -zxf xdebug.tgz \
     && chmod u+x composer && mv composer $PHP_HOME/bin \
     && echo "c96980d7de1d66c821a4ee5809df0076f925b2fe0b8c362d234d92f2f0a178e2 *php-${PHP_VERSION}.tar.xz" | sha256sum -c - \
 	  && export GNUPGHOME=$(mktemp -d) \
@@ -46,13 +45,14 @@ RUN set -x \
     && mkdir -p /usr/src \
     && tar -Jxf php-${PHP_VERSION}.tar.xz -C /usr/src \
     && mv /usr/src/php-$PHP_VERSION /usr/src/php \
-    && rm -r $GNUPGHOME php-${PHP_VERSION}.tar.xz php-${PHP_VERSION}.tar.xz.asc \
+    && rm -r $GNUPGHOME php-${PHP_VERSION}.tar.xz php-${PHP_VERSION}.tar.xz.asc xdebug.tgz \
+
 #       Compile and install
     && cd /usr/src/php \
     && ./configure --prefix=$PHP_HOME \
 		--with-config-file-path=$PHP_INI_DIR \
 		--with-config-file-scan-dir=$PHP_INI_DIR/conf.d \
-		$PHP_COMPILE_ARGS --enable-mysqlnd \
+		$PHP_COMPILE_ARGS \
     && make -j"$(getconf _NPROCESSORS_ONLN)" \
 	  && make install \
 	  && { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
@@ -64,49 +64,19 @@ RUN set -x \
 			  | sort -u )" \
 	  && apk add --no-cache --virtual .php-rundeps $runDeps \
     && mv /usr/src/php/php.ini-development $PHP_INI_DIR/php.ini \
-    && mv /usr/src/php/ext /usr/local/var/ \
+#   && mv /usr/src/php/ext /usr/local/var/ \
+    && mkdir /usr/local/var/ext \
+    && mv /xdebug-2.4.0 /usr/local/var/ext/ \
+    && cd /usr/local/var/ext/xdebug-2.4.0 && /usr/local/bin/phpize \
+    && ./configure --with-php-config=/usr/local/bin/php-config \
+    && make && make install \
     && apk del .build-deps autoconf g++ gcc make re2c file \
            gnupg libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev freetype-dev \
     		   libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev \
-    && rm -rf /var/cache/apk/* /usr/src/php/* \
-#       Config
-	  && cd $PHP_INI_DIR \
-	  && if [ -d php-fpm.d ]; then \
-		      # for some reason, upstream's php-fpm.conf.default has "include=NONE/etc/php-fpm.d/*.conf"
-		       sed 's!=NONE/!=!g' php-fpm.conf.default | tee php-fpm.conf > /dev/null; \
-		       mv php-fpm.d/www.conf.default php-fpm.d/www.conf; \
-	     else \
-		      # PHP 5.x don't use "include=" by default, so we'll create our own simple config that mimics PHP 7+ for consistency
-		       mkdir php-fpm.d; \
-		       mv php-fpm.conf.default php-fpm.d/www.conf; \
-		       { \
-			         echo '[global]'; \
-			         echo 'include=etc/php-fpm.d/*.conf'; \
-		       } | tee php-fpm.conf; \
-	     fi \
-	  && { \
-		       echo '[global]'; \
-		       echo 'error_log = /proc/self/fd/2'; \
-		       echo; \
-		       echo '[www]'; \
-		       echo '; if we send this to /proc/self/fd/1, it never appears'; \
-		       echo 'access.log = /proc/self/fd/2'; \
-		       echo; \
-		       echo 'clear_env = no'; \
-		       echo; \
-		       echo '; Ensure worker stdout and stderr are sent to the main error log.'; \
-		       echo 'catch_workers_output = yes'; \
-	     } | tee php-fpm.d/docker.conf \
-	  && { \
-		    echo '[global]'; \
-		    echo 'daemonize = no'; \
-		    echo; \
-		    echo '[www]'; \
-		    echo 'listen = [::]:9000'; \
-	     } | tee php-fpm.d/zz-docker.conf
+    && rm -rf /var/cache/apk/* /usr/src/php/*
 
 COPY docker-php-ext-* $PHP_HOME/bin/
-WORKDIR /var/www/html
+WORKDIR /usr/local/app
 VOLUME ["/usr/local/app", "/usr/local/etc", "/usr/local/lib/php/extensions/debug-non-zts-20131226"]
-EXPOSE 9000
+EXPOSE 9000 9001
 CMD ["php-fpm", "-R"]

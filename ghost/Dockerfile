@@ -17,7 +17,8 @@ RUN set -ex && mkdir -p $GHOST_SOURCE && cd $GHOST_SOURCE \
     && rm -f sqlite3/src/gcc-preinclude.h ghost.zip
 COPY gcc-preinclude.h $GHOST_SOURCE/sqlite3/src/
 
-RUN cd $GHOST_SOURCE/sqlite3 \
+RUN npm install -g node-pre-gyp node-gyp \
+    && cd $GHOST_SOURCE/sqlite3 \
     && npm install --build-from-source \
     && ./node_modules/.bin/node-pre-gyp rebuild --loglevel=verbose \
     && cd ../ && mkdir node_modules && mv sqlite3 node_modules/ \
