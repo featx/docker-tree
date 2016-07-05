@@ -9,6 +9,7 @@ MAINTAINER palmtale<m@glad.so>
 ENV PHP_HOME=/usr/local \
     PHP_VERSION=5.6.22 \
     COMPOSER_VERSION=1.1.2 \
+    XDEBUG_VERSION=2.4.0 \
     PHP_INI_DIR=/usr/local/etc \
     PHP_COMPILE_ARGS="--enable-fpm --with-fpm-user=root --with-fpm-group=root \
 --with-mysql --with-mysqli --with-pdo-mysql --with-iconv \
@@ -31,7 +32,7 @@ RUN set -x \
     && curl -fSL http://php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror -o php-${PHP_VERSION}.tar.xz \
     && curl -fSL http://php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror -o php-${PHP_VERSION}.tar.xz.asc \
     && curl -fkSL https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar -o composer \
-    && curl -fkSL https://xdebug.org/files/xdebug-2.4.0.tgz -o xdebug.tgz && tar -zxf xdebug.tgz \
+    && curl -fkSL https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz -o xdebug.tgz && tar -zxf xdebug.tgz \
     && chmod u+x composer && mv composer $PHP_HOME/bin \
     && echo "c96980d7de1d66c821a4ee5809df0076f925b2fe0b8c362d234d92f2f0a178e2 *php-${PHP_VERSION}.tar.xz" | sha256sum -c - \
 	  && export GNUPGHOME=$(mktemp -d) \
@@ -64,11 +65,8 @@ RUN set -x \
 			  | sort -u )" \
 	  && apk add --no-cache --virtual .php-rundeps $runDeps \
     && mv /usr/src/php/php.ini-development $PHP_INI_DIR/php.ini \
-#   && mv /usr/src/php/ext /usr/local/var/ \
-    && mkdir /usr/local/var/ext \
-    && mv /xdebug-2.4.0 /usr/local/var/ext/ \
-    && cd /usr/local/var/ext/xdebug-2.4.0 && /usr/local/bin/phpize \
-    && ./configure --with-php-config=/usr/local/bin/php-config \
+    && mv /xdebug-$XDEBUG_VERSION /usr/src/php/ext/ && cd /usr/src/php/ext/xdebug-$XDEBUG_VERSION \
+    && /usr/local/bin/phpize && ./configure --with-php-config=/usr/local/bin/php-config \
     && make && make install \
     && apk del .build-deps autoconf g++ gcc make re2c file \
            gnupg libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev freetype-dev \
