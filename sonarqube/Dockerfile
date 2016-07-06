@@ -6,7 +6,7 @@ FROM java:8-jre-alpine
 LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
-ENV SONAR_VERSION=5.5 \
+ENV SONAR_VERSION=5.6 \
     SONARQUBE_HOME=/usr/local/sonarqube \
     SONARQUBE_JDBC_USERNAME=sonar \
     SONARQUBE_JDBC_PASSWORD=sonar \
