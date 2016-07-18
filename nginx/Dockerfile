@@ -8,7 +8,7 @@ MAINTAINER palmtale<m@glad.so>
 #USER soglad
 
 ENV NGINX_PREFIX=/usr/local \
-    NGINX_VERSION=release-1.11.0
+    NGINX_VERSION=release-1.11.2
 
 RUN mkdir -p $NGINX_PREFIX/src && cd $NGINX_PREFIX/src \
     && apk add --no-cache pcre openssl \

@@ -7,8 +7,8 @@ LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
 ENV PHP_HOME=/usr/local \
-    PHP_VERSION=5.6.22 \
-    COMPOSER_VERSION=1.1.2 \
+    PHP_VERSION=5.6.23 \
+    COMPOSER_VERSION=1.1.3 \
     XDEBUG_VERSION=2.4.0 \
     PHP_INI_DIR=/usr/local/etc \
     PHP_COMPILE_ARGS="--enable-fpm --with-fpm-user=root --with-fpm-group=root \
@@ -21,8 +21,9 @@ ENV PHP_HOME=/usr/local \
 --with-png-dir=/usr/local --with-libxml-dir=/usr/local \
 --with-vpx-dir=/usr/local --with-xpm-dir=/usr/local"
 
-RUN set -x \
+COPY docker-php-* $PHP_HOME/bin/
 
+RUN set -x \
 #       Download and Verify
     && apk add --no-cache --virtual .persistent-deps curl ca-certificates \
     && apk add --no-cache --virtual .build-deps autoconf g++ gcc make re2c file \
@@ -33,8 +34,8 @@ RUN set -x \
     && curl -fSL http://php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror -o php-${PHP_VERSION}.tar.xz.asc \
     && curl -fkSL https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar -o composer \
     && curl -fkSL https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz -o xdebug.tgz && tar -zxf xdebug.tgz \
-    && chmod u+x composer && mv composer $PHP_HOME/bin \
-    && echo "c96980d7de1d66c821a4ee5809df0076f925b2fe0b8c362d234d92f2f0a178e2 *php-${PHP_VERSION}.tar.xz" | sha256sum -c - \
+    && mv composer $PHP_HOME/bin && chmod u+x $PHP_HOME/bin/* \
+    && echo "39141e9a617af172aedbbacee7a63eb15502850f7cea20d759a9cffa7cfb0a1a *php-${PHP_VERSION}.tar.xz" | sha256sum -c - \
 	  && export GNUPGHOME=$(mktemp -d) \
 	  && for key in \
       0BD78B5F97500D450838F95DFE857D9A90D90EC1 \
@@ -71,10 +72,13 @@ RUN set -x \
     && apk del .build-deps autoconf g++ gcc make re2c file \
            gnupg libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev freetype-dev \
     		   libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev \
-    && rm -rf /var/cache/apk/* /usr/src/php/*
+    && rm -rf /var/cache/apk/* /usr/src/php/* \
+    && mkdir -p /tmp/etc /tmp/extensions \
+    && mv $PHP_HOME/etc/* /tmp/etc/ \
+    && mv $PHP_HOME/lib/php/extensions/debug-non-zts-20131226/* /tmp/extensions/
 
-COPY docker-php-ext-* $PHP_HOME/bin/
 WORKDIR /usr/local/app
 VOLUME ["/usr/local/app", "/usr/local/etc", "/usr/local/lib/php/extensions/debug-non-zts-20131226"]
 EXPOSE 9000 9001
+ENTRYPOINT ["docker-php-fpm"]
 CMD ["php-fpm", "-R"]
