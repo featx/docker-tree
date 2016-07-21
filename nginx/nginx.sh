@@ -1,8 +1,11 @@
 #!/bin/sh
-mkdir -p /var/logs /var/conf /var/apps
 
-if [ ! -f /var/conf/nginx.conf ]; then
-    mv /tmp/conf/*  /var/conf/
+set -e
+
+mkdir -p /mnt/log /mnt/etc /mnt/app
+
+if [ ! -f /mnt/etc/nginx.conf ]; then
+    cp -r /tmp/etc/*  /mnt/etc/
 fi
 
-nginx
+exec "$@"

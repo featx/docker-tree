@@ -8,26 +8,25 @@ MAINTAINER palmtale<m@glad.so>
 #USER soglad
 
 ENV NGX_HOME=/usr/local \
-    NGX_VERSION=release-1.11.2
-# product variable/data would be put in /var   etc=/var/conf logs=/var/logs apps=/var/apps
-RUN mkdir -p $NGX_HOME/src && cd $NGX_HOME/src \
-    && apk add --no-cache pcre openssl \
-       git pcre-dev openssl-dev make gcc g++ linux-headers paxctl libgcc libstdc++ gnupg \
-    && git clone https://github.com/nginx/nginx.git \
-    && cd $NGX_HOME/src/nginx \
-    && git checkout $NGX_VERSION \
-    && rm $NGX_HOME/src/nginx/src/core/nginx.h
-COPY nginx.* $NGX_HOME/src/nginx/src/core/
+    NGX_VERSION=1.11.2
 
-RUN set -ex \
-    && mv $NGX_HOME/src/nginx/src/core/nginx.sh /usr/bin/ \
-    && chmod u+x /usr/bin/nginx.sh \
-    && cd $NGX_HOME/src/nginx \
-    && ./auto/configure --prefix=$NGX_HOME/nginx \
+COPY nginx.* $NGX_HOME/
+# product variable/data would be put in /var   etc=/var/conf logs=/var/logs apps=/var/apps
+RUN set -ex && mkdir -p $NGX_HOME/src \
+    && apk add --no-cache -U pcre openssl \
+       ca-certificates wget make gcc g++ linux-headers paxctl libgcc libstdc++ gnupg \
+       pcre-dev openssl-dev tar \
+    && cd $NGX_HOME/src \
+    && wget -O nginx.tar.gz http://nginx.org/download/nginx-$NGX_VERSION.tar.gz \
+    && tar -zxf nginx.tar.gz && mv nginx-$NGX_VERSION nginx \
+    && cd nginx \
+    && rm ./src/core/nginx.h \
+    && mv $NGX_HOME/nginx.h ./src/core/ \
+    && ./configure --prefix=$NGX_HOME/nginx \
                    --sbin-path=/usr/sbin/nginx \
-                   --conf-path=/var/conf/nginx.conf \
-                   --error-log-path=/var/logs/error.log \
-                   --http-log-path=/var/logs/access.log \
+                   --conf-path=/mnt/etc/nginx.conf \
+                   --error-log-path=/mnt/log/error.log \
+                   --http-log-path=/mnt/log/access.log \
                    --with-pcre --with-http_ssl_module \
                    --with-http_realip_module --with-http_addition_module \
                    --with-http_sub_module --with-http_dav_module \
@@ -40,13 +39,14 @@ RUN set -ex \
                    --with-mail --with-mail_ssl_module \
     && make && make install \
     && cd $NGX_HOME \
-    && apk del git pcre-dev openssl-dev make gcc g++ linux-headers paxctl libgcc libstdc++ gnupg \
-    && rm -rf /var/cache/apk/* $NGX_HOME/src $NGX_HOME/etc/nginx.conf $NGX_HOME/etc/*.default \
-              $NGX_HOME/nginx/html $NGX_HOME/nginx/logs \
-    && mkdir -p /tmp/etc \
-    && mv $NGX_HOME/etc/* /tmp/etc/
+    && mv $NGX_HOME/nginx.sh /usr/bin/ \
+    && chmod u+x /usr/bin/nginx.sh \
+    && mkdir -p /tmp/etc && mv /mnt/etc/* /tmp/etc/ \
+    && apk del ca-certificates wget make gcc g++ linux-headers paxctl libgcc libstdc++ gnupg \
+               pcre-dev openssl-dev tar \
+    && rm -rf /var/cache/apk/* $NGX_HOME/src $NGX_HOME/nginx/html $NGX_HOME/nginx/logs
 
-COPY conf/* /tmp/etc/
 EXPOSE 80 443
-VOLUME /var
+VOLUME /mnt
 ENTRYPOINT ["nginx.sh"]
+CMD ["nginx"]

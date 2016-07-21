@@ -10,7 +10,7 @@ ENV PHP_HOME=/usr/local \
     PHP_VERSION=5.6.23 \
     COMPOSER_VERSION=1.1.3 \
     XDEBUG_VERSION=2.4.0 \
-    PHP_CONF=/var/conf \
+    PHP_CONF=/mnt/etc \
     PHP_COMPILE_ARGS="--enable-fpm --with-fpm-user=root --with-fpm-group=root \
 --with-mysql --with-mysqli --with-pdo-mysql --with-iconv --with-gmp \
 --with-openssl --with-gd --with-libedit  --with-zlib --with-curl \
@@ -21,19 +21,22 @@ ENV PHP_HOME=/usr/local \
 --with-png-dir=/usr/local --with-libxml-dir=/usr/local \
 --with-vpx-dir=/usr/local --with-xpm-dir=/usr/local"
 
-COPY docker-php-* $PHP_HOME/bin/
+COPY php-fpm.sh $PHP_HOME/bin/
 
 RUN set -x \
-#       Download and Verify
-    && apk add --no-cache --virtual .persistent-deps curl ca-certificates libmemcached \
-    && apk add --no-cache --virtual .build-deps autoconf g++ gcc make re2c file \
-           gnupg libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev gmp-dev \
-    		   libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev freetype-dev \
-    && mkdir -p $PHP_CONF/conf.d \
-    && curl -fSL http://php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror -o php-${PHP_VERSION}.tar.xz \
-    && curl -fSL http://php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror -o php-${PHP_VERSION}.tar.xz.asc \
-    && curl -fkSL https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar -o composer \
-    && curl -fkSL https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz -o xdebug.tgz && tar -zxf xdebug.tgz \
+    && apk add --no-cache -U libmemcached \
+                             wget ca-certificates gnupg \
+                             autoconf g++ gcc make re2c file \
+    libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev gmp-dev \
+    libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev freetype-dev \
+
+    && mkdir -p $PHP_HOME/src \
+    && cd $PHP_HOME/src \
+    #Download and Verify
+    && wget -O php-${PHP_VERSION}.tar.xz http://php.net/get/php-${PHP_VERSION}.tar.xz \
+    && wget -O php-${PHP_VERSION}.tar.xz.asc http://php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror \
+    && wget -O composer https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar \
+    && wget -O xdebug.tgz https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz \
     && mv composer $PHP_HOME/bin && chmod u+x $PHP_HOME/bin/* \
     && echo "39141e9a617af172aedbbacee7a63eb15502850f7cea20d759a9cffa7cfb0a1a *php-${PHP_VERSION}.tar.xz" | sha256sum -c - \
 	  && export GNUPGHOME=$(mktemp -d) \
@@ -44,41 +47,38 @@ RUN set -x \
           gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
 	     done \
     && gpg --batch --verify php-${PHP_VERSION}.tar.xz.asc php-${PHP_VERSION}.tar.xz \
-    && mkdir -p /usr/src \
-    && tar -Jxf php-${PHP_VERSION}.tar.xz -C /usr/src \
-    && mv /usr/src/php-$PHP_VERSION /usr/src/php \
-    && rm -r $GNUPGHOME php-${PHP_VERSION}.tar.xz php-${PHP_VERSION}.tar.xz.asc xdebug.tgz \
-
-#       Compile and install
-    && cd /usr/src/php \
+    # Unpackage
+    && tar -Jxf php-${PHP_VERSION}.tar.xz && mv php-$PHP_VERSION php \
+    # Compile and install
+    && cd php \
     && ./configure --prefix=$PHP_HOME \
 		--with-config-file-path=$PHP_CONF \
 		--with-config-file-scan-dir=$PHP_CONF/conf.d \
 		$PHP_COMPILE_ARGS \
     && make -j"$(getconf _NPROCESSORS_ONLN)" \
 	  && make install \
-	  && { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
-	  && make clean \
-	  && runDeps="$( scanelf --needed --nobanner --recursive /usr/local \
-			  | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-			  | sort -u \
-			  | xargs -r apk info --installed \
-			  | sort -u )" \
-	  && apk add --no-cache --virtual .php-rundeps $runDeps \
-    && mv /usr/src/php/php.ini-development $PHP_CONF/php.ini \
-    && mv /xdebug-$XDEBUG_VERSION /usr/src/php/ext/ && cd /usr/src/php/ext/xdebug-$XDEBUG_VERSION \
-    && /usr/local/bin/phpize && ./configure --with-php-config=/usr/local/bin/php-config \
+    && mv php.ini-development $PHP_HOME/php.ini \
+    && cd $PHP_HOME/src \
+    && tar -zxf xdebug.tgz && cd xdebug-$XDEBUG_VERSION \
+    && $PHP_HOME/bin/phpize \
+    && ./configure --with-php-config=$PHP_HOME/bin/php-config \
     && make && make install \
-    && apk del .build-deps autoconf g++ gcc make re2c file \
-           gnupg libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev gmp-dev \
-    		   libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev freetype-dev\
-    && rm -rf /var/cache/apk/* /usr/src/php/* \
-    && mkdir -p /tmp/etc /tmp/extensions \
-    && mv $PHP_HOME/etc/* /tmp/etc/ \
-    && mv $PHP_HOME/lib/php/extensions/debug-non-zts-20131226/* /tmp/extensions/
+    && cd $PHP_HOME \
+    # distructor
+    && apk del wget ca-certificates gnupg \
+                autoconf g++ gcc make re2c file \
+                libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev gmp-dev \
+                libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev freetype-dev \
+    && rm -rf $GNUPGHOME /var/cache/apk/* $PHP_HOME/src/*
+    #&& { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
+    #&& make clean \
+    #&& runDeps="$( scanelf --needed --nobanner --recursive /usr/local \
+    #    | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+    #      | sort -u \
+    #      | xargs -r apk info --installed \
+    #       | sort -u )" \
 
-WORKDIR /var/apps
-VOLUME ["/var"]
+VOLUME /mnt
 EXPOSE 9000 9001
-ENTRYPOINT ["docker-php-fpm"]
+ENTRYPOINT ["php-fpm.sh"]
 CMD ["php-fpm", "-R"]
