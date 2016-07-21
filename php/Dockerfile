@@ -82,7 +82,7 @@ RUN set -x \
                 libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev freetype-dev \
     && rm -rf $GNUPGHOME /var/cache/apk/* $PHP_HOME/src/*
 
-VOLUME /mnt
 EXPOSE 9000 9001
+VOLUME ["/mnt", "/usr/src"]
 ENTRYPOINT ["php-fpm.sh"]
 CMD ["php-fpm", "-R"]

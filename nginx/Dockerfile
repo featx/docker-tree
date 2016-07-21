@@ -47,6 +47,6 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
     && rm -rf /var/cache/apk/* $NGX_HOME/src $NGX_HOME/nginx/html $NGX_HOME/nginx/logs
 
 EXPOSE 80 443
-VOLUME /mnt
+VOLUME ["/mnt", "/usr/src"]
 ENTRYPOINT ["nginx.sh"]
 CMD ["nginx"]
