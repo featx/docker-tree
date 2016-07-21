@@ -70,8 +70,8 @@ RUN set -x \
     && /usr/local/bin/phpize && ./configure --with-php-config=/usr/local/bin/php-config \
     && make && make install \
     && apk del .build-deps autoconf g++ gcc make re2c file \
-           gnupg libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev freetype-dev \
-    		   libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev \
+           gnupg libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev gmp-dev \
+    		   libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev freetype-dev\
     && rm -rf /var/cache/apk/* /usr/src/php/* \
     && mkdir -p /tmp/etc /tmp/extensions \
     && mv $PHP_HOME/etc/* /tmp/etc/ \
