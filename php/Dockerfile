@@ -30,10 +30,10 @@ RUN set -x \
     libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev gmp-dev \
     libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev freetype-dev \
 
-    && mkdir -p $PHP_HOME/src \
+    && mkdir -p $PHP_HOME/src $PHP_CONF \
     && cd $PHP_HOME/src \
     #Download and Verify
-    && wget -O php-${PHP_VERSION}.tar.xz http://php.net/get/php-${PHP_VERSION}.tar.xz \
+    && wget -O php-${PHP_VERSION}.tar.xz http://php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror \
     && wget -O php-${PHP_VERSION}.tar.xz.asc http://php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror \
     && wget -O composer https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar \
     && wget -O xdebug.tgz https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz \
@@ -57,26 +57,30 @@ RUN set -x \
 		$PHP_COMPILE_ARGS \
     && make -j"$(getconf _NPROCESSORS_ONLN)" \
 	  && make install \
-    && mv php.ini-development $PHP_HOME/php.ini \
+    && { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
+	  && make clean \
+	  && runDeps="$( scanelf --needed --nobanner --recursive /usr/local \
+			  | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+			  | sort -u \
+			  | xargs -r apk info --installed \
+			  | sort -u )" \
+	  && apk add --no-cache --virtual .php-rundeps $runDeps \
+    && mv php.ini-development $PHP_CONF/php.ini \
     && cd $PHP_HOME/src \
     && tar -zxf xdebug.tgz && cd xdebug-$XDEBUG_VERSION \
     && $PHP_HOME/bin/phpize \
     && ./configure --with-php-config=$PHP_HOME/bin/php-config \
     && make && make install \
     && cd $PHP_HOME \
+    && mkdir -p /tmp/etc /tmp/lib \
+    && mv $PHP_HOME/etc/* /tmp/etc/ && mv $PHP_HOME/lib/php/extensions/debug-non-zts-20131226/* /tmp/lib/ \
+    && rm -rf $PHP_HOME/etc $PHP_HOME/lib/php/extensions/debug-non-zts-20131226 \
     # distructor
     && apk del wget ca-certificates gnupg \
                 autoconf g++ gcc make re2c file \
                 libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev gmp-dev \
                 libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev freetype-dev \
     && rm -rf $GNUPGHOME /var/cache/apk/* $PHP_HOME/src/*
-    #&& { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
-    #&& make clean \
-    #&& runDeps="$( scanelf --needed --nobanner --recursive /usr/local \
-    #    | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-    #      | sort -u \
-    #      | xargs -r apk info --installed \
-    #       | sort -u )" \
 
 VOLUME /mnt
 EXPOSE 9000 9001
