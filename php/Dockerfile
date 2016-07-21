@@ -12,7 +12,7 @@ ENV PHP_HOME=/usr/local \
     XDEBUG_VERSION=2.4.0 \
     PHP_INI_DIR=/usr/local/etc \
     PHP_COMPILE_ARGS="--enable-fpm --with-fpm-user=root --with-fpm-group=root \
---with-mysql --with-mysqli --with-pdo-mysql --with-iconv \
+--with-mysql --with-mysqli --with-pdo-mysql --with-iconv --with-gmp \
 --with-openssl --with-gd --with-libedit  --with-zlib --with-curl \
 --with-mcrypt --with-mhash --enable-xml --enable-bcmath \
 --enable-mbstring --enable-mbregex --enable-gd-native-ttf --enable-mysqlnd \
@@ -25,7 +25,7 @@ COPY docker-php-* $PHP_HOME/bin/
 
 RUN set -x \
 #       Download and Verify
-    && apk add --no-cache --virtual .persistent-deps curl ca-certificates \
+    && apk add --no-cache --virtual .persistent-deps curl ca-certificates libmemcached \
     && apk add --no-cache --virtual .build-deps autoconf g++ gcc make re2c file \
            gnupg libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev freetype-dev \
     		   libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev \
