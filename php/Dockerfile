@@ -27,8 +27,8 @@ RUN set -x \
 #       Download and Verify
     && apk add --no-cache --virtual .persistent-deps curl ca-certificates libmemcached \
     && apk add --no-cache --virtual .build-deps autoconf g++ gcc make re2c file \
-           gnupg libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev freetype-dev \
-    		   libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev \
+           gnupg libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev gmp-dev \
+    		   libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev freetype-dev \
     && mkdir -p $PHP_INI_DIR/conf.d \
     && curl -fSL http://php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror -o php-${PHP_VERSION}.tar.xz \
     && curl -fSL http://php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror -o php-${PHP_VERSION}.tar.xz.asc \
