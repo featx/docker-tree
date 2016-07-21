@@ -6,15 +6,15 @@ if [ "${1:0:1}" = '-' ]; then
 fi
 
 if [ "$1" = 'postgres' ]; then
-	mkdir -p "$PGDATA"
-	chmod 700 "$PGDATA"
-	chown -R postgres "$PGDATA"
+	mkdir -p "$PG_DATA"
+	chmod 700 "$PG_DATA"
+	chown -R postgres "$PG_DATA"
 
 	chmod g+s /run/postgresql
 	chown -R postgres /run/postgresql
 
 	# look specifically for PG_VERSION, as it is expected in the DB dir
-	if [ ! -s "$PGDATA/PG_VERSION" ]; then
+	if [ ! -s "$PG_DATA/PG_VERSION" ]; then
 		eval "gosu postgres initdb $POSTGRES_INITDB_ARGS"
 
 		# check password first so we can output the warning before postgres
@@ -41,11 +41,11 @@ if [ "$1" = 'postgres' ]; then
 			authMethod=trust
 		fi
 
-		{ echo; echo "host all all 0.0.0.0/0 $authMethod"; } >> "$PGDATA/pg_hba.conf"
+		{ echo; echo "host all all 0.0.0.0/0 $authMethod"; } >> "$PG_DATA/pg_hba.conf"
 
 		# internal start of server in order to allow set-up using psql-client
 		# does not listen on external TCP/IP and waits until start finishes
-		gosu postgres pg_ctl -D "$PGDATA" \
+		gosu postgres pg_ctl -D "$PG_DATA" \
 			-o "-c listen_addresses='localhost'" \
 			-w start
 
@@ -85,7 +85,7 @@ if [ "$1" = 'postgres' ]; then
 			echo
 		done
 
-		gosu postgres pg_ctl -D "$PGDATA" -m fast -w stop
+		gosu postgres pg_ctl -D "$PG_DATA" -m fast -w stop
 
 		echo
 		echo 'PostgreSQL init process complete; ready for start up.'

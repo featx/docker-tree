@@ -10,7 +10,7 @@ ENV PHP_HOME=/usr/local \
     PHP_VERSION=5.6.23 \
     COMPOSER_VERSION=1.1.3 \
     XDEBUG_VERSION=2.4.0 \
-    PHP_INI_DIR=/usr/local/etc \
+    PHP_CONF=/var/conf \
     PHP_COMPILE_ARGS="--enable-fpm --with-fpm-user=root --with-fpm-group=root \
 --with-mysql --with-mysqli --with-pdo-mysql --with-iconv --with-gmp \
 --with-openssl --with-gd --with-libedit  --with-zlib --with-curl \
@@ -29,7 +29,7 @@ RUN set -x \
     && apk add --no-cache --virtual .build-deps autoconf g++ gcc make re2c file \
            gnupg libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev gmp-dev \
     		   libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev freetype-dev \
-    && mkdir -p $PHP_INI_DIR/conf.d \
+    && mkdir -p $PHP_CONF/conf.d \
     && curl -fSL http://php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror -o php-${PHP_VERSION}.tar.xz \
     && curl -fSL http://php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror -o php-${PHP_VERSION}.tar.xz.asc \
     && curl -fkSL https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar -o composer \
@@ -52,8 +52,8 @@ RUN set -x \
 #       Compile and install
     && cd /usr/src/php \
     && ./configure --prefix=$PHP_HOME \
-		--with-config-file-path=$PHP_INI_DIR \
-		--with-config-file-scan-dir=$PHP_INI_DIR/conf.d \
+		--with-config-file-path=$PHP_CONF \
+		--with-config-file-scan-dir=$PHP_CONF/conf.d \
 		$PHP_COMPILE_ARGS \
     && make -j"$(getconf _NPROCESSORS_ONLN)" \
 	  && make install \
@@ -65,7 +65,7 @@ RUN set -x \
 			  | xargs -r apk info --installed \
 			  | sort -u )" \
 	  && apk add --no-cache --virtual .php-rundeps $runDeps \
-    && mv /usr/src/php/php.ini-development $PHP_INI_DIR/php.ini \
+    && mv /usr/src/php/php.ini-development $PHP_CONF/php.ini \
     && mv /xdebug-$XDEBUG_VERSION /usr/src/php/ext/ && cd /usr/src/php/ext/xdebug-$XDEBUG_VERSION \
     && /usr/local/bin/phpize && ./configure --with-php-config=/usr/local/bin/php-config \
     && make && make install \
@@ -77,8 +77,8 @@ RUN set -x \
     && mv $PHP_HOME/etc/* /tmp/etc/ \
     && mv $PHP_HOME/lib/php/extensions/debug-non-zts-20131226/* /tmp/extensions/
 
-WORKDIR /usr/local/app
-VOLUME ["/usr/local/app", "/usr/local/etc", "/usr/local/lib/php/extensions/debug-non-zts-20131226"]
+WORKDIR /var/apps
+VOLUME ["/var"]
 EXPOSE 9000 9001
 ENTRYPOINT ["docker-php-fpm"]
 CMD ["php-fpm", "-R"]

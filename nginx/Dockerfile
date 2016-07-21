@@ -7,27 +7,27 @@ LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 #USER soglad
 
-ENV NGINX_PREFIX=/usr/local \
-    NGINX_VERSION=release-1.11.2
-
-RUN mkdir -p $NGINX_PREFIX/src && cd $NGINX_PREFIX/src \
+ENV NGX_HOME=/usr/local \
+    NGX_VERSION=release-1.11.2
+# product variable/data would be put in /var   etc=/var/conf logs=/var/logs apps=/var/apps
+RUN mkdir -p $NGX_HOME/src && cd $NGX_HOME/src \
     && apk add --no-cache pcre openssl \
        git pcre-dev openssl-dev make gcc g++ linux-headers paxctl libgcc libstdc++ gnupg \
     && git clone https://github.com/nginx/nginx.git \
-    && cd $NGINX_PREFIX/src/nginx \
-    && git checkout $NGINX_VERSION \
-    && rm $NGINX_PREFIX/src/nginx/src/core/nginx.h
-COPY nginx.* $NGINX_PREFIX/src/nginx/src/core/
+    && cd $NGX_HOME/src/nginx \
+    && git checkout $NGX_VERSION \
+    && rm $NGX_HOME/src/nginx/src/core/nginx.h
+COPY nginx.* $NGX_HOME/src/nginx/src/core/
 
 RUN set -ex \
-    && mv $NGINX_PREFIX/src/nginx/src/core/nginx.sh /usr/bin/ \
+    && mv $NGX_HOME/src/nginx/src/core/nginx.sh /usr/bin/ \
     && chmod u+x /usr/bin/nginx.sh \
-    && cd $NGINX_PREFIX/src/nginx \
-    && ./auto/configure --prefix=$NGINX_PREFIX/nginx \
+    && cd $NGX_HOME/src/nginx \
+    && ./auto/configure --prefix=$NGX_HOME/nginx \
                    --sbin-path=/usr/sbin/nginx \
-                   --conf-path=$NGINX_PREFIX/etc/nginx.conf \
-                   --error-log-path=$NGINX_PREFIX/log/error.log \
-                   --http-log-path=$NGINX_PREFIX/log/access.log \
+                   --conf-path=/var/conf/nginx.conf \
+                   --error-log-path=/var/logs/error.log \
+                   --http-log-path=/var/logs/access.log \
                    --with-pcre --with-http_ssl_module \
                    --with-http_realip_module --with-http_addition_module \
                    --with-http_sub_module --with-http_dav_module \
@@ -39,14 +39,14 @@ RUN set -ex \
                    --with-http_stub_status_module \
                    --with-mail --with-mail_ssl_module \
     && make && make install \
-    && cd $NGINX_PREFIX \
+    && cd $NGX_HOME \
     && apk del git pcre-dev openssl-dev make gcc g++ linux-headers paxctl libgcc libstdc++ gnupg \
-    && rm -rf /var/cache/apk/* $NGINX_PREFIX/src $NGINX_PREFIX/etc/nginx.conf $NGINX_PREFIX/etc/*.default \
-              $NGINX_PREFIX/nginx/html $NGINX_PREFIX/nginx/logs \
+    && rm -rf /var/cache/apk/* $NGX_HOME/src $NGX_HOME/etc/nginx.conf $NGX_HOME/etc/*.default \
+              $NGX_HOME/nginx/html $NGX_HOME/nginx/logs \
     && mkdir -p /tmp/etc \
-    && mv $NGINX_PREFIX/etc/* /tmp/etc/
+    && mv $NGX_HOME/etc/* /tmp/etc/
 
 COPY conf/* /tmp/etc/
 EXPOSE 80 443
-VOLUME ["/usr/local/etc", "/usr/local/app", "/usr/local/log"]
+VOLUME /var
 ENTRYPOINT ["nginx.sh"]

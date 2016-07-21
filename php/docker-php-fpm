@@ -2,13 +2,15 @@
 
 set -e
 
-mkdir -p /usr/local/app /usr/local/etc /usr/local/lib/php/extensions/debug-non-zts-20131226
-
-if [ ! -f /usr/local/etc/php-fpm.conf ]; then
-    rm -rf /usr/local/etc/* /usr/local/lib/php/extensions/debug-non-zts-20131226/*
-    cp -r /tmp/etc/* /usr/local/etc/
-    cp -r /tmp/extensions/* /usr/local/lib/php/extensions/debug-non-zts-20131226/
-    mv /usr/local/etc/php-fpm.conf.default /usr/local/etc/php-fpm.conf
+mkdir -p /var/apps /var/conf /var/ext
+#"/usr/local/lib/php/extensions/debug-non-zts-20131226"
+if [ ! -f /var/conf/php-fpm.conf ]; then
+    rm -rf /var/conf/* /var/ext/*
+    cp -r /tmp/conf/* /var/conf/
+    cp -r /usr/local/lib/php/extensions/debug-non-zts-20131226/* /var/ext/
+    rm -rf /usr/local/lib/php/extensions/debug-non-zts-20131226
+    ln -s /usr/local/lib/php/extensions/debug-non-zts-20131226 /var/ext
+    mv /var/conf/php-fpm.conf.default /var/conf/php-fpm.conf
 fi
 
 exec "$@"

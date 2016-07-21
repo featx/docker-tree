@@ -1,8 +1,8 @@
 #!/bin/sh
-mkdir -p $NGINX_PREFIX/log $NGINX_PREFIX/etc $NGINX_PREFIX/app
+mkdir -p /var/logs /var/conf /var/apps
 
-if [ ! -f $NGINX_PREFIX/etc/nginx.conf ]; then
-    mv /tmp/etc/*  $NGINX_PREFIX/etc/
+if [ ! -f /var/conf/nginx.conf ]; then
+    mv /tmp/conf/*  /var/conf/
 fi
 
 nginx
