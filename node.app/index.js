@@ -1,0 +1,15 @@
+'use strict';
+
+/**
+ * Created by palmtale on 16/6/14.
+ */
+
+var http = require("http");
+var server = http.createServer(function(req, res) {
+    res.writeHeader(200, {
+        'Content-Type' : 'text/plain;charset=utf-8'  // 添加charset=utf-8
+    }) ;
+    res.end("Hello, Welcome to Node.js world.") ;
+ }) ;
+ var port = process.env.APP_PORT || 5000;
+ server.listen(port) ;
