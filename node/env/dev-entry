@@ -1,0 +1,29 @@
+#!/bin/sh
+
+set -e
+
+npm install -g node-inspector
+node-inspector &
+
+if [ -f $APP_HOME/package.json ]; then
+    npm install --$APP_ENV
+else
+    echo -e "'use strict';
+
+    /**
+     * Node.js Env Default app.
+     * @auth palmtale
+     * @since 2016/7/26.
+     */
+
+    var http = require(\"http\");
+    var server = http.createServer(function(req, res) {
+        res.writeHeader(200, {'Content-Type': 'text/plain;charset=utf-8'});
+        res.end(\"Hello, Welcome to Node.js world.\");
+    });
+    var port = process.env.APP_PORT || 5000;
+    server.listen(port);
+    " >> $APP_HOME/index.js
+fi
+
+exec "$@"
