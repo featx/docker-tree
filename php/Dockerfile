@@ -21,7 +21,7 @@ ENV PHP_HOME=/usr/local \
 --with-png-dir=/usr/local --with-libxml-dir=/usr/local \
 --with-vpx-dir=/usr/local --with-xpm-dir=/usr/local"
 
-COPY php-fpm.sh $PHP_HOME/bin/
+COPY entry $PHP_HOME/bin/
 
 RUN set -x \
     && apk add --no-cache -U libmemcached \
@@ -80,9 +80,10 @@ RUN set -x \
                 autoconf g++ gcc make re2c file \
                 libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev gmp-dev \
                 libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev freetype-dev \
-    && rm -rf $GNUPGHOME /var/cache/apk/* $PHP_HOME/src/*
+    && rm -rf $GNUPGHOME /var/cache/apk/* $PHP_HOME/src/* \
+    && chmod u+x /usr/local/bin/entry
 
 EXPOSE 9000 9001
 VOLUME ["/mnt", "/usr/src"]
-ENTRYPOINT ["php-fpm.sh"]
+ENTRYPOINT ["entry"]
 CMD ["php-fpm", "-R"]

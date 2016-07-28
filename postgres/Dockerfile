@@ -15,13 +15,13 @@ ENV LANG=en_US.utf8 \
     PG_DATA=/var/data
 # Hidden ENV PG_CONF=/var/conf PG_DATA=/var/data PG_LOGS=/var/logs
 
-COPY docker-prepare.sh /usr/bin/
+COPY entry /usr/bin/
 # explicitly set user/group IDs
 RUN groupadd -r postgres --gid=999 && useradd -r -g postgres --uid=999 postgres \
   && set -x \
-  && chmod u+x /usr/bin/docker-prepare.sh \
+  && chmod u+x /usr/bin/entry \
   # grab gosu for easy step-down from root
-	&& apk add -U ca-certificates wget gnupg locales readline-dev zlib-dev \
+	&& apk add -U ca-certificates wget gnupg readline-dev zlib-dev \
 	&& wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)" \
 	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" \
 	&& export GNUPGHOME="$(mktemp -d)" \
@@ -43,11 +43,11 @@ RUN groupadd -r postgres --gid=999 && useradd -r -g postgres --uid=999 postgres 
   && sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /tmp/conf/createcluster.conf \
   && sed -ri "s!^#?(listen_addresses)\s*=\s*\S+.*!\1 = '*'!" /tmp/conf/postgresql.conf.sample \
   ## destructor
-  && apk del ca-certificates wget gnupg locales readline-dev zlib-dev \
+  && apk del ca-certificates wget gnupg readline-dev zlib-dev \
   && rm -rf "$GNUPGHOME" $PG_HOME/postgresql /usr/local/bin/gosu.asc /var/cache/apk/*
 
 VOLUME /var
 EXPOSE 5432
 
-ENTRYPOINT ["docker-prepare.sh"]
+ENTRYPOINT ["entry"]
 CMD ["postgres"]
