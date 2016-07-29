@@ -26,7 +26,7 @@ RUN set -x \
     && rm -rf mvn /var/cache/apk/* maven.tar.gz maven.tar.gz.asc \
     #$GNUPGHOME \
     && ln -s $MVN_HOME/bin/mvn /usr/bin/mvn \
-    && mkdir /mnt/.m2 && ln -s /root/.m2 /mnt/.m2   
+    && rm -rf /root/.m2 && ln -s /root/.m2 /mnt
 
 WORKDIR "/usr/local/app"
 VOLUME ["/usr/local/app", "/mnt"]
