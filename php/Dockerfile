@@ -7,9 +7,10 @@ LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
 ENV PHP_HOME=/usr/local \
-    PHP_VERSION=5.6.23 \
-    COMPOSER_VERSION=1.1.3 \
-    XDEBUG_VERSION=2.4.0 \
+    PHP_VERSION=5.6.24 \
+    COMPOSER_VERSION=1.2.0 \
+    XDEBUG_VERSION=2.4.1 \
+    PHPUNIT_VERSION=5.5.0 \
     PHP_CONF=/mnt/etc \
     PHP_COMPILE_ARGS="--enable-fpm --with-fpm-user=root --with-fpm-group=root \
 --with-mysql --with-mysqli --with-pdo-mysql --with-iconv --with-gmp \
@@ -36,8 +37,9 @@ RUN set -x \
     && wget -O php-${PHP_VERSION}.tar.xz http://php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror \
     && wget -O php-${PHP_VERSION}.tar.xz.asc http://php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror \
     && wget -O composer https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar \
+    && wget -O phpunit https://phar.phpunit.de/phpunit-$PHPUNIT_VERSION.phar \
     && wget -O xdebug.tgz https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz \
-    && mv composer $PHP_HOME/bin && chmod u+x $PHP_HOME/bin/* \
+    && mv composer phpunit $PHP_HOME/bin && chmod u+x $PHP_HOME/bin/* \
     && echo "39141e9a617af172aedbbacee7a63eb15502850f7cea20d759a9cffa7cfb0a1a *php-${PHP_VERSION}.tar.xz" | sha256sum -c - \
 	  && export GNUPGHOME=$(mktemp -d) \
 	  && for key in \
