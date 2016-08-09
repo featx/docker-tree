@@ -40,7 +40,7 @@ RUN set -x \
     && wget -O phpunit https://phar.phpunit.de/phpunit-$PHPUNIT_VERSION.phar \
     && wget -O xdebug.tgz https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz \
     && mv composer phpunit $PHP_HOME/bin && chmod u+x $PHP_HOME/bin/* \
-    && echo "39141e9a617af172aedbbacee7a63eb15502850f7cea20d759a9cffa7cfb0a1a *php-${PHP_VERSION}.tar.xz" | sha256sum -c - \
+    && echo "ed7c38c6dac539ade62e08118258f4dac0c49beca04d8603bee4e0ea6ca8250b *php-${PHP_VERSION}.tar.xz" | sha256sum -c - \
 	  && export GNUPGHOME=$(mktemp -d) \
 	  && for key in \
       0BD78B5F97500D450838F95DFE857D9A90D90EC1 \
