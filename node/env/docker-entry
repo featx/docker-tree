@@ -2,12 +2,16 @@
 
 set -e
 
-npm install -g node-inspector
-node-inspector &
+if [[ $APP_ENV -eq dev ]];the
+    node-inspector &
+fi
 
 if [ -f $APP_HOME/package.json ]; then
     npm install --$APP_ENV
 else
+    rm -rf $APP_HOME/index.js
+    touch $APP_HOME/index.js
+
     echo -e "'use strict';
 
     /**

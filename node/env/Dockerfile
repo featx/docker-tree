@@ -8,14 +8,16 @@ MAINTAINER palmtale<m@glad.so>
 
 ENV APP_HOME=/usr/local/app \
     APP_PORT=5000 \
-    APP_ENV=production \
-    # It's not require to expose Debug and inspector ports in production dev
+    APP_ENV=dev \
+    # It's not required to expose Debug and inspector ports in production env
     DEBUG_PORT=5858 \
     INSPECTOR_PORT=8080
 
-COPY $APP_ENV-entry /usr/local/
-RUN mv /usr/local/$APP_ENV-entry /usr/local/bin/node-entry \
-    && chmod u+x /usr/local/bin/node-entry
+COPY $APP_ENV-entry /usr/local/bin/
+RUN mv /usr/local/bin/$APP_ENV-entry /usr/local/bin/node-entry \
+    && chmod u+x /usr/local/bin/node-entry \
+    # It's not required to expose Debug and inspector ports in production env
+    && npm install -g node-inspector
 
 VOLUME $APP_HOME/data
 EXPOSE $APP_PORT \
