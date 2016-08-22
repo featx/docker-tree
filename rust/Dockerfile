@@ -6,7 +6,7 @@ FROM alpine
 LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
-ENV RUST_VERSION=1.9.0 \
+ENV RUST_VERSION=1.10.0 \
     RUST_HOME=/usr/local
 
 RUN set -ex \

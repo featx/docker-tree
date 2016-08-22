@@ -17,7 +17,7 @@ COPY $APP_ENV-entry /usr/local/
 RUN mv /usr/local/$APP_ENV-entry /usr/local/bin/node-entry \
     && chmod u+x /usr/local/bin/node-entry
 
-VOLUME $APP_HOME
+VOLUME $APP_HOME/data
 EXPOSE $APP_PORT \
        $DEBUG_PORT $INSPECTOR_PORT
 WORKDIR $APP_HOME

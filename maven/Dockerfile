@@ -12,9 +12,9 @@ ENV JAVA_HOME=/usr \
 RUN set -x \
     && export MVN_VERSION=3.3.9 \
     && export DLD_MIRROR=http://mirrors.cnnic.cn/apache \
-    && apk add --no-cache -U ca-certificates wget openjdk8-jre \
+    && apk add --no-cache -U ca-certificates wget openjdk8 \
     # gnupg \
-    && wget -O maven.tar.gz $DLD_MIRROR/maven/maven-3/$MVN_VERSION/binaries/apache-maven-$MVN_VERSION-bin.tar.gz \  
+    && wget -O maven.tar.gz $DLD_MIRROR/maven/maven-3/$MVN_VERSION/binaries/apache-maven-$MVN_VERSION-bin.tar.gz \
     && wget -O maven.tar.gz.asc https://www.apache.org/dist/maven/maven-3/$MVN_VERSION/binaries/apache-maven-$MVN_VERSION-bin.tar.gz.asc \
     && echo "516923b3955b6035ba6b0a5b031fbd8b *maven.tar.gz" | md5sum -c - \
 #    && export GNUPGHOME=$(mktemp -d) \

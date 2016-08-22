@@ -6,8 +6,10 @@ FROM alpine
 LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
-ENV NODE_VERSION=v6.3.1 \
-    NPM_VERSION=3 \
+ENV NODE_VERSION=v4.5.0 \
+#6.4.0
+    NPM_VERSION=2.15.9 \
+#3.10.6
     NODE_HOME=/usr/local
 
 # gpg keys listed at https://github.com/nodejs/node
