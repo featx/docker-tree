@@ -7,7 +7,7 @@ if [ $APP_ENV == dev ]; then
 fi
 
 if [ -f $APP_HOME/package.json ]; then
-    npm install --$APP_ENV
+    npm install --only=$APP_ENV
 else
     rm -rf $APP_HOME/index.js
     touch $APP_HOME/index.js

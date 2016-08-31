@@ -6,12 +6,13 @@ FROM java:8-jre-alpine
 LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
-ENV SONAR_VERSION=5.6 \
+ENV SONAR_VERSION=6.0 \
     SONARQUBE_HOME=/usr/local/sonarqube \
     SONARQUBE_JDBC_USERNAME=sonar \
     SONARQUBE_JDBC_PASSWORD=sonar \
     SONARQUBE_JDBC_URL=jdbc:h2:tcp://localhost:9092/sonar
 
+COPY run.sh $SONARQUBE_HOME/bin/
 RUN set -x \
     && apk add --no-cache gnupg unzip curl \
     # pub   2048R/D26468DE 2015-05-25
@@ -29,15 +30,7 @@ RUN set -x \
     && apk del gnupg unzip curl \
     && rm -rf $SONARQUBE_HOME/conf/* $SONARQUBE_HOME/bin/* /root/.gnupg /var/cache/apk/*
 
-
-#VOLUME ["$SONARQUBE_HOME/data", "$SONARQUBE_HOME/extensions"]
-
-COPY run.sh $SONARQUBE_HOME/bin/
+VOLUME $SONARQUBE_HOME/data,$SONARQUBE_HOM/extensions,$SONARQUBE_HOME/logs
 WORKDIR $SONARQUBE_HOME
 EXPOSE 9000
 ENTRYPOINT ["./bin/run.sh"]
-
-# invoke: docker run -v /var/data/docker/sonardata:/usr/local/sonarqube/data
-#                    -v /var/data/docker/sonarext:/usr/local/sonarqube/extensions
-#                    -v /var/data/docker/sonarlogs:/usr/local/sonarqube/logs
-# -p xxxx:9000 -p xxxx:9001 --name sonar soglad/sonarqube:alpine start

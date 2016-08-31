@@ -11,7 +11,7 @@ ENV RUST_VERSION=1.10.0 \
 
 RUN set -ex \
     && apk add --no-cache make gcc g++ libc-dev \
-    ca-certificates file curl tar \
+    ca-certificates file curl python \
     && export DOWNLOAD_URL=https://static.rust-lang.org/dist/rust-$RUST_VERSION-x86_64-unknown-linux-gnu.tar.gz \
     && cd $RUST_HOME \
     && curl -fsOSL $DOWNLOAD_URL \
