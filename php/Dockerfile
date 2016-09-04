@@ -86,6 +86,6 @@ RUN set -x \
     && chmod u+x /usr/local/bin/entry
 
 EXPOSE 9000 9001
-VOLUME ["/mnt/php/etc", "/mnt/app"]
+VOLUME ["/mnt/php", "/mnt/app"]
 ENTRYPOINT ["entry"]
 CMD ["php-fpm", "-R"]
