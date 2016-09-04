@@ -2,7 +2,7 @@
 
 set -e
 
-mkdir -p /mnt/php/etc /mnt/php/lib
+mkdir -p /mnt/php/etc /mnt/php/lib /mnt/ngx/log /mnt/ngx/etc
 
 if [ ! -f /mnt/php/etc/php-fpm.conf ]; then
     rm -rf /mnt/php/etc/* /mnt/php/lib/*
@@ -15,4 +15,9 @@ rm -rf $PHP_HOME/etc $PHP_HOME/lib/php/extensions/debug-non-zts-20151012
 ln -s /mnt/php/etc $PHP_HOME/etc
 ln -s /mnt/php/lib $PHP_HOME/lib/php/extensions/debug-non-zts-20151012
 
+if [ ! -f /mnt/ngx/etc/nginx.conf ]; then
+    cp -r /tmp/etc/*  /mnt/ngx/etc/
+fi
+
+php-fpm -c /mnt/php/etc/php.ini -y /mnt/php/etc/php-fpm.conf
 exec "$@"

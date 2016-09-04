@@ -7,12 +7,14 @@ LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
 ENV PHP_HOME=/usr/local \
-    PHP_VERSION=5.6.24 \
+    PHP_VERSION=7.0.10 \
+    PHP_USER=www-data \
+    PHP_GROUP=www-data \
     COMPOSER_VERSION=1.2.0 \
     XDEBUG_VERSION=2.4.1 \
     PHPUNIT_VERSION=5.5.0 \
-    PHP_CONF=/mnt/etc \
-    PHP_COMPILE_ARGS="--enable-fpm --with-fpm-user=root --with-fpm-group=root \
+    PHP_CONF=/mnt/php/etc \
+    PHP_COMPILE_ARGS="--enable-fpm --with-fpm-user=$PHP_USER --with-fpm-group=$PHP_GROUP \
 --with-mysql --with-mysqli --with-pdo-mysql --with-iconv --with-gmp \
 --with-openssl --with-gd --with-libedit  --with-zlib --with-curl \
 --with-mcrypt --with-mhash --enable-xml --enable-bcmath \
@@ -30,27 +32,26 @@ RUN set -x \
                              autoconf g++ gcc make re2c file \
     libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev gmp-dev \
     libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev freetype-dev \
-
+    && addgroup -g 82 -S $PHP_GROUP \
+    && adduser -u 82 -D -S -G $PHP_GROUP $PHP_USER \
     && mkdir -p $PHP_HOME/src $PHP_CONF \
     && cd $PHP_HOME/src \
     #Download and Verify
-    && wget -O php-${PHP_VERSION}.tar.xz http://php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror \
-    && wget -O php-${PHP_VERSION}.tar.xz.asc http://php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror \
-    && wget -O composer https://getcomposer.org/download/${COMPOSER_VERSION}/composer.phar \
+    && wget -O php-$PHP_VERSION.tar.xz http://php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror \
+    && wget -O php-$PHP_VERSION.tar.xz.asc http://php.net/get/php-$PHP_VERSION.tar.xz.asc/from/this/mirror \
+    && wget -O composer https://getcomposer.org/download/$COMPOSER_VERSION/composer.phar \
     && wget -O phpunit https://phar.phpunit.de/phpunit-$PHPUNIT_VERSION.phar \
     && wget -O xdebug.tgz https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz \
     && mv composer phpunit $PHP_HOME/bin && chmod u+x $PHP_HOME/bin/* \
-    && echo "ed7c38c6dac539ade62e08118258f4dac0c49beca04d8603bee4e0ea6ca8250b *php-${PHP_VERSION}.tar.xz" | sha256sum -c - \
+    && echo "348476ff7ba8d95a1e28e1059430c10470c5f8110f6d9133d30153dda4cdf56a *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
 	  && export GNUPGHOME=$(mktemp -d) \
-	  && for key in \
-      0BD78B5F97500D450838F95DFE857D9A90D90EC1 \
-      6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3 \
-      ; do \
-          gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
+    && for key in 1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763; do \
+		       gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
 	     done \
-    && gpg --batch --verify php-${PHP_VERSION}.tar.xz.asc php-${PHP_VERSION}.tar.xz \
+	  && gpg --batch --verify php-$PHP_VERSION.tar.xz.asc php-$PHP_VERSION.tar.xz \
+
     # Unpackage
-    && tar -Jxf php-${PHP_VERSION}.tar.xz && mv php-$PHP_VERSION php \
+    && tar -Jxf php-$PHP_VERSION.tar.xz && mv php-$PHP_VERSION php \
     # Compile and install
     && cd php \
     && ./configure --prefix=$PHP_HOME \
@@ -75,17 +76,16 @@ RUN set -x \
     && make && make install \
     && cd $PHP_HOME \
     && mkdir -p /tmp/etc /tmp/lib \
-    && mv $PHP_HOME/etc/* /tmp/etc/ && mv $PHP_HOME/lib/php/extensions/debug-non-zts-20131226/* /tmp/lib/ \
-    && rm -rf $PHP_HOME/etc $PHP_HOME/lib/php/extensions/debug-non-zts-20131226 \
+    && mv $PHP_HOME/etc/* /tmp/etc/ && mv $PHP_HOME/lib/php/extensions/debug-non-zts-20151012/* /tmp/lib/ \
+    && rm -rf $PHP_HOME/etc $PHP_HOME/lib/php/extensions/debug-non-zts-20151012 \
     # distructor
-    && apk del wget ca-certificates gnupg \
-                autoconf g++ gcc make re2c file \
+    && apk del wget gnupg autoconf g++ gcc make re2c file \
                 libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev gmp-dev \
                 libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev freetype-dev \
     && rm -rf $GNUPGHOME /var/cache/apk/* $PHP_HOME/src/* \
     && chmod u+x /usr/local/bin/entry
 
 EXPOSE 9000 9001
-VOLUME ["/mnt", "/usr/src"]
+VOLUME ["/mnt/php/etc", "/mnt/app"]
 ENTRYPOINT ["entry"]
 CMD ["php-fpm", "-R"]

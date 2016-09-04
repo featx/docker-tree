@@ -1,11 +1,10 @@
 #++++++++++++++++++++++++++++++++++++++
-# Nginx Docker container in Alpine
+# PHP Docker container in Alpine
 #++++++++++++++++++++++++++++++++++++++
 
-FROM alpine
+FROM soglad/php:7.0.10-debug-alpine
 LABEL vendor=Glad.so
-MAINTAINER Palmtale <m@glad.so>
-#USER soglad
+MAINTAINER palmtale<m@glad.so>
 
 ENV NGX_HOME=/usr/local \
     NGX_VERSION=1.11.3
