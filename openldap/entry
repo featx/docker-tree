@@ -1,0 +1,20 @@
+#!/bin/sh
+
+set -e
+
+# Add ldap as command if needed
+if [ "${1:0:1}" = '-' ]; then
+	set -- $OLDAP_USER "$@"
+fi
+
+# Drop root privileges if we are running ldap
+# allow the container to be started with `--user`
+if [ "$1" = '$OLDAP_USER' -a "$(id -u)" = '0' ]; then
+	chown -R $OLDAP_USER:$OLDAP_GROUP $OLDAP_DATA
+	set -- gosu $OLDAP_USER "$@"
+fi
+
+# As argument is not related to ldap,
+# then assume that user wants to run his own process,
+# for example a `bash` shell to explore this image
+exec "$@"
