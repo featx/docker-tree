@@ -13,9 +13,9 @@ if [ "$1" = '/usr/local/libexec/slapd' -a "$(id -u)" = '0' ]; then
 	mkdir -p "$OLDAP_DATA"
 	chmod 700 "$OLDAP_DATA"
 	chown -R $OLDAP_GROUP:$OLDAP_USER $OLDAP_DATA
-  if[ ! -d $OLDAP_DATA/openldap ]
+  if[ ! -d $OLDAP_DATA/openldap ]; then
 	  mv /tmp/* $OLDAP_DATA/
-	fi	
+	fi
 	set -- gosu $OLDAP_USER "$@"
 fi
 # As argument is not related to ldap,

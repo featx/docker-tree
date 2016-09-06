@@ -12,7 +12,7 @@ if [ "$1" = 'postgres' ]; then
 
 	chmod g+s /run/postgresql
 	chown -R $PG_GROP:$PG_USER /run/postgresql
-	if[ ! -d $PG_DATA/postgresql ]
+	if[ ! -d $PG_DATA/postgresql ]; then
 		mv /tmp/* $PG_DATA/
 	fi
 	# look specifically for PG_VERSION, as it is expected in the DB dir
