@@ -43,4 +43,4 @@ WORKDIR $OLDAP_HOME
 EXPOSE 389
 VOLUME ["$OLDAP_DATA"]
 ENTRYPOINT ["entry"]
-CMD ["/usr/local/libexec/slapd", "-s", "389"]
+CMD ["/usr/local/libexec/slapd", "-d", "389"]
