@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 if [ "${1:0:1}" = '-' ]; then
@@ -7,14 +7,15 @@ fi
 
 if [ "$1" = 'postgres' ]; then
 	mkdir -p "$PG_DATA"
+	if [ ! -d $PG_DATA/etc ]; then
+		mv /tmp/* $PG_DATA/
+	fi
 	chmod 700 "$PG_DATA"
 	chown -R $PG_GROP:$PG_USER "$PG_DATA"
 
 	chmod g+s /run/postgresql
 	chown -R $PG_GROP:$PG_USER /run/postgresql
-	if [ ! -d $PG_DATA/postgresql ]; then
-		mv /tmp/* $PG_DATA/
-	fi
+
 	# look specifically for PG_VERSION, as it is expected in the DB dir
 	if [ ! -s "$PG_DATA/PG_VERSION" ]; then
 		eval "gosu $PG_USER initdb $POSTGRES_INITDB_ARGS"
@@ -43,7 +44,7 @@ if [ "$1" = 'postgres' ]; then
 			authMethod=trust
 		fi
 
-		{ echo; echo "host all all 0.0.0.0/0 $authMethod"; } >> "$PG_DATA/etc/pg_hba.conf"
+		{ echo; echo "host all all 0.0.0.0/0 $authMethod"; } >> "$PG_DATA/pg_hba.conf"
 
 		# internal start of server in order to allow set-up using psql-client
 		# does not listen on external TCP/IP and waits until start finishes
@@ -58,7 +59,7 @@ if [ "$1" = 'postgres' ]; then
 		psql=( psql -v ON_ERROR_STOP=1 )
 
 		if [ "$PG_DB" != 'postgres' ]; then
-			"${psql[@]}" --username postgres <<-EOSQL
+			"${psql[@]}" --username $PG_USER <<-EOSQL
 				CREATE DATABASE "$PG_DB" ;
 			EOSQL
 			echo
@@ -69,7 +70,7 @@ if [ "$1" = 'postgres' ]; then
 		else
 			op='CREATE'
 		fi
-		"${psql[@]}" --username postgres <<-EOSQL
+		"${psql[@]}" --username $PG_USER <<-EOSQL
 			$op USER "$PG_USER" WITH SUPERUSER $pass ;
 		EOSQL
 		echo

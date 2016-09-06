@@ -10,13 +10,12 @@ fi
 # Drop root privileges if we are running ldap
 # allow the container to be started with `--user`
 if [ "$1" = '/usr/local/libexec/slapd' -a "$(id -u)" = '0' ]; then
-	mkdir -p "$OLDAP_DATA"
+  mkdir -p "$OLDAP_DATA"
+	if [ ! -d $OLDAP_DATA/etc ]; then
+		mv /tmp/* $OLDAP_DATA/
+	fi
 	chmod 700 "$OLDAP_DATA"
 	chown -R $OLDAP_GROUP:$OLDAP_USER $OLDAP_DATA
-  if [ ! -d $OLDAP_DATA/openldap ]; then
-	  mv /tmp/* $OLDAP_DATA/
-	fi
-	set -- gosu $OLDAP_USER "$@"
 fi
 # As argument is not related to ldap,
 # then assume that user wants to run his own process,
