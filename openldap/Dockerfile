@@ -18,14 +18,15 @@ COPY entry /usr/bin/
 RUN set -x \
     && chmod u+x /usr/bin/entry \
     && addgroup -g 101 -S $OLDAP_GROUP && adduser -u 100 -D -S -G $OLDAP_GROUP $OLDAP_USER \
-    && apk add -U build-base wget ca-certificates db-dev gnupg libltdl groff \
+    && apk add -U build-base wget ca-certificates db-dev gnupg \
+                  db libltdl groff \
     && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
     && wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc" \
     && export GNUPGHOME="$(mktemp -d)" \
     && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
     && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
     && chmod +x /usr/local/bin/gosu \
-    && gosu $OLDAP_USER true \
+    && gosu nobody true \
 
     && cd $OLDAP_HOME \
     && wget -O openldap.tar.gz https://github.com/openldap/openldap/archive/$OLDAP_VERSION.tar.gz \
@@ -35,10 +36,11 @@ RUN set -x \
     && make && make install \
     && cd $OLDAP_HOME \
     && apk del build-base wget ca-certificates db-dev gnupg \
-    && rm -rf /var/cache/apk/* openldap.tar.gz openldap-$OLDAP_VERSION "$GNUPGHOME" /usr/local/bin/gosu.asc
+    && rm -rf /var/cache/apk/* openldap.tar.gz openldap-$OLDAP_VERSION "$GNUPGHOME" /usr/local/bin/gosu.asc \
+    && mv $OLDAP_DATA/* /tmp/
 
 WORKDIR $OLDAP_HOME
-VOLUME ["$OLDAP_DATA"]
 EXPOSE 389
+VOLUME ["$OLDAP_DATA"]
 ENTRYPOINT ["entry"]
-CMD ["$OLDAP_HOME/libexec/slapd", "-s", "389", "-g", "$OLDAP_GROUP", "-u", "$OLDAP_USER"]
+CMD ["/usr/local/libexec/slapd", "-s", "389"]

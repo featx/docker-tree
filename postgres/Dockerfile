@@ -50,7 +50,8 @@ RUN set -x \
 
   ## destructor
   && apk del build-base readline-dev openssl-dev zlib-dev libxml2-dev wget gnupg ca-certificates \
-  && rm -rf "$GNUPGHOME" $PG_HOME/postgresql /usr/local/bin/gosu.asc /var/cache/apk/*
+  && rm -rf "$GNUPGHOME" $PG_HOME/postgresql /usr/local/bin/gosu.asc /var/cache/apk/* \
+  && mv $PG_DATA/* /tmp/
 
 VOLUME /mnt
 EXPOSE 5432

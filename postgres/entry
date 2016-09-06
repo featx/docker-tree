@@ -2,20 +2,22 @@
 set -e
 
 if [ "${1:0:1}" = '-' ]; then
-	set -- postgres "$@"
+	set -- $PG_USER "$@"
 fi
 
 if [ "$1" = 'postgres' ]; then
 	mkdir -p "$PG_DATA"
 	chmod 700 "$PG_DATA"
-	chown -R postgres "$PG_DATA"
+	chown -R $PG_GROP:$PG_USER "$PG_DATA"
 
 	chmod g+s /run/postgresql
-	chown -R postgres /run/postgresql
-
+	chown -R $PG_GROP:$PG_USER /run/postgresql
+	if[ ! -d $PG_DATA/postgresql ]
+		mv /tmp/* $PG_DATA/
+	fi
 	# look specifically for PG_VERSION, as it is expected in the DB dir
 	if [ ! -s "$PG_DATA/PG_VERSION" ]; then
-		eval "gosu postgres initdb $POSTGRES_INITDB_ARGS"
+		eval "gosu $PG_USER initdb $POSTGRES_INITDB_ARGS"
 
 		# check password first so we can output the warning before postgres
 		# messes it up
@@ -45,7 +47,7 @@ if [ "$1" = 'postgres' ]; then
 
 		# internal start of server in order to allow set-up using psql-client
 		# does not listen on external TCP/IP and waits until start finishes
-		gosu postgres pg_ctl -D "$PG_DATA" \
+		gosu $PG_USER pg_ctl -D "$PG_DATA" \
 			-o "-c listen_addresses='localhost'" \
 			-w start
 
@@ -85,14 +87,14 @@ if [ "$1" = 'postgres' ]; then
 			echo
 		done
 
-		gosu postgres pg_ctl -D "$PG_DATA" -m fast -w stop
+		gosu $PG_USER pg_ctl -D "$PG_DATA" -m fast -w stop
 
 		echo
 		echo 'PostgreSQL init process complete; ready for start up.'
 		echo
 	fi
 
-	exec gosu postgres "$@"
+	exec gosu $PG_USER "$@"
 fi
 
 exec "$@"
