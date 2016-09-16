@@ -96,5 +96,8 @@ if [[ "$first_run" == "true" ]]; then
     fi
 fi
 
+chown -R $OLDAP_GROUP:$OLDAP_USER $OLDAP_HOME
+
 chown -R $OLDAP_GROUP:$OLDAP_USER $OLDAP_DATA
+
 exec "$@"
