@@ -9,10 +9,11 @@ fi
 mkdir -p $PG_DATA
 
 # Init
-if [ ! -d $PG_DATA/etc ]; then
-	cp -r /tmp/* $PG_DATA/
+if [ ! -d $PG_DATA/data ]; then
+	mv /tmp/doc $PG_DATA/
+	mv /tmp/man $PG_DATA/
+	ln -s /tmp/postgresql $PG_DATA/postgresql
 	mkdir -p $PG_DATA/log $PG_DATA/data
-	
 	chmod 700 $PG_DATA
   chown -R $PG_GROUP:$PG_USER $PG_HOME
 	chown -R $PG_GROUP:$PG_USER $PG_DATA
@@ -40,7 +41,7 @@ if [ ! -d $PG_DATA/etc ]; then
 		authMethod=trust
 	fi
 
-	{ echo; echo "host all all 0.0.0.0/0 $authMethod"; } >> "$PG_DATA/etc/pg_hba.conf"
+	{ echo; echo "host all all 0.0.0.0/0 $authMethod"; } >> "$PG_DATA/data/pg_hba.conf"
 
 	gosu $PG_USER pg_ctl -D $PG_DATA/data \
 	  -l $PG_DATA/log/logfile \

@@ -17,7 +17,7 @@ ENV LANG=en_US.utf8 \
     PG_GROUP=postgres \
     POSTGRES_PASSWORD=postgres \
     PG_COMPILE_ARGS="--prefix=$PG_HOME \
-    --sysconfdir=/mnt/etc --datarootdir=/mnt"
+      --datarootdir=/mnt --sysconfdir=/mnt/etc"
 
 # Hidden ENV PG_CONF=/var/conf PG_DATA=/var/data PG_LOGS=/var/logs
 
@@ -50,9 +50,6 @@ RUN set -x \
   && apk del build-base readline-dev openssl-dev zlib-dev libxml2-dev wget gnupg ca-certificates \
   && rm -rf "$GNUPGHOME" $PG_HOME/postgresql /usr/local/bin/gosu.asc /var/cache/apk/* \
   && mv $PG_DATA/* /tmp/ \
-  && mv /tmp/postgresql /tmp/etc \
-  && mv /tmp/etc/postgresql.conf.sample /tmp/etc/postgresql.conf \
-	&& mv /tmp/etc/pg_hba.conf.sample /tmp/etc/pg_hba.conf \
   && chown -R $PG_GROUP:$PG_USER /tmp/
 
 VOLUME /mnt
