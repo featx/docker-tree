@@ -26,7 +26,7 @@ RUN set -x \
     && tar -zxf openldap.tar.gz \
     && cd openldap-$OLDAP_VERSION \
     && ./configure --prefix=$OLDAP_HOME --datarootdir=$OLDAP_DATA --sysconfdir=$OLDAP_DATA/etc \
-    && make && make install \
+    && make depend && make && make install \
     && cd $OLDAP_HOME \
     && apk del build-base wget ca-certificates db-dev gnupg \
     && rm -rf /var/cache/apk/* openldap.tar.gz openldap-$OLDAP_VERSION \

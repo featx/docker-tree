@@ -1,23 +1,26 @@
-#!/bin/bash
+#!/bin/sh
+
 set -e
 
 if [ "${1:0:1}" = '-' ]; then
 	set -- $PG_USER "$@"
 fi
 
+if [ ! -d $PG_DATA/etc ]; then
+	mv /tmp/* $PG_DATA/
+fi
+
 if [ "$1" = 'postgres' ]; then
 	mkdir -p "$PG_DATA"
-	if [ ! -d $PG_DATA/etc ]; then
-		mv /tmp/* $PG_DATA/
-	fi
-	chmod 700 "$PG_DATA"
-	chown -R $PG_GROP:$PG_USER "$PG_DATA"
+
+	chmod 700 $PG_DATA
+	chown -R $PG_GROUP:$PG_USER $PG_DATA
 
 	chmod g+s /run/postgresql
-	chown -R $PG_GROP:$PG_USER /run/postgresql
+	chown -R $PG_GROUP:$PG_USER /run/postgresql
 
 	# look specifically for PG_VERSION, as it is expected in the DB dir
-	if [ ! -s "$PG_DATA/PG_VERSION" ]; then
+	if [ ! -s "$PG_DATA/$PG_VERSION" ]; then
 		eval "gosu $PG_USER initdb $POSTGRES_INITDB_ARGS"
 
 		# check password first so we can output the warning before postgres
