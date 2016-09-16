@@ -27,7 +27,6 @@ RUN set -x \
   && apk add -U build-base readline-dev openssl-dev zlib-dev libxml2-dev glib-lang wget gnupg ca-certificates \
 
   # grab gosu for easy step-down from root
-  && mkdir /docker-entrypoint-initdb.d/ \
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
 	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc" \
 	&& export GNUPGHOME="$(mktemp -d)" \
@@ -45,13 +44,16 @@ RUN set -x \
   && cd $PG_HOME \
 
   # make the sample config easier to munge (and "correct by default")
-  && mkdir -p /tmp/etc /var/run && chown -R postgres /var/run \
   && sed -ri "s!^#?(listen_addresses)\s*=\s*\S+.*!\1 = '*'!" $PG_DATA/postgresql/postgresql.conf.sample \
 
   ## destructor
   && apk del build-base readline-dev openssl-dev zlib-dev libxml2-dev wget gnupg ca-certificates \
   && rm -rf "$GNUPGHOME" $PG_HOME/postgresql /usr/local/bin/gosu.asc /var/cache/apk/* \
-  && mv $PG_DATA/* /tmp/
+  && mv $PG_DATA/* /tmp/ \
+  && mv /tmp/postgresql /tmp/etc \
+  && mv /tmp/etc/postgresql.conf.sample /tmp/etc/postgresql.conf \
+	&& mv /tmp/etc/pg_hba.conf.sample /tmp/etc/pg_hba.conf \
+  && chown -R $PG_GROUP:$PG_USER /tmp/
 
 VOLUME /mnt
 EXPOSE 5432

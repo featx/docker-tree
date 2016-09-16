@@ -11,7 +11,8 @@ mkdir -p $PG_DATA
 # Init
 if [ ! -d $PG_DATA/etc ]; then
 	cp -r /tmp/* $PG_DATA/
-	mkdir -p $PG_DATA/etc $PG_DATA/log $PG_DATA/data
+	mkdir -p $PG_DATA/log $PG_DATA/data
+	
 	chmod 700 $PG_DATA
   chown -R $PG_GROUP:$PG_USER $PG_HOME
 	chown -R $PG_GROUP:$PG_USER $PG_DATA
