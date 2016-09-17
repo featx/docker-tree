@@ -17,8 +17,8 @@ if [ ! -d $PG_DATA/data ]; then
   chown -R $PG_GROUP:$PG_USER $PG_HOME
 	chown -R $PG_GROUP:$PG_USER $PG_DATA
 
-	if [ "$POSTGRES_PASSWORD" ]; then
-		pass="PASSWORD '$POSTGRES_PASSWORD'"
+	if [ "$PGPASSWORD" ]; then
+		pass="PASSWORD '$PGPASSWORD'"
 		authMethod=md5
 	else
 		cat >&2 <<-'EOWARN'
@@ -38,14 +38,33 @@ if [ ! -d $PG_DATA/data ]; then
 		authMethod=trust
 	fi
 
-	{ echo; echo "host all all 0.0.0.0/0 $authMethod"; } >> "$PG_DATA/data/pg_hba.conf"
+	{ echo; echo "host all all 0.0.0.0/0 $authMethod"; } >> "$PGDATA/pg_hba.conf"
 
-	gosu $PG_USER pg_ctl -D $PG_DATA/data \
+	gosu $PG_USER pg_ctl -D $PGDATA \
 	  -l $PG_DATA/log/logfile \
 		-o "-c listen_addresses='localhost'" \
 		-w start
 
-	gosu $PG_USER pg_ctl -D "$PG_DATA/data" \
+	if [ "$PGDATABASE" != 'postgres' ]; then
+	  psql -v ON_ERROR_STOP=1 --username $PGUSER <<-EOSQL
+		  CREATE DATABASE "$PGDATABASE" ;
+		EOSQL
+		echo
+	fi
+
+	if [ "$PGUSER" = 'postgres' ]; then
+	  op='ALTER'
+	else
+		op='CREATE'
+	fi
+
+	psql -v ON_ERROR_STOP=1 --username $PGUSER <<-EOSQL
+		$op USER "$PGUSER" WITH SUPERUSER $pass ;
+	EOSQL
+	echo
+	# psql -v ON_ERROR_STOP=1 --username $PGUSER --dbname $PGDATABASE
+	# echo
+	gosu $PG_USER pg_ctl -D "$PGDATA" \
 	  -m fast \
 		-w stop
 

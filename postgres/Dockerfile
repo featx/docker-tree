@@ -12,21 +12,24 @@ ENV LANG=en_US.utf8 \
     PG_VERSION=9.5.4 \
     PG_HOME=/usr/local \
     PG_DATA=/mnt \
-    PG_DB=postgres \
-    PG_USER=postgres \
     PG_GROUP=postgres \
-    POSTGRES_PASSWORD=postgres \
+    PG_USER=postgres \
+    PGDATA=/mnt/data \
+    PGDATABASE=postgres \
+    PGUSER=postgresql \
+    PGPASSWORD=postgres \
     PG_COMPILE_ARGS="--prefix=$PG_HOME \
-      --datarootdir=/mnt --sysconfdir=/mnt/etc"
+      --datarootdir=/mnt --sysconfdir=/mnt/data"
 
-# Hidden ENV PG_CONF=/var/conf PG_DATA=/var/data PG_LOGS=/var/logs
+# Hidden ENV PG_CONF=/mnt/data PG_LOGS=/mnt/log
 
 COPY entry /usr/bin/
-RUN set -x \
+RUN set -ex \
   && chmod u+x /usr/bin/entry \
-  && apk add -U build-base readline-dev openssl-dev zlib-dev libxml2-dev glib-lang wget gnupg ca-certificates \
+  && apk add -U build-base readline-dev openssl-dev zlib-dev libxml2-dev wget gnupg ca-certificates \
+                glib-lang readline openssl zlib libxml2
 
-  # grab gosu for easy step-down from root
+  # Grab gosu for easy step-down from root
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
 	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc" \
 	&& export GNUPGHOME="$(mktemp -d)" \
@@ -35,10 +38,10 @@ RUN set -x \
 	&& chmod +x /usr/local/bin/gosu \
 	&& gosu nobody true \
 
-  ## wget source package and install postgresql
+  # Wget source package and install postgresql
   && cd $PG_HOME \
   && wget -O postgresql.tar.gz https://ftp.postgresql.org/pub/source/v$PG_VERSION/postgresql-$PG_VERSION.tar.gz \
-  && tar -zxf postgresql.tar.gz && rm -f postgresql.tar.gz && mv postgresql-$PG_VERSION postgresql \
+  && tar -zxf postgresql.tar.gz && mv postgresql-$PG_VERSION postgresql \
   && cd postgresql \
   && ./configure $PG_COMPILE_ARGS && make world && make install-world \
   && cd $PG_HOME \
@@ -51,9 +54,9 @@ RUN set -x \
 
   ## destructor
   && apk del build-base readline-dev openssl-dev zlib-dev libxml2-dev wget gnupg ca-certificates \
-  && rm -rf "$GNUPGHOME" $PG_HOME/postgresql /usr/local/bin/gosu.asc /var/cache/apk/* \
-  && mkdir $PG_DATA/data && chown -R $PG_GROUP:$PG_USER $PG_DATA \
-  && eval "gosu $PG_USER initdb -D $PG_DATA/data" \
+  && rm -rf "$GNUPGHOME" $PG_HOME/postgresql.tar.gz $PG_HOME/postgresql /usr/local/bin/gosu.asc /var/cache/apk/* \
+  && mkdir $PGDATA && chown -R $PG_GROUP:$PG_USER $PG_DATA \
+  && eval "gosu $PG_USER initdb -D $PGDATA" \
   && mv $PG_DATA/postgresql /etc/ \
   && mv $PG_DATA/* /tmp/
 
