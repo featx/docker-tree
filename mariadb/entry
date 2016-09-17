@@ -1,0 +1,33 @@
+#!/bin/sh
+
+set -ex
+
+#mkdir -p ${BASE_DIR} ${DATA_DIR} /var/run/mysqld
+chown -R mysql:mysql $BASE_DIR $DATA_DIR /var/run/mysqld
+
+if [ ! -f $DATA_DIR/my.cnf ]; then
+    mv /etc/mysql/my.cnf $DATA_DIR/
+    rm -rf /etc/mysql/my.cnf
+    ln -s $DATA_DIR/my.cnf /etc/mysql/my.cnf
+    chmod o-r /etc/mysql/my.cnf
+fi
+
+if [ ! -f ${DATA_DIR}/ibdata1 ]; then
+
+    mysql_install_db --user=$MYSQL_USER --datadir=$DATA_DIR
+
+    mysqld_safe --defaults-file=$DATA_DIR/my.cnf &
+    sleep 10s
+
+		#Changed mysql_secure_installation script to running only the commands.
+		echo "UPDATE mysql.user SET password=password('$DB_ROOT_PASS') WHERE user='root'; DELETE FROM mysql.user WHERE user='root' AND host NOT IN ('localhost', '127.0.0.1', '::1'); DELETE FROM mysql.user WHERE user=''; DROP DATABASE test; FLUSH PRIVILEGES;" | mysql -u root
+    echo "GRANT ALL ON *.* TO $DB_USER@'127.0.0.1' IDENTIFIED BY '$DB_PASS' WITH GRANT OPTION; GRANT ALL ON *.* TO $DB_USER@'localhost' IDENTIFIED BY '$DB_PASS' WITH GRANT OPTION; GRANT ALL ON *.* TO $DB_USER@'::1' IDENTIFIED BY '$DB_PASS' WITH GRANT OPTION; FLUSH PRIVILEGES;" | mysql -u root --password="$DB_ROOT_PASS"
+
+    killall mysqld
+    killall mysqld_safe
+    sleep 10s
+    killall -9 mysqld
+    killall -9 mysqld_safe
+fi
+
+mysqld --user=$MYSQL_USER
