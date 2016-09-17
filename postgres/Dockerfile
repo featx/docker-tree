@@ -16,7 +16,7 @@ ENV LANG=en_US.utf8 \
     PG_USER=postgres \
     PGDATA=/mnt/data \
     PGDATABASE=postgres \
-    PGUSER=postgresql \
+    PGUSER=postgres \
     PGPASSWORD=postgres \
     PG_COMPILE_ARGS="--prefix=$PG_HOME \
       --datarootdir=/mnt --sysconfdir=/mnt/data"
@@ -27,7 +27,7 @@ COPY entry /usr/bin/
 RUN set -ex \
   && chmod u+x /usr/bin/entry \
   && apk add -U build-base readline-dev openssl-dev zlib-dev libxml2-dev wget gnupg ca-certificates \
-                glib-lang readline openssl zlib libxml2
+                glib-lang readline openssl zlib libxml2 \
 
   # Grab gosu for easy step-down from root
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
