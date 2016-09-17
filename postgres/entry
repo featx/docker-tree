@@ -10,15 +10,12 @@ mkdir -p $PG_DATA
 
 # Init
 if [ ! -d $PG_DATA/data ]; then
-	mv /tmp/doc $PG_DATA/
-	mv /tmp/man $PG_DATA/
-	ln -s /tmp/postgresql $PG_DATA/postgresql
-	mkdir -p $PG_DATA/log $PG_DATA/data
+	cp -r /tmp/* $PG_DATA/
+	mkdir -p $PG_DATA/log
+  ln -s /etc/postgresql $PG_DATA/postgresql
 	chmod 700 $PG_DATA
   chown -R $PG_GROUP:$PG_USER $PG_HOME
 	chown -R $PG_GROUP:$PG_USER $PG_DATA
-
-	eval "gosu $PG_USER initdb -D $PG_DATA/data"
 
 	if [ "$POSTGRES_PASSWORD" ]; then
 		pass="PASSWORD '$POSTGRES_PASSWORD'"

@@ -45,12 +45,17 @@ RUN set -x \
 
   # make the sample config easier to munge (and "correct by default")
   && sed -ri "s!^#?(listen_addresses)\s*=\s*\S+.*!\1 = '*'!" $PG_DATA/postgresql/postgresql.conf.sample \
+  && sed -ri "s!^#?(data_directory)\s*=\s*\S+.*!\1 = '/mnt/data'!" $PG_DATA/postgresql/postgresql.conf.sample \
+  && sed -ri "s!^#?(hba_file)\s*=\s*\S+.*!\1 = '/mnt/data/pg_hba.conf'!" $PG_DATA/postgresql/postgresql.conf.sample \
+  && sed -ri "s!^#?(ident_file)\s*=\s*\S+.*!\1 = '/mnt/data/pg_ident.conf'!" $PG_DATA/postgresql/postgresql.conf.sample \
 
   ## destructor
   && apk del build-base readline-dev openssl-dev zlib-dev libxml2-dev wget gnupg ca-certificates \
   && rm -rf "$GNUPGHOME" $PG_HOME/postgresql /usr/local/bin/gosu.asc /var/cache/apk/* \
-  && mv $PG_DATA/* /tmp/ \
-  && chown -R $PG_GROUP:$PG_USER /tmp/
+  && mkdir $PG_DATA/data && chown -R $PG_GROUP:$PG_USER $PG_DATA \
+  && eval "gosu $PG_USER initdb -D $PG_DATA/data" \
+  && mv $PG_DATA/postgresql /etc/ \
+  && mv $PG_DATA/* /tmp/
 
 VOLUME /mnt
 EXPOSE 5432
