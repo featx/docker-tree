@@ -2,7 +2,7 @@
 # Courier Docker container in CentOS7
 #++++++++++++++++++++++++++++++++++++++
 
-FROM centos:7.2.1511
+FROM ubuntu:16.10
 LABEL vendor=Glad.so
 MAINTAINER Palmtale <m@glad.so>
 
@@ -14,7 +14,7 @@ ENV COURIER_HOME=/usr/local \
 COPY /
 
 RUN set -ex \
-    && yum install make gcc gcc-c++ libc-devel linux-headers perl-devel perl   
+    && apt-get install make gcc gcc-c++ libc-devel linux-headers perl-devel perl
 EXPOSE 965 456 23
 VOLUME [""]
 ENTRYPOINT [""]
