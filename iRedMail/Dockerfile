@@ -2,7 +2,7 @@
 # iRedMail Docker container in CentOS7
 #++++++++++++++++++++++++++++++++++++++
 
-FROM centos:7.2.1511
+FROM opensuse:42.1
 LABEL vendor=Glad.so
 MAINTAINER Palmtale <m@glad.so>
 
@@ -22,7 +22,7 @@ RUN set -ex
     && echo $HOSTNAME > /etc/hostname && echo $HOSTNAME > /etc/mailname
     && echo "127.0.0.1   $HOSTNAME" > /etc/hosts
     && echo "HOSTNAME=$HOSTNAME" > /etc/sysconfig/network \
-    && yum install curl wget ca-certicicates
+    && zypper in curl wget ca-certicicates
 
 EXPOSE 25 80 110 143 389 443 587 636 993 995
 VOLUME ["/mnt"]

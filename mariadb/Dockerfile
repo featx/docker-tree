@@ -2,7 +2,7 @@
 #      Mariadb Docker container in Alpine    #
 #++++++++++++++++++++++++++++++++++++++++++++#
 
-FROM centos:7.2.1511
+FROM opensuse:42.1
 LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
@@ -37,7 +37,7 @@ ENV MYSQL_VERSION=10.1.17 \
 
 COPY entry $MYSQL_HOME/
 RUN groupadd -g 101 -S $MYSQL_GROUP && adduser -u 100 -D -S -G $MYSQL_GROUP $MYSQL_USER \
-    && yum install -y ca-certificates wget gnupg linux-headers cmake make gcc g++ \
+    && zypper in -y ca-certificates wget gnupg linux-headers cmake make gcc g++ \
          zlib-dev openssl-dev readline-dev ncurses-dev libxml2-dev jemalloc-dev \
          bison jemalloc \
     && export MIRROR_ROOT=https://mirrors.tuna.tsinghua.edu.cn/mariadb/ \
@@ -53,8 +53,8 @@ RUN groupadd -g 101 -S $MYSQL_GROUP && adduser -u 100 -D -S -G $MYSQL_GROUP $MYS
     && scripts/mysql_install_db --user=$MYSQL_USER --basedir=$MYSQL_HOME --datadir=$DATA_DIR
 
 #   destructor
-    && yum remove -y ca-certificates wget gnupg cmake make gcc g++ \
-    && yum remove -y zlib-dev openssl-dev readline-dev ncurses-dev libxml2-dev jemalloc-dev \
+    && zypper rm -y ca-certificates wget gnupg cmake make gcc g++ \
+    && zypper rm -y zlib-dev openssl-dev readline-dev ncurses-dev libxml2-dev jemalloc-dev \
     && rm -rf /tmp/src/* /var/cache/apk/* /etc/mysql/my.cnf \
     && mv $BASE_DIR/entry /usr/bin/ && chmod u+x /usr/bin/entry \
 		&& mv $BASE_DIR/my.cnf $DATA_DIR/etc/
