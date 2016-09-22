@@ -2,6 +2,9 @@
 # iRedMail Docker container in CentOS7
 #++++++++++++++++++++++++++++++++++++++
 
+# http://iredmail.org/yum/misc/roundcubemail-1.2.0-complete.tar.gz
+# http://iredmail.org/yum/misc/iRedAPD-1.9.1.tar.bz2
+# http://iredmail.org/yum/misc/iRedAdmin-0.6.1.tar.bz2
 FROM opensuse:42.1
 LABEL vendor=Glad.so
 MAINTAINER Palmtale <m@glad.so>
