@@ -1,0 +1,14 @@
+#!/usr/bin/sh
+
+set -e
+
+mkdir -p $HHVM_DATA/etc $HHVM_DATA/lib $HHVM_DATA/log 
+
+if [ ! -f $HHVM_DATA/etc/server.ini ]; then
+    cp -r /tmp/etc/* $HHVM_DATA/etc/
+fi
+
+rm -rf /etc/hhvm
+ln -s $HHVM_DATA/etc /etc/hhvm
+
+exec '@'

@@ -2,14 +2,6 @@
 #      HHVM Docker container in Alpine       #
 #++++++++++++++++++++++++++++++++++++++++++++#
 
-FROM opensuse:42.1
-LABEL vendor=Glad.so
-MAINTAINER palmtale<m@glad.so>
-
-ENV HHVM_HOME=/usr/local \
-    HHVM_VERSION=3.15.0
-
-
 ##http://ftp.twaren.net/Linux/OpenSuSE/repositories/devel:/libraries:/c_c++/openSUSE_Leap_42.1/x86_64/libtbb2-2017_20160722-8.1.x86_64.rpm
 ##http://ftp.twaren.net/Linux/OpenSuSE/repositories/devel:/libraries:/c_c++/openSUSE_Leap_42.1/x86_64/libtbbmalloc2-2017_20160722-8.1.x86_64.rpm
 ##http://ftp.twaren.net/Linux/OpenSuSE/repositories/devel:/libraries:/c_c++/openSUSE_Leap_42.1/x86_64/tbb-devel-2017_20160722-8.1.x86_64.rpm
@@ -28,30 +20,24 @@ ENV HHVM_HOME=/usr/local \
   # libxshmfence1 libxslt1 libyaml-0-2 libzip2 logrotate nginx pango-tools perl pkg-config shared-mime-info timezone
   # unixODBC wallpaper-branding-openSUSE
 
+FROM opensuse:42.1
+LABEL vendor=Glad.so
+MAINTAINER palmtale<m@glad.so>
+
+ENV HHVM_HOME=/usr/local \
+    HHVM_VERSION=3.15.0 \
+    HHVM_DATA=/mnt
+
+COPY entry /usr/bin/
 RUN set -e \
     # To install Dependecies
-    && zypper in -y ca-certificates git make gcc gcc-c++ cmake automake autoconf gperf \
-           libelf-devel libevent-devel libmcrypt-devel libmemcached-devel libicu-devel liblz4-devel libxml2-devel libcap-devel libexpat-devel libxslt-devel \
-           boost-devel curl-devel pcre-devel openssl-devel zlib-devel gettext-devel readline-devel sqlite-devel oniguruma-devel \
-           gd-devel imagemagick-devel freetype2-devel jemalloc-devel gmp-devel glog-devel inotify-tools-devel libdwarf-devel \
-           double-conversion-devel libzip-devel  freetype2-devel libyaml-devel libnuma-devel libvpx-devel \
-           pkgconfig gawk jemalloc libtool ocaml \
-    && curl -o tbb.tgz https://www.threadingbuildingblocks.org/sites/default/files/software_releases/source/tbb2017_20160722oss_src.tgz \
-    && cd tbb2017_20160722oss \
-    && make all \
-
-    # To install from github.com
-    && git clone https://github.com/facebook/hhvm -b HHVM-$HHVM_VERSION hhvm --recursive \
-    && cd hhvm && ./configure --prefix=$HHVM_HOME -DMYSQL_UNIX_SOCK_ADDR=/dev/null && make -j4 hhvm
-
-    && zypper rm -y ca-certificates git make gcc gcc-c++ cmake automake autoconf gperf \
-           libelf-devel libevent-devel libmcrypt-devel libmemcached-devel libicu-devel liblz4-devel libxml2-devel libcap-devel libexpat-devel libxslt-devel \
-           boost-devel curl-devel pcre-devel openssl-devel zlib-devel gettext-devel readline-devel sqlite-devel oniguruma-devel \
-           double-conversion-devel libzip-devel  freetype2-devel libyaml-devel libnuma-devel libvpx-devel \
-           gd-devel imagemagick-devel freetype-devel jemalloc-devel gmp-devel glog-devel inotify-tools-devel libdwarf-devel \
-   # Distrcutor all
-#   && rm -rf /var/cache/apk/*
-
-VOLUME $DATA_DIR
+    && zypper addrepo http://download.opensuse.org/repositories/home:munix9/openSUSE_Leap_42.1/home:munix9.repo
+    && zypper refresh -a \
+    && zypper in -y hhvm hhvm-fastcgi \
+    && mkdir /tmp/etc \
+    && mv /etc/hhvm/* /tmp/etc/
+    
+VOLUME $HHVM_DATA
 EXPOSE 9000
-CMD ["entry"]
+ENTRYPOINT ["entry"]
+CMD ['hhvm', '-c', '$HHVM_DATA/etc/php.ini', '-c', '$HHVM_DATA/etc/php.ini', '-m', 's', '-u', 'hhvm']
