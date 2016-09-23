@@ -11,4 +11,4 @@ fi
 rm -rf /etc/hhvm
 ln -s $HHVM_DATA/etc /etc/hhvm
 
-exec '@'
+exec "$@"

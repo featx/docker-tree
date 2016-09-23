@@ -30,10 +30,10 @@ ENV HHVM_HOME=/usr/local \
 
 COPY entry /usr/bin/
 RUN set -e \
+    && chmod u+x /usr/bin/entry \
     # To install Dependecies
-    && zypper addrepo http://download.opensuse.org/repositories/home:munix9/openSUSE_Leap_42.1/home:munix9.repo
-    && zypper refresh -a \
-    && zypper in -y hhvm hhvm-fastcgi \
+    && zypper addrepo http://download.opensuse.org/repositories/home:munix9/openSUSE_Leap_42.1/home:munix9.repo \
+    && zypper --gpg-auto-import-keys install -y hhvm hhvm-fastcgi \
     && mkdir /tmp/etc \
     && mv /etc/hhvm/* /tmp/etc/
     
