@@ -24,9 +24,10 @@ FROM opensuse:42.1
 LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
-ENV HHVM_HOME=/usr/local \
-    HHVM_VERSION=3.15.0 \
-    HHVM_DATA=/mnt
+ENV HHVM_VERSION=3.15.0 \
+    HHVM_HOME=/usr/local \
+    HHVM_DATA=/mnt/hhvm \
+    HHVM_SAVE=/home/hhvm
 
 COPY entry /usr/bin/
 RUN set -e \
@@ -34,10 +35,11 @@ RUN set -e \
     # To install Dependecies
     && zypper addrepo http://download.opensuse.org/repositories/home:munix9/openSUSE_Leap_42.1/home:munix9.repo \
     && zypper --gpg-auto-import-keys install -y hhvm hhvm-fastcgi \
+    && mkdir -p $HHVM_DATA $HHVM_SAVE && chown -R hhvm:hhvm $HHVM_SAVE \
     && mkdir /tmp/etc \
     && mv /etc/hhvm/* /tmp/etc/
     
-VOLUME $HHVM_DATA
+VOLUME $HHVM_DATA /mnt/app
 EXPOSE 9000
 ENTRYPOINT ["entry"]
-CMD ['hhvm', '-c', '$HHVM_DATA/etc/php.ini', '-c', '$HHVM_DATA/etc/php.ini', '-m', 's', '-u', 'hhvm']
+CMD ["hhvm", "-c", "/mnt/hhvm/etc/php.ini", "-c", "/mnt/hhvm/etc/server.ini", "-m", "s", "-u", "hhvm"]
