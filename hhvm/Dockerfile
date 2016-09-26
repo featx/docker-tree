@@ -1,24 +1,27 @@
 #++++++++++++++++++++++++++++++++++++++++++++#
-#      HHVM Docker container in Alpine       #
+#      HHVM Docker container in Ubuntu       #
 #++++++++++++++++++++++++++++++++++++++++++++#
 
 FROM ubuntu:16.10
 LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
-RUN set -e \
-    && apt-get install -y ca-certificates git make gcc gcc-c++ cmake automake autoconf \
-           libelf-devel libevent-devel libmcrypt-devel libmemcached-devel libicu-devel liblz4-devel \
-           boost-devel pcre-devel openssl-devel zlib-devel gettext-devel readline-devel sqlite-devel \
-           gd-devel imagemagick-devel freetype-devel jemalloc-devel gmp-devel \
-           pkgconfig gawk jemalloc libtool \
-    && \
-    && apt-get remove -y ca-certificates git make gcc gcc-c++ cmake automake autoconf \
-           libelf-devel libevent-devel libmcrypt-devel libmemcached-devel libicu-devel liblz4-devel \
-           boost-devel pcre-devel openssl-devel zlib-devel gettext-devel readline-devel sqlite-devel \
-           gd-devel imagemagick-devel freetype-devel jemalloc-devel gmp-devel \
-#    && rm -rf /var/cache/apk/*
+ENV HHVM_VERSION=3.15.0 \
+    HHVM_HOME=/usr/local \
+    HHVM_DATA=/mnt/hhvm \
+    HHVM_SAVE=/home/hhvm
 
-VOLUME $DATA_DIR
+COPY entry /usr/bin/
+RUN set -e \
+    && apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0x5a16e7281be7a449 \
+    && add-apt-repository "deb http://dl.hhvm.com/ubuntu $(lsb_release -sc) main" \
+    && apt-get update \
+    && apt-get install -y hhvm ca-certificates --no-install-recommends \
+    && update-rc.d hhvm defaults \
+    && apt-get clean \
+    && rm -rf /var/cache/apt/archives/*
+    
+VOLUME $HHVM_DATA /mnt/app
 EXPOSE 9000
-CMD ["entry"]
+ENTRYPOINT ["entry"]
+CMD ["hhvm", "-c", "/mnt/hhvm/etc/php.ini", "-c", "/mnt/hhvm/etc/server.ini", "-m", "s", "-u", "hhvm"]
