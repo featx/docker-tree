@@ -1,5 +1,5 @@
 #++++++++++++++++++++++++++++++++++++++++++++#
-#      HHVM Docker container in Alpine       #
+#      HHVM Docker container in Opensuse     #
 #++++++++++++++++++++++++++++++++++++++++++++#
 
 ##http://ftp.twaren.net/Linux/OpenSuSE/repositories/devel:/libraries:/c_c++/openSUSE_Leap_42.1/x86_64/libtbb2-2017_20160722-8.1.x86_64.rpm
@@ -25,21 +25,22 @@ LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
 ENV HHVM_VERSION=3.15.0 \
-    HHVM_HOME=/usr/local \
-    HHVM_DATA=/mnt/hhvm \
-    HHVM_SAVE=/home/hhvm
+    HHVM_ROOT=/usr/local \
+    HHVM_HOME=/home/hhvm \
+    HHVM_DATA=/mnt/hhvm 
 
-COPY entry /usr/bin/
+COPY entry $HHVM_ROOT/bin/
 RUN set -e \
-    && chmod u+x /usr/bin/entry \
+    && chmod u+x $HHVM_ROOT/bin/entry \
     # To install Dependecies
     && zypper addrepo http://download.opensuse.org/repositories/home:munix9/openSUSE_Leap_42.1/home:munix9.repo \
     && zypper --gpg-auto-import-keys install -y hhvm hhvm-fastcgi \
-    && mkdir -p $HHVM_DATA $HHVM_SAVE && chown -R hhvm:hhvm $HHVM_SAVE \
+    && mkdir -p $HHVM_DATA $HHVM_HOME && chown -R hhvm:hhvm $HHVM_HOME \
     && mkdir /tmp/etc \
     && mv /etc/hhvm/* /tmp/etc/
-    
+ 
+WORKDIR /mnt/app    
 VOLUME $HHVM_DATA /mnt/app
 EXPOSE 9000
 ENTRYPOINT ["entry"]
-CMD ["hhvm", "-c", "/mnt/hhvm/etc/php.ini", "-c", "/mnt/hhvm/etc/server.ini", "-m", "s", "-u", "hhvm"]
+CMD ["hhvm", "--config", "/mnt/hhvm/etc/php.ini", "--config", "/mnt/hhvm/etc/server.ini", "--mode", "server", "--user", "hhvm"]

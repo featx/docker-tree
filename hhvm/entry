@@ -9,7 +9,7 @@ if [ ! -f $HHVM_DATA/etc/server.ini ]; then
 fi
 
 chown -R hhvm:hhvm $HHVM_DATA
-chown -R hhvm:hhvm /mnt/app
+# chown -R hhvm:hhvm /mnt/app
 
 rm -rf /etc/hhvm
 ln -s $HHVM_DATA/etc /etc/hhvm
