@@ -20,6 +20,10 @@
   # libxshmfence1 libxslt1 libyaml-0-2 libzip2 logrotate nginx pango-tools perl pkg-config shared-mime-info timezone
   # unixODBC wallpaper-branding-openSUSE
 
+## Since docker 1.10, there's default seccomp profile config to forbidden some default syscall include hhvm used set_mempolicy
+## So that it is required to add param --security-opt seccomp:unconfined (docker run)for running container from this image.
+## It means do not use the default seccomp profile, other words, open all of the forbidden syscalls.
+
 FROM opensuse:42.1
 LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
@@ -43,4 +47,4 @@ WORKDIR /mnt/app
 VOLUME $HHVM_DATA /mnt/app
 EXPOSE 9000
 ENTRYPOINT ["entry"]
-CMD ["hhvm", "--config", "/mnt/hhvm/etc/php.ini", "--config", "/mnt/hhvm/etc/server.ini", "--mode", "server", "--user", "hhvm"]
+CMD ["hhvm", "-m", "s", "-u", "hhvm", "-c", "/mnt/hhvm/etc/php.ini", "-c", "/mnt/hhvm/etc/server.ini"] 
