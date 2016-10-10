@@ -7,9 +7,9 @@ LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
 ENV PHP_HOME=/usr/local \
-    PHP_VERSION=7.0.10 \
-    PHP_USER=www-data \
-    PHP_GROUP=www-data \
+    PHP_VERSION=7.0.11 \
+    PHP_USER=www \
+    PHP_GROUP=www \
     COMPOSER_VERSION=1.2.0 \
     XDEBUG_VERSION=2.4.1 \
     PHPUNIT_VERSION=5.5.0 \
@@ -43,9 +43,9 @@ RUN set -x \
     && wget -O phpunit https://phar.phpunit.de/phpunit-$PHPUNIT_VERSION.phar \
     && wget -O xdebug.tgz https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz \
     && mv composer phpunit $PHP_HOME/bin && chmod u+x $PHP_HOME/bin/* \
-    && echo "348476ff7ba8d95a1e28e1059430c10470c5f8110f6d9133d30153dda4cdf56a *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
+    && echo "d4cccea8da1d27c11b89386f8b8e95692ad3356610d571253d00ca67d524c735 *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
 	  && export GNUPGHOME=$(mktemp -d) \
-    && for key in 1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763; do \
+    && for key in 1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3; do \
 		       gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
 	     done \
 	  && gpg --batch --verify php-$PHP_VERSION.tar.xz.asc php-$PHP_VERSION.tar.xz \

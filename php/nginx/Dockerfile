@@ -7,7 +7,7 @@ LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
 ENV NGX_HOME=/usr/local \
-    NGX_VERSION=1.11.3
+    NGX_VERSION=1.11.4
 
 COPY * $NGX_HOME/
 # product variable/data would be put in /var   etc=/var/conf logs=/var/logs apps=/var/apps
