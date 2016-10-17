@@ -34,6 +34,6 @@ RUN set -x \
 
 WORKDIR $OLDAP_HOME
 EXPOSE 389
-VOLUME ["$OLDAP_DATA"]
+VOLUME $OLDAP_DATA
 ENTRYPOINT ["entry"]
 CMD ["/usr/local/libexec/slapd", "-d", "32768", "-u", "ldap", "-g", "ldap"]

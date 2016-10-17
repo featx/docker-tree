@@ -13,8 +13,8 @@ ENV APP_HOME=/usr/local/app \
     #DEBUG_PORT=5858 \
     #INSPECTOR_PORT=8080
 
-COPY docker-entry /usr/local/bin/
-RUN chmod u+x /usr/local/bin/docker-entry
+COPY entry /usr/local/bin/
+RUN chmod u+x /usr/local/bin/entry
     # It's not required to expose Debug and inspector ports in production env
     # && npm install -g node-inspector
 
@@ -22,5 +22,5 @@ VOLUME $APP_HOME $APP_HOME/data
 EXPOSE $APP_PORT
        #$DEBUG_PORT $INSPECTOR_PORT
 WORKDIR $APP_HOME
-ENTRYPOINT ["docker-entry"]
+ENTRYPOINT ["entry"]
 CMD ["node", "."]

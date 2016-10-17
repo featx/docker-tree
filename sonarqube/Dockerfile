@@ -12,7 +12,7 @@ ENV SONAR_VERSION=6.0 \
     SONARQUBE_JDBC_PASSWORD=sonar \
     SONARQUBE_JDBC_URL=jdbc:h2:tcp://localhost:9092/sonar
 
-COPY run.sh $SONARQUBE_HOME/bin/
+COPY entry $SONARQUBE_HOME/bin/
 RUN set -x \
     && apk add --no-cache gnupg unzip curl \
     # pub   2048R/D26468DE 2015-05-25
@@ -33,4 +33,4 @@ RUN set -x \
 VOLUME $SONARQUBE_HOME/data,$SONARQUBE_HOM/extensions,$SONARQUBE_HOME/logs
 WORKDIR $SONARQUBE_HOME
 EXPOSE 9000
-ENTRYPOINT ["./bin/run.sh"]
+ENTRYPOINT ["./bin/entry"]
