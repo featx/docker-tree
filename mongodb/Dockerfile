@@ -12,13 +12,14 @@ ENV GOSU_VERSION=1.7 \
     MONGO_HOME=/usr/local
 
 # Source Tar: https://fastdl.mongodb.org/src/mongodb-src-r$MONGO_VERSION.tar.gz
-# Binary Tar: http://downloads.mongodb.org/linux/mongodb-linux-x86_64-$MONGO_VERSION.tgz
+#              https://codeload.github.com/mongodb/mongo/tar.gz/r3.3.15
+# Binary Tar: https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-$MONGO_VERSION.tgz
 
 COPY entry $MONGO_HOME/bin/
 
 RUN set -ex \
   && addgroup -g 1000 mongodb && adduser -G mongodb -u 1000 -s /sbin/nologin -D -H mongodb \
-  && apk add -U --no-cache ca-certificates wget \
+  && apk add -U --no-cache ca-certificates wget gnupg \
 
   # Grab gosu for easy step-down from root
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
@@ -30,11 +31,15 @@ RUN set -ex \
   && gosu nobody true \
 
   && mkdir -p $MONGO_HOME/bin \
-  && wget -o mongodb.tgz http://downloads.mongodb.org/linux/mongodb-linux-x86_64-$MONGO_VERSION.tgz \
-  && tar -zxf mongodb.tgz && mv mongodb-linux-x86_64-$MONGO_VERSION/bin/* $MONGO_HOME/bin/ \
+  && wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-$MONGO_VERSION.tgz \
+  && wget -o mongodb.sha256sum https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-$MONGO_VERSION.tgz.sha256 \
+# && gpg --verify mongodb.tgz.sha256sum.asc \
+  && grep mongodb-linux-x86_64-$MONGO_VERSION.tgz mongodb.sha256sum | sha256sum -c - \
+  && tar -zxf mongodb-linux-x86_64-$MONGO_VERSION.tgz \
+  && mv mongodb-linux-x86_64-$MONGO_VERSION/bin/* $MONGO_HOME/bin/ \
 
-  && apk del ca-certificates wget \
-  && rm -rf mongodb.tgz mongodb-linux-x86_64-$MONGO_VERSION /var/cache/apk/* \
+  && apk del ca-certificates wget gnupg \
+  && rm -rf mongodb.sha256sum mongodb-linux-x86_64-$MONGO_VERSIO* /var/cache/apk/* \
   && chmod u+x -R $MONGO_HOME/bin
 
 EXPOSE 27017
