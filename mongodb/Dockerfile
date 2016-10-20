@@ -34,7 +34,7 @@ RUN set -ex \
   && wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-$MONGO_VERSION.tgz \
   && wget -o mongodb.sha256sum https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-$MONGO_VERSION.tgz.sha256 \
 # && gpg --verify mongodb.tgz.sha256sum.asc \
-  && grep mongodb-linux-x86_64-$MONGO_VERSION.tgz mongodb.sha256sum | sha256sum -c - \
+# && grep mongodb-linux-x86_64-$MONGO_VERSION.tgz mongodb.sha256sum | sha256sum -c - \
   && tar -zxf mongodb-linux-x86_64-$MONGO_VERSION.tgz \
   && mv mongodb-linux-x86_64-$MONGO_VERSION/bin/* $MONGO_HOME/bin/ \
 

@@ -1,3 +1,7 @@
+#++++++++++++++++++++++++++++++++++++++++++#
+# Elasticsearch Docker container in Alpine #
+#++++++++++++++++++++++++++++++++++++++++++#
+
 FROM java:8-jre-alpine
 
 # grab gosu for easy step-down from root
