@@ -14,7 +14,9 @@ ENV NODE_VERSION=v4.6.1 \
 
 # gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
-  && zypper in tar curl make gcc gcc-c++ binutils-gold python kernel-default-devel \
+  && zypper in -y tar curl make gcc gcc-c++ binutils-gold python kernel-devel glibc-devel-static \
+  && zypper addrepo http://download.opensuse.org/repositories/home:munix9/openSUSE_Leap_42.1/home:munix9.repo \
+  && zypper --gpg-auto-import-keys install -y paxctl \
   && for key in \
     9554F04D7259F04124DE6B476D5A82AC7E37093B \
     94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
@@ -43,7 +45,7 @@ RUN set -ex \
      then npm install -g npm@$NPM_VERSION \
   && find $NODE_HOME/lib/node_modules/npm -name test -o -name .bin -type d | xargs rm -rf; \
      fi \
-  && zypper rm tar curl make gcc gcc-c++ binutils-gold python kernel-default-devel \
+  && zypper rm tar curl make gcc gcc-c++ binutils-gold python kernel-devel glibc-devel-static paxctl \
   && rm -rf /etc/ssl /node-$NODE_VERSION.tar.gz /SHASUMS256.txt.asc /node-$NODE_VERSION /usr/include/* \
       $NODE_HOME/share/man /tmp/* /var/cache/apk/* /root/.npm /root/.node-gyp /root/.gnupg \
       $NODE_HOME/lib/node_modules/npm/man $NODE_HOME/lib/node_modules/npm/doc $NODE_HOME/lib/node_modules/npm/html
