@@ -7,10 +7,11 @@ LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
 ENV PHP_HOME=/usr/local \
-    PHP_VERSION=7.0.11 \
+    PHP_VERSION=7.0.12 \
+#5.6.27
     PHP_USER=www \
     PHP_GROUP=www \
-    COMPOSER_VERSION=1.2.0 \
+    COMPOSER_VERSION=1.2.1 \
     XDEBUG_VERSION=2.4.1 \
     PHPUNIT_VERSION=5.5.0 \
     PHP_CONF=/mnt/php/etc \
