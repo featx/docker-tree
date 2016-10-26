@@ -39,11 +39,12 @@ RUN set -ex \
     && tar -zxf mongodb-src-r$MONGO_VERSION.tar.gz \
     && cd mongodb-src-r$MONGO_VERSION && scons core \
     && mv build/opt/mongo/* $MONGO_HOME/ && mv $MONGO_HOME/mongo* $MONGO_HOME/bin/ \
-    cd / \
+    && cd / \
     && zypper rm -y tar wget make gcc5 gcc5-c++ scons glibc-devel-static \
     && rm -rf /var/cache/zypp/* mongodb.sha256sum mongodb-src-r$MONGO_VERSION* \
     && chmod u+x -R $MONGO_HOME/bin/*
 
 EXPOSE 27017
 VOLUME /mnt
+ENTRYPOINT ["entry"]
 CMD ["mongod"]
