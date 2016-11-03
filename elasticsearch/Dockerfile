@@ -42,14 +42,14 @@ RUN set -ex \
     && for path in \
         bin lib modules \
     ; do \
-        mkdir -p "$ELASTICSEARCH_HOME/$path"; \
-        mv "elasticsearch-$ELASTICSEARCH_VERSION/$path/*" "$ELASTICSEARCH_HOME/$path/"; \
-        chown -R $ELASTICSEARCH_GROUP:$ELASTICSEARCH_USER "$ELASTICSEARCH_HOME/$path"; \
+        mkdir -p $ELASTICSEARCH_HOME/$path; \
+        mv elasticsearch-$ELASTICSEARCH_VERSION/$path/* $ELASTICSEARCH_HOME/$path/; \
+        chown -R $ELASTICSEARCH_GROUP:$ELASTICSEARCH_USER $ELASTICSEARCH_HOME/$path; \
     done \
     && for path in \
         config plugins data logs \
     ; do \
-        mkdir -p "$ELASTICSEARCH_DATA/$path"; \
+        mkdir -p $ELASTICSEARCH_DATA/$path; \
         ln -s $ELASTICSEARCH_DATA/$path $ELASTICSEARCH_HOME/$path; \
     done \
     && mkdir $ELASTICSEARCH_DATA/config/scripts \
