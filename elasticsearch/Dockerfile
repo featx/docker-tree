@@ -57,5 +57,5 @@ RUN set -ex \
 
 VOLUME $ELASTICSEARCH_DATA
 EXPOSE 9200 9300
-ENTRYPOINT ["/entry"]
+ENTRYPOINT ["entry"]
 CMD ["elasticsearch"]
