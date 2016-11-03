@@ -39,18 +39,24 @@ RUN set -ex \
     
     # Unzip & install artifact tgz.
     && tar -zxf elasticsearch-$ELASTICSEARCH_VERSION.tar.gz \
-    && mv elasticsearch-$ELASTICSEARCH_VERSION/bin/* $ELASTICSEARCH_HOME/bin/ \
-    && mv elasticsearch-$ELASTICSEARCH_VERSION/lib/* $ELASTICSEARCH_HOME/lib/ \
-    && mv elasticsearch-$ELASTICSEARCH_VERSION/modules $ELASTICSEARCH_HOME/ \
-    && mkdir -p $ELASTICSEARCH_DATA/config $ELASTICSEARCH_DATA/config/scripts \
-                $ELASTICSEARCH_DATA/data $ELASTICSEARCH_HOME/logs \
+    && for path in \
+        bin lib modules \
+    ; do \
+        mkdir -p "$ELASTICSEARCH_HOME/$path"; \
+        mv "elasticsearch-$ELASTICSEARCH_VERSION/$path/*" "$ELASTICSEARCH_HOME/$path/"; \
+        chown -R $ELASTICSEARCH_GROUP:$ELASTICSEARCH_USER "$ELASTICSEARCH_HOME/$path"; \
+    done \
+    && for path in \
+        config plugins data logs \
+    ; do \
+        mkdir -p "$ELASTICSEARCH_DATA/$path"; \
+        ln -s $ELASTICSEARCH_DATA/$path $ELASTICSEARCH_HOME/$path; \
+    done \
+    && mkdir $ELASTICSEARCH_DATA/config/scripts \
     && mv elasticsearch-$ELASTICSEARCH_VERSION/config/* $ELASTICSEARCH_DATA/config/ \
-    && ln -s $ELASTICSEARCH_DATA/config $ELASTICSEARCH_HOME/config \
-    && ln -s $ELASTICSEARCH_DATA/data $ELASTICSEARCH_HOME/data \
-    && ln -s $ELASTICSEARCH_DATA/logs $ELASTICSEARCH_HOME/logs \
     && chown -R $ELASTICSEARCH_GROUP:$ELASTICSEARCH_USER $ELASTICSEARCH_DATA \
-    && chmod u+x $ELASTICSEARCH_HOME/bin/entry \
-
+    && chmod u+x $ELASTICSEARCH_HOME/bin/* \
+    && sed -i '1s/bash/sh/g' $ELASTICSEARCH_HOME/bin/elasticsearch \
     # Disconstruct
     && apk del ca-certificates wget gnupg \
     && rm -rf elasticsearch-$ELASTICSEARCH_VERSION* /var/cache/apk/*
