@@ -44,6 +44,7 @@ RUN set -ex \
     && mv elasticsearch-$ELASTICSEARCH_VERSION/modules $ELASTICSEARCH_HOME/ \
     && mkdir -p $ELASTICSEARCH_DATA/config $ELASTICSEARCH_DATA/config/scripts \
                 $ELASTICSEARCH_DATA/data $ELASTICSEARCH_HOME/logs \
+    && mv elasticsearch-$ELASTICSEARCH_VERSION/config/* $ELASTICSEARCH_DATA/config/ \
     && ln -s $ELASTICSEARCH_DATA/config $ELASTICSEARCH_HOME/config \
     && ln -s $ELASTICSEARCH_DATA/data $ELASTICSEARCH_HOME/data \
     && ln -s $ELASTICSEARCH_DATA/logs $ELASTICSEARCH_HOME/logs \
