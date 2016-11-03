@@ -46,15 +46,8 @@ RUN set -ex \
         mv elasticsearch-$ELASTICSEARCH_VERSION/$path/* $ELASTICSEARCH_HOME/$path/; \
         chown -R $ELASTICSEARCH_GROUP:$ELASTICSEARCH_USER $ELASTICSEARCH_HOME/$path; \
     done \
-    && for path in \
-        config plugins data logs \
-    ; do \
-        mkdir -p $ELASTICSEARCH_DATA/$path; \
-        ln -s $ELASTICSEARCH_DATA/$path $ELASTICSEARCH_HOME/$path; \
-    done \
-    && mkdir $ELASTICSEARCH_DATA/config/scripts \
-    && mv elasticsearch-$ELASTICSEARCH_VERSION/config/* $ELASTICSEARCH_DATA/config/ \
-    && chown -R $ELASTICSEARCH_GROUP:$ELASTICSEARCH_USER $ELASTICSEARCH_DATA \
+    && mkdir /tmp/elasticsearch \
+    && mv elasticsearch-$ELASTICSEARCH_VERSION/config /tmp/elasticsearch/ \
     && chmod u+x $ELASTICSEARCH_HOME/bin/* \
     && sed -i '1s/bash/sh/g' $ELASTICSEARCH_HOME/bin/elasticsearch \
     # Disconstruct
