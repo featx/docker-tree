@@ -1,0 +1,38 @@
+#!/bin/sh
+
+set -e
+
+if [ ! -d $KIBANA_DATA/config ]; then
+  for path in config plugins data logs; \
+    do \
+      mkdir -p $KIBANA_DATA/$path; \
+      ln -s $KIBANA_DATA/$path $KIBANA_HOME/$path; \
+    done
+
+  mv /tmp/kibana/config/* $KIBANA_DATA/config/
+  chown -R $KIBANA_GROUP:$KIBANA_USER $KIBANA_DATA
+fi
+
+SCRIPT=$0
+
+# SCRIPT may be an arbitrarily deep series of symlinks. Loop until we have the concrete path.
+while [ -h "$SCRIPT" ] ; do
+  ls=$(ls -ld "$SCRIPT")
+  # Drop everything prior to ->
+  link=$(expr "$ls" : '.*-> \(.*\)$')
+  if expr "$link" : '/.*' > /dev/null; then
+    SCRIPT="$link"
+  else
+    SCRIPT=$(dirname "$SCRIPT")/"$link"
+  fi
+done
+
+if [ "$1" = 'kibana' -a "$(id -u)" = '0' ]; then
+  shift
+  exec gosu $KIBANA_USER node $NODE_OPTIONS --no-warnings "$KIBANA_HOME/src/cli" "$@"
+if [ "$1" = 'kibana-plugin' -a "$(id -u)" = '0' ]; then
+  shift
+  exec gosu $KIBANA_USER node $NODE_OPTIONS --no-warnings "$KIBANA_HOME/src/cli_plugin" "$@"  
+else
+  exec "$@"
+fi
