@@ -9,7 +9,7 @@ MAINTAINER palmtale<m@glad.so>
 ENV LANG=en_US.utf8 \
     GOSU_VERSION=1.7 \
     PG_MAJOR=9.6 \
-    PG_VERSION=9.6.0 \
+    PG_VERSION=9.6.1 \
     PG_HOME=/usr/local \
     PG_DATA=/mnt \
     PG_GROUP=postgres \
@@ -41,6 +41,8 @@ RUN set -ex \
   # Wget source package and install postgresql
   && cd $PG_HOME \
   && wget -O postgresql.tar.gz https://ftp.postgresql.org/pub/source/v$PG_VERSION/postgresql-$PG_VERSION.tar.gz \
+  && wget -O postgresql.tar.gz.sha256 https://ftp.postgresql.org/pub/source/v$PG_VERSION/postgresql-$PG_VERSION.tar.gz.sha256 \
+  && grep postgresql-$PG_VERSION.tar.gz postgresql-$PG_VERSION.tar.gz.sha256 | sha256sum -c - \
   && tar -zxf postgresql.tar.gz && mv postgresql-$PG_VERSION postgresql \
   && cd postgresql \
   && ./configure $PG_COMPILE_ARGS && make world && make install-world \
@@ -54,7 +56,7 @@ RUN set -ex \
 
   ## destructor
   && apk del build-base readline-dev openssl-dev zlib-dev libxml2-dev wget gnupg ca-certificates \
-  && rm -rf "$GNUPGHOME" $PG_HOME/postgresql.tar.gz $PG_HOME/postgresql /usr/local/bin/gosu.asc /var/cache/apk/* \
+  && rm -rf "$GNUPGHOME" $PG_HOME/postgresql* /usr/local/bin/gosu.asc /var/cache/apk/* \
   && mkdir $PGDATA && chown -R $PG_GROUP:$PG_USER $PG_DATA \
   && eval "gosu $PG_USER initdb -D $PGDATA" \
   && mv $PG_DATA/postgresql /etc/ \
