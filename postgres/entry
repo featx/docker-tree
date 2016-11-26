@@ -12,7 +12,8 @@ mkdir -p $PG_DATA
 if [ ! -d $PG_DATA/data ]; then
 	cp -r /tmp/* $PG_DATA/
 	mkdir -p $PG_DATA/log
-  ln -s /etc/postgresql $PG_DATA/postgresql
+  mv /etc/postgresql  $PG_DATA/
+	ln -s $PG_DATA/postgresql /etc/postgresql
 	chmod 700 $PG_DATA
   chown -R $PG_GROUP:$PG_USER $PG_HOME
 	chown -R $PG_GROUP:$PG_USER $PG_DATA

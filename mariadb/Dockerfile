@@ -6,7 +6,7 @@ FROM alpine
 LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
-ENV MYSQL_VERSION=10.1.17 \
+ENV MYSQL_VERSION=10.1.19 \
     MYSQL_HOME=/usr/mysql \
     DATA_DIR=/mnt/data \
     MYSQL_USER=mysql \

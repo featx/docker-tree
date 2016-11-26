@@ -8,7 +8,7 @@ MAINTAINER Palmtale <m@glad.so>
 #USER soglad
 
 ENV NGX_HOME=/usr/local \
-    NGX_VERSION=1.11.5
+    NGX_VERSION=1.11.6
 
 COPY * $NGX_HOME/
 # product variable/data would be put in /var   etc=/var/conf logs=/var/logs apps=/var/apps
