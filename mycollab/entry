@@ -7,7 +7,7 @@ if [ ! -d $MYCOLLAB_DATA/conf ]; then
         do \
             mkdir -p $MYCOLLAB_DATA/$path; \
             ln -s $MYCOLLAB_DATA/$path $MYCOLLAB_HOME/$path; \
-            mv /tmp/conf/* $MYCOLLAB_DATA/$path/
+            mv /tmp/$path/* $MYCOLLAB_DATA/$path/;
         done
     chown -R $MYCOLLAB_GROUP:$MYCOLLAB_USER $MYCOLLAB_DATA
 fi
