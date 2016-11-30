@@ -1,0 +1,23 @@
+#!/bin/sh
+
+set -e
+
+if [ ! -d $MYCOLLAB_DATA/conf ]; then
+    for path in conf logs; \
+        do \
+            mkdir -p $MYCOLLAB_DATA/$path; \
+            ln -s $MYCOLLAB_DATA/$path $MYCOLLAB_HOME/$path; \
+            mv /tmp/conf/* $MYCOLLAB_DATA/$path/
+        done
+    chown -R $MYCOLLAB_GROUP:$MYCOLLAB_USER $MYCOLLAB_DATA
+fi
+
+if [ "${1:0:1}" = '-' ]; then
+	set -- mycollab.sh "$@"
+fi
+
+if [ "$1" = 'mycollab.sh' -a "$(id -u)" = '0' ]; then
+	exec gosu $MYCOLLAB_USER "$@"
+else
+  exec "$@"
+fi
