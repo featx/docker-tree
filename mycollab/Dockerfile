@@ -52,9 +52,11 @@ RUN set -ex \
     && apk del ca-certificates wget unzip gnupg \
     && rm -rf MyCollab-Pro-All-$MYCOLLAB_VERSION.zip MyCollab-$MYCOLLAB_VERSIONs \
        /var/cache/apk/* $MYCOLLAB_HOME/bin/*.exe $MYCOLLAB_HOME/bin/*.bat \
+       $MYCOLLAB_HOME/bin/startup.sh \
+    && sed -i '159s/\&//g' $MYCOLLAB_HOME/bin/mycollab.sh \
     && chmod u+x $MYCOLLAB_HOME/bin/*
 
 VOLUME $MYCOLLAB_DATA
 EXPOSE 8080 32645
 ENTRYPOINT ["entry"]
-CMD ["startup.sh"]
+CMD ["startup"]
