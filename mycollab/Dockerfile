@@ -16,7 +16,6 @@ ENV GOSU_VERSION=1.7 \
 COPY entry $MYCOLLAB_HOME/bin/
 
 RUN set -ex \
-    && mkdir /home/$MYCOLLAB_USER \
     && addgroup -g 1000 $MYCOLLAB_GROUP && adduser -G $MYCOLLAB_GROUP -u 1000 -s /sbin/nologin -D $MYCOLLAB_USER -h /home/$MYCOLLAB_USER \
     && apk add -U --no-cache ca-certificates wget gnupg unzip \
 
