@@ -16,7 +16,8 @@ ENV GOSU_VERSION=1.7 \
 COPY entry $MYCOLLAB_HOME/bin/
 
 RUN set -ex \
-    && addgroup -g 1000 $MYCOLLAB_GROUP && adduser -G $MYCOLLAB_GROUP -u 1000 -s /sbin/nologin -D -H $MYCOLLAB_USER \
+    && mkdir /home/$MYCOLLAB_USER \
+    && addgroup -g 1000 $MYCOLLAB_GROUP && adduser -G $MYCOLLAB_GROUP -u 1000 -s /sbin/nologin -D $MYCOLLAB_USER -h /home/$MYCOLLAB_USER \
     && apk add -U --no-cache ca-certificates wget gnupg unzip \
 
     # Grab gosu for easy step-down from root
@@ -30,13 +31,13 @@ RUN set -ex \
     && gosu nobody true \
 
     # Download artifact tgz.
-    && wget https://github.com/MyCollab/mycollab/releases/download/Release_$MYCOLLAB_VERSION/MyCollab-Pro-All-$MYCOLLAB_VERSION.zip \
-    #&& wget https://MyCollab-Pro-All-$MYCOLLAB_VERSION.zip.sha1 \
+    && wget https://github.com/MyCollab/mycollab/releases/download/Release_$MYCOLLAB_VERSION/MyCollab-All-$MYCOLLAB_VERSION.zip \
+    #&& wget https://MyCollab-All-$MYCOLLAB_VERSION.zip.sha1 \
     # Verify artifact tgz.
-    #&& grep MyCollab-Pro-All-$MYCOLLAB_VERSION.zip MyCollab-Pro-All-$MYCOLLAB_VERSION.zip.sha1 | sha256sum -c - \
+    #&& grep MyCollab-All-$MYCOLLAB_VERSION.zip MyCollab-All-$MYCOLLAB_VERSION.zip.sha1 | sha256sum -c - \
 
     # Unzip & install artifact tgz.
-    && unzip MyCollab-Pro-All-$MYCOLLAB_VERSION.zip \
+    && unzip MyCollab-All-$MYCOLLAB_VERSION.zip \
     && for path in \
         bin i18n lib webapp \
     ; do \
@@ -50,11 +51,12 @@ RUN set -ex \
     && mv MyCollab-$MYCOLLAB_VERSION/logs/* /tmp/logs/ \
     # Disconstruct
     && apk del ca-certificates wget unzip gnupg \
-    && rm -rf MyCollab-Pro-All-$MYCOLLAB_VERSION.zip MyCollab-$MYCOLLAB_VERSIONs \
+    && rm -rf MyCollab-All-$MYCOLLAB_VERSION.zip MyCollab-$MYCOLLAB_VERSIONs \
        /var/cache/apk/* $MYCOLLAB_HOME/bin/*.exe $MYCOLLAB_HOME/bin/*.bat \
        $MYCOLLAB_HOME/bin/startup.sh \
     && sed -i '159s/\&//g' $MYCOLLAB_HOME/bin/mycollab.sh \
-    && chmod u+x $MYCOLLAB_HOME/bin/*
+    && chmod u+x $MYCOLLAB_HOME/bin/* \
+    && chown -R $MYCOLLAB_GROUP:$MYCOLLAB_USER $MYCOLLAB_HOME
 
 VOLUME $MYCOLLAB_DATA
 EXPOSE 8080 32645
