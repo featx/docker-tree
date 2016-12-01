@@ -2,17 +2,23 @@
 
 set -e
 
-mkdir -p /mnt/php/etc /mnt/php/lib
+for path in etc lib; do \
 
-if [ ! -f /mnt/php/etc/php-fpm.conf ]; then
-    rm -rf /mnt/php/etc/* /mnt/php/lib/*
-    cp -r /tmp/etc/* /mnt/php/etc/
-    cp -r /tmp/lib/* /mnt/php/lib/
-    mv /mnt/php/etc/php-fpm.conf.default /mnt/php/etc/php-fpm.conf
+  if [ ! -d $PHP_DATA/$path ]; then
+    mkdir -p $PHP_DATA/$path; \
+    cp -r /tmp/$path/* $PHP_DATA/$path/;
+  fi
+ \
+done
+
+if [ ! -f $PHP_DATA/etc/php-fpm.conf ]; then
+    mv $PHP_DATA/etc/php-fpm.conf.default $PHP_DATA/etc/php-fpm.conf
 fi
 
-rm -rf $PHP_HOME/etc $PHP_HOME/lib/php/extensions/debug-non-zts-20151012
-ln -s /mnt/php/etc $PHP_HOME/etc
-ln -s /mnt/php/lib $PHP_HOME/lib/php/extensions/debug-non-zts-20151012
+chown -R $PHP_GROUP:$PHP_USER $PHP_DATA
+
+rm -rf $PHP_HOME/etc $PHP_HOME/lib/php/extensions/$PHP_EXT
+ln -s $PHP_DATA/etc $PHP_HOME/etc
+ln -s $PHP_DATA/lib $PHP_HOME/lib/php/extensions/$PHP_EXT
 
 exec "$@"
