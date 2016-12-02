@@ -19,9 +19,9 @@ ENV PHP_HOME=/usr/local \
 #    XDEBUG_VERSION=2.4.1 \
 #    PHPUNIT_VERSION=5.6.7 \--enable-debug
     PHP_COMPILE_ARGS="--enable-fpm --with-fpm-group=$PHP_GROUP --with-fpm-user=$PHP_USER \
---with-mysql --with-mysqli --with-pdo-mysql --with-iconv --with-gmp \
---with-openssl --with-gd --with-libedit  --with-zlib --with-curl \
---with-mcrypt --with-mhash --enable-xml --enable-bcmath \
+--with-mysql --with-mysqli --with-pdo-mysql --with-pgsql --with-pdo-pgsql \
+--with-iconv --with-gmp --with-openssl --with-gd --with-libedit  --with-zlib \
+--with-curl --with-mcrypt --with-mhash --enable-xml --enable-bcmath \
 --enable-mbstring --enable-mbregex --enable-gd-native-ttf --enable-mysqlnd \
 --enable-sockets --enable-zip --enable-soap --enable-pdo \
 --with-freetype-dir=/usr/local --with-jpeg-dir=/usr/local \
