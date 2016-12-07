@@ -11,25 +11,34 @@ ENV OLDAP_HOME=/usr/local \
     OLDAP_VERSION=OPENLDAP_REL_ENG_2_4_44 \
     OLDAP_DOMAIN="dc=glad,dc=so" \
     OLDAP_USER=ldap \
-    OLDAP_GROUP=ldap
+    OLDAP_GROUP=ldap \
+    OLDAP_COMPILE_ARGS="--enable-modules --enable-slapd --enable-spasswd \
+    --with-cyrus-sasl --enable-overlays=mod --enable-sql --enable-shell \
+    --enable-meta --enable-passwd --enable-null --enable-ldap --enable-monitor"
 # It's not required gosu, because of "slapd -u"
 
 COPY entry /usr/bin/
 RUN set -x \
     && chmod u+x /usr/bin/entry \
     && addgroup -g 101 -S $OLDAP_GROUP && adduser -u 100 -D -S -G $OLDAP_GROUP $OLDAP_USER \
-    && apk add -U build-base wget ca-certificates db-dev gnupg \
-                  db libltdl groff \
+    && apk add -U build-base m4 wget ca-certificates gnupg db-dev openssl-dev cyrus-sasl-dev unixodbc-dev \
+                  db openssl groff cyrus-sasl unixodbc \
+
+    && wget http://ftpmirror.gnu.org/libtool/libtool-2.4.6.tar.gz \
+    && tar -zxf libtool-2.4.6.tar.gz \
+    && cd libtool-2.4.6 && ./configure --prefix=/usr && make && make install \
+    && cd libltdl && ./configure --prefix=/usr && make && make install \
 
     && cd $OLDAP_HOME \
     && wget -O openldap.tar.gz https://github.com/openldap/openldap/archive/$OLDAP_VERSION.tar.gz \
     && tar -zxf openldap.tar.gz \
     && cd openldap-$OLDAP_VERSION \
     && ./configure --prefix=$OLDAP_HOME --datarootdir=$OLDAP_DATA --sysconfdir=$OLDAP_DATA/etc \
+        $OLDAP_COMPILE_ARGS \
     && make depend && make && make install \
     && cd $OLDAP_HOME \
-    && apk del build-base wget ca-certificates db-dev gnupg \
-    && rm -rf /var/cache/apk/* openldap.tar.gz openldap-$OLDAP_VERSION \
+    && apk del build-base m4 wget ca-certificates gnupg db-dev openssl-dev cyrus-sasl-dev unixodbc-dev \
+    && rm -rf /var/cache/apk/* openldap.tar.gz openldap-$OLDAP_VERSION libtool-2.4.6.tar.gz \
     && mv $OLDAP_DATA/* /tmp/
 
 WORKDIR $OLDAP_HOME

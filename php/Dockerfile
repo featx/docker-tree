@@ -9,32 +9,35 @@ MAINTAINER palmtale<m@glad.so>
 ENV PHP_HOME=/usr/local \
     PHP_DATA=/mnt/php \
     PHP_APPS=/mnt/app \
-    PHP_VERSION=7.0.13 \
-    #5.6.28
-    PHP_EXT=no-debug-non-zts-20151012 \
-    #debug-non-zts-20131226 \
+    PHP_VERSION=5.6.28 \
+    PHP_EXT=no-debug-non-zts-20131226 \
+    #debug-non-zts-20160303 (7.1)\
+    #debug-non-zts-20151012 (7.0)\
+    #debug-non-zts-20131226 (5.6)\
     PHP_USER=www \
     PHP_GROUP=www \
     COMPOSER_VERSION=1.2.2 \
 #    XDEBUG_VERSION=2.4.1 \
 #    PHPUNIT_VERSION=5.6.7 \
     PHP_COMPILE_ARGS="--enable-fpm --with-fpm-group=$PHP_GROUP --with-fpm-user=$PHP_USER \
---with-mysql --with-mysqli --with-pdo-mysql --with-pgsql --with-pdo-pgsql \
---with-iconv --with-gmp --with-openssl --with-gd --with-libedit  --with-zlib \
---with-curl --with-mcrypt --with-mhash --enable-xml --enable-bcmath \
---enable-mbstring --enable-mbregex --enable-gd-native-ttf --enable-mysqlnd \
---enable-sockets --enable-zip --enable-soap --enable-pdo \
---with-freetype-dir=/usr/local --with-jpeg-dir=/usr/local \
---with-png-dir=/usr/local --with-libxml-dir=/usr/local \
---with-vpx-dir=/usr/local --with-xpm-dir=/usr/local"
+    --enable-xml --enable-zip --enable-soap --enable-pdo \
+    --enable-bcmath --enable-mbstring --enable-mbregex \
+    --enable-mysqlnd --enable-sockets --enable-gd-native-ttf \
+    --with-mysql --with-mysqli --with-pdo-mysql --with-pgsql --with-pdo-pgsql \
+    --with-iconv --with-gmp --with-openssl --with-gd --with-libedit  --with-zlib \
+    --with-curl --with-mcrypt --with-mhash --with-gettext \
+    --with-freetype-dir=/usr/local --with-jpeg-dir=/usr/local \
+    --with-png-dir=/usr/local --with-libxml-dir=/usr/local \
+    --with-vpx-dir=/usr/local --with-xpm-dir=/usr/local"
 # --enable-debug
 COPY entry $PHP_HOME/bin/
 
 RUN set -x \
-    && apk add --no-cache -U libmemcached wget ca-certificates gnupg \
-                             autoconf g++ gcc make re2c file \
-    libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev gmp-dev postgresql-dev \
+    && apk add --no-cache -U libmemcached \
+    wget ca-certificates gnupg autoconf g++ gcc make re2c file \
+    libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev gmp-dev postgresql-dev gettext-dev \
     libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev freetype-dev \
+    #
     && addgroup -g 82 -S $PHP_GROUP && adduser -u 82 -D -S -G $PHP_GROUP $PHP_USER \
     && mkdir -p $PHP_HOME/src $PHP_DATA/etc \
     && cd $PHP_HOME/src \
@@ -46,9 +49,9 @@ RUN set -x \
 #    && wget -O xdebug.tgz https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz \
 #    && mv composer phpunit $PHP_HOME/bin && chmod u+x $PHP_HOME/bin/* \
     && mv composer $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
-    && echo "357ba7f93975d7d836abed0852dc3ed96a988af539e87750613294cbee82f1bf *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
+    && echo "07187ba2870f89cef334cd2ad6cb801aeec5eaf283da0293a9a6be75d6786d11 *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
 	  && export GNUPGHOME=$(mktemp -d) \
-    && for key in 1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3; do \
+    && for key in 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3 0BD78B5F97500D450838F95DFE857D9A90D90EC1; do \
 		       gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
 	     done \
 	  && gpg --batch --verify php-$PHP_VERSION.tar.xz.asc php-$PHP_VERSION.tar.xz \
@@ -83,8 +86,8 @@ RUN set -x \
     && rm -rf $PHP_HOME/etc $PHP_HOME/lib/php/extensions/$PHP_EXT \
     # distructor
     && apk del wget gnupg autoconf g++ gcc make re2c file \
-                libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev gmp-dev postgresql-dev \
-                libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev freetype-dev \
+                libc-dev curl-dev openssl-dev libmcrypt-dev libxml2-dev gmp-dev postgresql-dev \
+                gettext-dev libedit-dev jpeg-dev libxpm-dev libpng-dev libvpx-dev freetype-dev \
     && rm -rf $GNUPGHOME /var/cache/apk/* $PHP_HOME/src/* \
     && chmod u+x /usr/local/bin/entry
 
