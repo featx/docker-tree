@@ -6,9 +6,9 @@ FROM alpine
 LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
-ENV NODE_VERSION=v6.9.1 \
-#v7.1.0
-    NPM_VERSION=3.10.8 \
+ENV NODE_VERSION=v7.2.1 \
+#v6.9.2
+    NPM_VERSION=3.10.10 \
 #3.10.9
     NODE_HOME=/usr/local
 

@@ -19,15 +19,18 @@ ENV LANG=en_US.utf8 \
     PGUSER=postgres \
     PGPASSWORD=postgres \
     PG_COMPILE_ARGS="--prefix=$PG_HOME \
-      --datarootdir=/mnt --sysconfdir=/mnt/data"
+      --datarootdir=/mnt --sysconfdir=/mnt/data \
+      --with-openssl --with-ldap \
+      --with-libxslt --with-libxml"
 
 # Hidden ENV PG_CONF=/mnt/data PG_LOGS=/mnt/log
 
 COPY entry /usr/bin/
 RUN set -ex \
   && chmod u+x /usr/bin/entry \
-  && apk add -U build-base readline-dev openssl-dev zlib-dev libxml2-dev wget gnupg ca-certificates \
-                glib-lang readline openssl zlib libxml2 \
+  && apk add -U build-base wget gnupg ca-certificates \
+                readline-dev openssl-dev zlib-dev libxml2-dev openldap-dev libxslt-dev \
+                glib-lang readline openssl zlib libxml2 openldap \
 
   # Grab gosu for easy step-down from root
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
@@ -55,7 +58,8 @@ RUN set -ex \
   && sed -ri "s!^#?(ident_file)\s*=\s*\S+.*!\1 = '/mnt/data/pg_ident.conf'!" $PG_DATA/postgresql/postgresql.conf.sample \
 
   ## destructor
-  && apk del build-base readline-dev openssl-dev zlib-dev libxml2-dev wget gnupg ca-certificates \
+  && apk del build-base wget gnupg ca-certificates \
+             readline-dev openssl-dev zlib-dev libxml2-dev openldap-dev libxslt-dev \
   && rm -rf "$GNUPGHOME" $PG_HOME/postgresql* /usr/local/bin/gosu.asc /var/cache/apk/* \
   && mkdir $PGDATA && chown -R $PG_GROUP:$PG_USER $PG_DATA \
   && eval "gosu $PG_USER initdb -D $PGDATA" \

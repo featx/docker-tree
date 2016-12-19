@@ -27,6 +27,7 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
                    --conf-path=/mnt/ngx/etc/nginx.conf \
                    --error-log-path=/mnt/ngx/log/error.log \
                    --http-log-path=/mnt/ngx/log/access.log \
+                   --with-http_v2_module \
                    --with-pcre --with-http_ssl_module \
                    --with-http_realip_module --with-http_addition_module \
                    --with-http_sub_module --with-http_dav_module \
