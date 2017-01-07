@@ -2,9 +2,9 @@
 # Node.js Running app Docker container in Alpine #
 #++++++++++++++++++++++++++++++++++++++++++++++++#
 
-FROM soglad/node
+FROM soglad/node:lts
 LABEL vendor=Glad.so
-MAINTAINER palmtale<m@glad.so>
+MAINTAINER palmtale<palmtale@glad.so>
 
 ENV APP_HOME=/usr/local/app \
     APP_PORT=5000 \
@@ -18,8 +18,8 @@ RUN chmod u+x /usr/local/bin/entry \
     # It's not required to expose Debug and inspector ports in production env
     && npm install -g node-inspector
 
-VOLUME $APP_HOME $APP_HOME/data
+VOLUME $APP_HOME
 EXPOSE $APP_PORT $DEBUG_PORT $INSPECTOR_PORT
 WORKDIR $APP_HOME
 ENTRYPOINT ["entry"]
-CMD ["node", "."]
+CMD ["node", "--debug", "."]
