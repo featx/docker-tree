@@ -8,7 +8,7 @@ MAINTAINER palmtale<m@glad.so>
 
 # grab gosu for easy step-down from root
 ENV GOSU_VERSION=1.7 \
-    ELASTICSEARCH_VERSION=5.0.0 \
+    ELASTICSEARCH_VERSION=5.2.0 \
     ELASTICSEARCH_HOME=/usr/local \
     ELASTICSEARCH_USER=elasticsearch \
     ELASTICSEARCH_GROUP=elasticsearch \

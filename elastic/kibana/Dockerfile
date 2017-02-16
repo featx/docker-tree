@@ -8,7 +8,7 @@ MAINTAINER palmtale<m@glad.so>
 
 # grab gosu for easy step-down from root
 ENV GOSU_VERSION=1.7 \
-    KIBANA_VERSION=5.0.0 \
+    KIBANA_VERSION=5.2.0 \
     KIBANA_HOME=/usr/local \
     KIBANA_USER=elasticsearch \
     KIBANA_GROUP=elasticsearch \

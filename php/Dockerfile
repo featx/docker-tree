@@ -6,19 +6,23 @@ FROM alpine
 LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
+# Required info below:
+# http://php.net/downloads.php
+
 ENV PHP_HOME=/usr/local \
     PHP_DATA=/mnt/php \
     PHP_APPS=/mnt/app \
-    PHP_VERSION=5.6.28 \
+    PHP_VERSION=5.6.30 \
+#   7.0.15 7.1.1 
     PHP_EXT=no-debug-non-zts-20131226 \
     #debug-non-zts-20160303 (7.1)\
     #debug-non-zts-20151012 (7.0)\
     #debug-non-zts-20131226 (5.6)\
     PHP_USER=www \
     PHP_GROUP=www \
-    COMPOSER_VERSION=1.2.2 \
-#    XDEBUG_VERSION=2.4.1 \
-#    PHPUNIT_VERSION=5.6.7 \
+    COMPOSER_VERSION=1.3.2 \
+#    XDEBUG_VERSION=2.5.0 \
+#    PHPUNIT_VERSION=5.7.13(5.6) 6.0.6(7.X.X) \
     PHP_COMPILE_ARGS="--enable-fpm --with-fpm-group=$PHP_GROUP --with-fpm-user=$PHP_USER \
     --enable-xml --enable-zip --enable-soap --enable-pdo \
     --enable-bcmath --enable-mbstring --enable-mbregex \

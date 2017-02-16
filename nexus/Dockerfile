@@ -9,7 +9,7 @@ MAINTAINER palmtale<m@glad.so>
 ENV GOSU_VERSION=1.7 \
     NEXUS_DATA=/mnt \
     NEXUS_HOME=/usr/local/nexus \
-    NEXUS_VERSION=3.1.0-04 \
+    NEXUS_VERSION=3.2.1-01 \
     NEXUS_GROUP=nexus \
     NEXUS_USER=nexus \
     CONTEXT_PATH=/

@@ -8,7 +8,7 @@ MAINTAINER palmtale<m@glad.so>
 
 # grab gosu for easy step-down from root
 ENV GOSU_VERSION=1.7 \
-    LOGSTASH_VERSION=5.0.0 \
+    LOGSTASH_VERSION=5.2.0 \
     LOGSTASH_HOME=/usr/local \
     LOGSTASH_USER=elasticsearch \
     LOGSTASH_GROUP=elasticsearch \
