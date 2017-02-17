@@ -12,17 +12,17 @@ MAINTAINER palmtale<m@glad.so>
 ENV PHP_HOME=/usr/local \
     PHP_DATA=/mnt/php \
     PHP_APPS=/mnt/app \
-    PHP_VERSION=5.6.30 \
-#   7.0.15 7.1.1 
-    PHP_EXT=no-debug-non-zts-20131226 \
+    PHP_VERSION=7.1.2 \
+#   5.6.30 7.0.16 7.1.2 
+    PHP_EXT=no-debug-non-zts-20160303 \
     #debug-non-zts-20160303 (7.1)\
     #debug-non-zts-20151012 (7.0)\
     #debug-non-zts-20131226 (5.6)\
     PHP_USER=www \
     PHP_GROUP=www \
     COMPOSER_VERSION=1.3.2 \
-#    XDEBUG_VERSION=2.5.0 \
-#    PHPUNIT_VERSION=5.7.13(5.6) 6.0.6(7.X.X) \
+    XDEBUG_VERSION=2.5.0 \
+    PHPUNIT_VERSION=6.0.6 \
     PHP_COMPILE_ARGS="--enable-fpm --with-fpm-group=$PHP_GROUP --with-fpm-user=$PHP_USER \
     --enable-xml --enable-zip --enable-soap --enable-pdo \
     --enable-bcmath --enable-mbstring --enable-mbregex \
@@ -40,7 +40,7 @@ RUN set -x \
     && apk add --no-cache -U libmemcached \
     wget ca-certificates gnupg autoconf g++ gcc make re2c file \
     libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev gmp-dev postgresql-dev gettext-dev \
-    libedit-dev libxml2-dev openssl-dev libpng-dev libvpx-dev freetype-dev \
+    libedit-dev libxml2-dev libressl-dev libssh2-dev libpng-dev libvpx-dev freetype-dev \
     #
     && addgroup -g 82 -S $PHP_GROUP && adduser -u 82 -D -S -G $PHP_GROUP $PHP_USER \
     && mkdir -p $PHP_HOME/src $PHP_DATA/etc \
@@ -53,9 +53,9 @@ RUN set -x \
 #    && wget -O xdebug.tgz https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz \
 #    && mv composer phpunit $PHP_HOME/bin && chmod u+x $PHP_HOME/bin/* \
     && mv composer $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
-    && echo "07187ba2870f89cef334cd2ad6cb801aeec5eaf283da0293a9a6be75d6786d11 *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
+    && echo "d815a0c39fd57bab1434a77ff0610fb507c22f790c66cd6f26e27030c4b3e971 *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
 	  && export GNUPGHOME=$(mktemp -d) \
-    && for key in 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3 0BD78B5F97500D450838F95DFE857D9A90D90EC1; do \
+    && for key in A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E; do \
 		       gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
 	     done \
 	  && gpg --batch --verify php-$PHP_VERSION.tar.xz.asc php-$PHP_VERSION.tar.xz \
@@ -95,7 +95,7 @@ RUN set -x \
     && rm -rf $GNUPGHOME /var/cache/apk/* $PHP_HOME/src/* \
     && chmod u+x /usr/local/bin/entry
 
-EXPOSE 9000
+EXPOSE 9000 
 #9001
 VOLUME ["/mnt/php", "/mnt/app"]
 ENTRYPOINT ["entry"]
