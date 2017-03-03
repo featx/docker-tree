@@ -22,7 +22,8 @@ ENV PHP_HOME=/usr/local \
     PHP_GROUP=www \
     COMPOSER_VERSION=1.3.2 \
     XDEBUG_VERSION=2.5.0 \
-    PHPUNIT_VERSION=6.0.6 \
+    PHPUNIT_VERSION=5.7.14 \
+    #5.7.X, 6.x.x
     PHP_COMPILE_ARGS="--enable-fpm --with-fpm-group=$PHP_GROUP --with-fpm-user=$PHP_USER \
     --enable-xml --enable-zip --enable-soap --enable-pdo \
     --enable-bcmath --enable-mbstring --enable-mbregex \
