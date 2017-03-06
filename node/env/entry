@@ -2,9 +2,9 @@
 
 set -e
 
-if [ $APP_ENV == dev ]; then
-    node-inspector &
-fi
+#if [ $APP_ENV == dev ]; then
+ #   node-inspector &
+#fi
 
 if [ -f $APP_HOME/package.json ]; then
     npm install --only=$APP_ENV
