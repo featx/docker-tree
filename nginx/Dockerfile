@@ -8,10 +8,15 @@ MAINTAINER Palmtale <m@glad.so>
 #USER soglad
 
 ENV NGX_HOME=/usr/local \
-    NGX_VERSION=1.11.10
+    NGX_VERSION=1.11.10 \
+#  Remember to update the sed  command below!!!    
+    NGX_VER=Motor \
+    NGX_TAG=SoGlad \
+    NGX_VAR=SOGLAD
 
-COPY * $NGX_HOME/
+COPY entry $NGX_HOME/
 # product variable/data would be put in /var   etc=/var/conf logs=/var/logs apps=/var/apps
+
 RUN set -ex && mkdir -p $NGX_HOME/src \
     && apk add --no-cache -U pcre openssl \
        ca-certificates wget make gcc g++ linux-headers paxctl libgcc libstdc++ gnupg \
@@ -20,8 +25,14 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
     && wget -O nginx.tar.gz http://nginx.org/download/nginx-$NGX_VERSION.tar.gz \
     && tar -zxf nginx.tar.gz && mv nginx-$NGX_VERSION nginx \
     && cd nginx \
-    && rm ./src/core/nginx.h \
-    && mv $NGX_HOME/nginx.h ./src/core/ \
+
+    && sed -i '12s/1011010/1000000/' src/core/nginx.h \
+    && sed -i '13s/1.11.10/Motor/' src/core/nginx.h \
+    && sed -i '14s/nginx/SoGlad/' src/core/nginx.h \
+    && sed -i '49s/nginx/SoGlad/' src/http/ngx_http_header_filter_module.c \
+    && sed -i '36s/nginx/SoGlad/' src/http/ngx_http_special_response.c \
+    && sed -i '22s/"NGINX/"SOGLAD/' src/core/nginx.h \
+    
     && ./configure --prefix=$NGX_HOME/nginx \
                    --sbin-path=/usr/sbin/nginx \
                    --conf-path=/mnt/ngx/etc/nginx.conf \
@@ -38,6 +49,7 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
                    --with-http_secure_link_module \
                    --with-http_stub_status_module \
                    --with-mail --with-mail_ssl_module \
+
     && make && make install \
     && cd $NGX_HOME \
     && mv $NGX_HOME/entry /usr/bin/ \
@@ -49,5 +61,6 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
 
 EXPOSE 80 443
 VOLUME ["/mnt/ngx", "/mnt/app"]
+WORKDIR /mnt/app
 ENTRYPOINT ["entry"]
 CMD ["nginx"]
