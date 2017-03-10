@@ -6,8 +6,13 @@ set -e
  #   node-inspector &
 #fi
 
-if [ -f $APP_HOME/package.json ]; then
+#--only={prod[uction]|dev[elopment]}
+if [ -d $APP_HOME/node_modules ]; then
+    npm update --only=$APP_ENV 
+elif [ -f $APP_HOME/package.json ]; then
+    apk add -U build-base python2
     npm install --only=$APP_ENV
+    apk del build-base python2 
 else
     rm -rf $APP_HOME/index.js
     touch $APP_HOME/index.js

@@ -8,11 +8,8 @@ MAINTAINER Palmtale <m@glad.so>
 #USER soglad
 
 ENV NGX_HOME=/usr/local \
-    NGX_VERSION=1.11.10 \
-#  Remember to update the sed  command below!!!    
-    NGX_VER=Motor \
-    NGX_TAG=SoGlad \
-    NGX_VAR=SOGLAD
+    NGX_VERSION=1.11.10
+#  Remember to update the sed  command below!!!
 
 COPY entry $NGX_HOME/
 # product variable/data would be put in /var   etc=/var/conf logs=/var/logs apps=/var/apps
