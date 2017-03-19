@@ -12,7 +12,7 @@ for path in etc lib; do \
 done
 
 if [ ! -f $PHP_DATA/etc/php-fpm.conf ]; then
-    mv $PHP_DATA/etc/php-fpm.conf.default $PHP_DATA/etc/php-fpm.conf
+    cp $PHP_DATA/etc/php-fpm.conf.default $PHP_DATA/etc/php-fpm.conf
 fi
 
 chown -R $PHP_GROUP:$PHP_USER $PHP_DATA

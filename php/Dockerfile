@@ -100,7 +100,7 @@ RUN set -x \
 
 EXPOSE 9000 
 #9001
-VOLUME ["/mnt/php", "/mnt/app"]
-WORKDIR $PHP_APPS
+VOLUME ["/mnt/php"]
+WORKDIR /mnt/php
 ENTRYPOINT ["entry"]
 CMD ["php-fpm", "-y", "/mnt/php/etc/php-fpm.conf", "-R"]
