@@ -1,0 +1,52 @@
+#++++++++++++++++++++++++++++++++++++++
+# SonarQube Docker container in Alpine
+#++++++++++++++++++++++++++++++++++++++
+
+FROM java:8-jre-alpine
+LABEL vendor=Glad.so
+MAINTAINER palmtale<m@glad.so>
+
+ENV SONAR_VERSION=6.3 \
+    SONARQUBE_HOME=/usr/local/sonarqube \
+    SONARQUBE_JDBC_USERNAME=sonar \
+    SONARQUBE_JDBC_PASSWORD=sonar \
+    SONARQUBE_JDBC_URL=jdbc:h2:tcp://localhost:9092/sonar
+
+RUN set -x \
+    && apk add --no-cache gnupg unzip curl \
+    # pub   2048R/D26468DE 2015-05-25
+    #       Key fingerprint = F118 2E81 C792 9289 21DB  CAB4 CFCA 4A29 D264 68DE
+    # uid                  sonarsource_deployer (Sonarsource Deployer) <infra@sonarsource.com>
+    # sub   2048R/06855C1D 2015-05-25
+    && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys F1182E81C792928921DBCAB4CFCA4A29D26468DE \
+    && cd /usr/local \
+    && curl -o sonarqube.zip -fSL https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-$SONAR_VERSION.zip \
+    && curl -o sonarqube.zip.asc -fSL https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-$SONAR_VERSION.zip.asc \
+    && gpg --batch --verify sonarqube.zip.asc sonarqube.zip \
+    && unzip sonarqube.zip \
+    && mv sonarqube-$SONAR_VERSION sonarqube \
+    && rm sonarqube.zip* \
+    && apk del gnupg unzip curl \
+    && rm -rf $SONARQUBE_HOME/conf/* $SONARQUBE_HOME/bin/* /root/.gnupg /var/cache/apk/* \
+
+    && echo -e '#!/bin/sh\n\
+\n\
+set -e\n\
+\n\
+if [ "${1:0:1}" != '-' ]; then\n\
+  exec "$@"\n\
+fi\n\
+\n\
+exec java -jar /usr/local/sonarqube/lib/sonar-application-5.6.jar \n\
+  -server -Xmx512m -Xms128m -XX:MaxPermSize=160m -XX:+HeapDumpOnOutOfMemoryError \n\
+  -Djava.net.preferIPv4Stack=true \n\
+  -Dsonar.jdbc.username="$SONARQUBE_JDBC_USERNAME" \n\
+  -Dsonar.jdbc.password="$SONARQUBE_JDBC_PASSWORD" \n\
+  -Dsonar.jdbc.url="$SONARQUBE_JDBC_URL" \n\
+  "$@"' >> $SONARQUBE_HOME/bin/entry \
+    && chmod u+x $SONARQUBE_HOME/bin/entry
+
+VOLUME $SONARQUBE_HOME/data,$SONARQUBE_HOM/extensions,$SONARQUBE_HOME/logs
+WORKDIR $SONARQUBE_HOME
+EXPOSE 9000
+ENTRYPOINT ["./bin/entry"]
