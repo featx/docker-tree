@@ -1,0 +1,82 @@
+#!/bin/sh
+
+set -e
+
+if [ "${1:0:1}" = '-' ]; then
+	set -- $PG_USER "$@"
+fi
+
+mkdir -p $PG_DATA
+
+# Init
+if [ ! -d $PG_DATA/data ]; then
+	cp -r /tmp/* $PG_DATA/
+	mkdir -p $PG_DATA/log
+  mv /etc/postgresql  $PG_DATA/
+	ln -s $PG_DATA/postgresql /etc/postgresql
+	chmod 700 $PG_DATA
+  chown -R $PG_GROUP:$PG_USER $PG_HOME
+	chown -R $PG_GROUP:$PG_USER $PG_DATA
+
+	if [ "$PGPASSWORD" ]; then
+		pass="PASSWORD '$PGPASSWORD'"
+		authMethod=md5
+	else
+		cat >&2 <<-'EOWARN'
+			****************************************************
+			WARNING: No password has been set for the database.
+							 This will allow anyone with access to the
+							 Postgres port to access your database. In
+							 Docker's default configuration, this is
+							 effectively any other container on the same
+							 system.
+							 Use "-e POSTGRES_PASSWORD=password" to set
+							 it in "docker run".
+			****************************************************
+		EOWARN
+
+		pass=
+		authMethod=trust
+	fi
+
+	{ echo; echo "host all all 0.0.0.0/0 $authMethod"; } >> "$PGDATA/pg_hba.conf"
+
+	gosu $PG_USER pg_ctl -D $PGDATA \
+	  -l $PG_DATA/log/logfile \
+		-o "-c listen_addresses='localhost'" \
+		-w start
+
+	if [ "$PGDATABASE" != 'postgres' ]; then
+	  psql -v ON_ERROR_STOP=1 --username $PGUSER <<-EOSQL
+		  CREATE DATABASE "$PGDATABASE" ;
+		EOSQL
+		echo
+	fi
+
+	if [ "$PGUSER" = 'postgres' ]; then
+	  op='ALTER'
+	else
+		op='CREATE'
+	fi
+
+	psql -v ON_ERROR_STOP=1 --username $PGUSER <<-EOSQL
+		$op USER "$PGUSER" WITH SUPERUSER $pass ;
+	EOSQL
+	echo
+	# psql -v ON_ERROR_STOP=1 --username $PGUSER --dbname $PGDATABASE
+	# echo
+	gosu $PG_USER pg_ctl -D "$PGDATA" \
+	  -m fast \
+		-w stop
+
+	echo
+	echo 'PostgreSQL init process complete; ready for start up.'
+	echo
+fi
+
+# Run
+if [ "$1" = 'postgres' ]; then
+	exec gosu $PG_USER "$@"
+else
+  exec "$@"
+fi
