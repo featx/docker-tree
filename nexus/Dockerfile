@@ -13,7 +13,7 @@ ENV GOSU_VERSION=1.7 \
     NEXUS_GROUP=nexus \
     NEXUS_USER=nexus \
     CONTEXT_PATH=/
-COPY entry /usr/local/bin/
+
 RUN set -ex \
     && addgroup -g 1000 $NEXUS_GROUP && adduser -G $NEXUS_GROUP -u 1000 -s /sbin/nologin -D -H $NEXUS_USER \
     && apk add -U wget gnupg \
@@ -44,6 +44,28 @@ RUN set -ex \
     -i $NEXUS_HOME/bin/nexus.vmoptions \
     && apk del wget gnupg \
     && rm -rf /var/cache/apk/* nexus-$NEXUS_VERSION nexus.tar.gz \
+    
+    && echo -e '#!/bin/sh\n\
+\n\
+set -e\n\
+\n\
+if [ "${1:0:1}" = '-' ]; then\n\
+    set -- nexus "$@"\n\
+fi\n\
+\n\
+if [ ! -d $NEXUS_DATA/etc ]; then\n\
+    mv $NEXUS_HOME/etc $NEXUS_DATA/\n\
+        ln -s $NEXUS_DATA/etc $NEXUS_HOME/etc\n\
+fi\n\
+\n\
+# mkdir -p $NEXUS_DATA/tmp $NEXUS_DATA/log\n\
+chown -R $NEXUS_GROUP:$NEXUS_USER $NEXUS_DATA\n\
+\n\
+if [ "$1" = './bin/nexus' -a "$(id -u)" = '0' ]; then\n\
+    exec gosu $NEXUS_USER "$@"\n\
+else\n\
+  exec "$@"\n\
+fi' >> /usr/local/bin/entry \
     && chmod u+x /usr/local/bin/entry 
 
 WORKDIR $NEXUS_HOME

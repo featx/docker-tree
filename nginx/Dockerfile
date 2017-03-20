@@ -5,14 +5,12 @@
 FROM alpine
 LABEL vendor=Glad.so
 MAINTAINER Palmtale <m@glad.so>
-#USER soglad
 
 ENV NGX_HOME=/usr/local \
     NGX_VERSION=1.11.10
-#  Remember to update the sed  command below!!!
 
-COPY entry $NGX_HOME/
-# product variable/data would be put in /var   etc=/var/conf logs=/var/logs apps=/var/apps
+#  Remember to update the sed  command below!!!
+#   product variable/data would be put in /var   etc=/var/conf logs=/var/logs apps=/var/apps
 
 RUN set -ex && mkdir -p $NGX_HOME/src \
     && apk add --no-cache -U pcre openssl \
@@ -48,14 +46,26 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
                    --with-mail --with-mail_ssl_module \
 
     && make && make install \
-    && cd $NGX_HOME \
-    && mv $NGX_HOME/entry /usr/bin/ \
-    && chmod u+x /usr/bin/entry \
+
     && mkdir -p /tmp/etc && mv /mnt/ngx/etc/* /tmp/etc/ \
     && apk del ca-certificates wget make gcc g++ linux-headers paxctl libgcc libstdc++ gnupg \
                pcre-dev openssl-dev tar \
-    && rm -rf /var/cache/apk/* $NGX_HOME/Dockfile $NGX_HOME/src $NGX_HOME/nginx/html $NGX_HOME/nginx/logs
+    && rm -rf /var/cache/apk/* $NGX_HOME/Dockfile $NGX_HOME/src $NGX_HOME/nginx/html $NGX_HOME/nginx/logs \
 
+    && echo -e '#!/bin/sh\n\
+\n\
+set -e\n\
+\n\
+mkdir -p /mnt/ngx/log /mnt/ngx/etc\n\
+\n\
+if [ ! -f /mnt/ngx/etc/nginx.conf ]; then\n\
+    cp -r /tmp/etc/*  /mnt/ngx/etc/\n\
+fi\n\
+\n\
+exec "$@"' >> /usr/bin/entry \
+    && chmod u+x /usr/bin/entry
+
+#USER soglad
 EXPOSE 80 443
 VOLUME ["/mnt/ngx"]
 WORKDIR /mnt/ngx

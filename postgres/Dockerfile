@@ -59,7 +59,7 @@ RUN set -ex \
 
   ## destructor
   && apk del build-base wget gnupg ca-certificates \
-             readline-dev openssl-dev zlib-dev libxml2-dev openldap-dev libxslt-dev \
+             readline-dev zlib-dev libxml2-dev openldap-dev libxslt-dev \
   && rm -rf "$GNUPGHOME" $PG_HOME/postgresql* /usr/local/bin/gosu.asc /var/cache/apk/* \
   && mkdir $PGDATA && chown -R $PG_GROUP:$PG_USER $PG_DATA \
   && eval "gosu $PG_USER initdb -D $PGDATA" \

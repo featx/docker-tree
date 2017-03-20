@@ -36,7 +36,6 @@ ENV PHP_HOME=/usr/local \
     --with-png-dir=/usr/local --with-libxml-dir=/usr/local \
     --with-vpx-dir=/usr/local --with-xpm-dir=/usr/local"
 # --enable-debug
-COPY entry $PHP_HOME/bin/
 
 RUN set -x \
     && apk add --no-cache -U libmemcached \
@@ -96,7 +95,32 @@ RUN set -x \
                 libc-dev curl-dev openssl-dev libmcrypt-dev libxml2-dev gmp-dev postgresql-dev \
                 gettext-dev libedit-dev jpeg-dev libxpm-dev libpng-dev libvpx-dev freetype-dev \
     && rm -rf $GNUPGHOME /var/cache/apk/* $PHP_HOME/src/* \
+
+    && echo -e '#!/bin/sh\n\
+\n\
+set -e\n\
+\n\
+for path in etc lib\n\
+do\n\
+    if [ ! -d $PHP_DATA/$path ]; then\n\
+        mkdir -p $PHP_DATA/$path\n\
+        cp -r /tmp/$path/* $PHP_DATA/$path/\n\
+    fi\n\
+done\n\
+\n\
+if [ ! -f $PHP_DATA/etc/php-fpm.conf ]; then\n\
+    cp $PHP_DATA/etc/php-fpm.conf.default $PHP_DATA/etc/php-fpm.conf\n\
+fi\n\
+\n\
+chown -R $PHP_GROUP:$PHP_USER $PHP_DATA\n\
+\n\
+rm -rf $PHP_HOME/etc $PHP_HOME/lib/php/extensions/$PHP_EXT\n\
+ln -s $PHP_DATA/etc $PHP_HOME/etc\n\
+ln -s $PHP_DATA/lib $PHP_HOME/lib/php/extensions/$PHP_EXT\n\
+\n\
+exec "$@"' >> /usr/local/bin/entry \
     && chmod u+x /usr/local/bin/entry
+
 
 EXPOSE 9000 
 #9001

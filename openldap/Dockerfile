@@ -17,9 +17,8 @@ ENV OLDAP_HOME=/usr/local \
     --enable-meta --enable-passwd --enable-null --enable-ldap --enable-monitor"
 # It's not required gosu, because of "slapd -u"
 
-COPY entry /usr/bin/
 RUN set -x \
-    && chmod u+x /usr/bin/entry \
+    
     && addgroup -g 101 -S $OLDAP_GROUP && adduser -u 100 -D -S -G $OLDAP_GROUP $OLDAP_USER \
     && apk add -U build-base m4 wget ca-certificates gnupg db-dev openssl-dev cyrus-sasl-dev unixodbc-dev \
                   db openssl groff cyrus-sasl unixodbc \
@@ -40,6 +39,22 @@ RUN set -x \
     && apk del build-base m4 wget ca-certificates gnupg db-dev openssl-dev cyrus-sasl-dev unixodbc-dev \
     && rm -rf /var/cache/apk/* openldap.tar.gz openldap-$OLDAP_VERSION libtool-2.4.6.tar.gz \
     && mv $OLDAP_DATA/* /tmp/
+
+    && echo -e '#!/bin/sh\n\
+\n\
+ulimit -n 8192\n\
+\n\
+set -e\n\
+\n\
+if [ ! -d $OLDAP_DATA/etc ]; then\n\
+    mv /tmp/* $OLDAP_DATA/\n\
+fi\n\
+\n\
+chown -R $OLDAP_GROUP:$OLDAP_USER $OLDAP_HOME\n\
+chown -R $OLDAP_GROUP:$OLDAP_USER $OLDAP_DATA\n\
+\n\
+exec "$@"' >> /usr/bin/entry \
+    && chmod u+x /usr/bin/entry 
 
 WORKDIR $OLDAP_HOME
 EXPOSE 389
