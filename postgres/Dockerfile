@@ -1,73 +1,82 @@
-#++++++++++++++++++++++++++++++++++++++
-# Postgres Docker container in Alpine
-#++++++++++++++++++++++++++++++++++++++
+#+++++++++++++++++++++++++++++++++++++#
+# Postgres Docker container in Alpine #
+#+++++++++++++++++++++++++++++++++++++#
 
 FROM alpine
 LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
 ENV LANG=en_US.utf8 \
-    GOSU_VERSION=1.7 \
     PG_MAJOR=9.6 \
     PG_VERSION=9.6.2 \
     PG_HOME=/usr/local \
-    PG_DATA=/mnt \
     PG_GROUP=postgres \
     PG_USER=postgres \
-    PGDATA=/mnt/data \
+    PG_DATA=/mnt/postgres \
+
+    PGDATA=/mnt/postgres/data \
     PGDATABASE=postgres \
     PGUSER=postgres \
-    PGPASSWORD=postgres \
-    PG_COMPILE_ARGS="--prefix=$PG_HOME \
-      --datarootdir=/mnt --sysconfdir=/mnt/data \
-      --with-openssl --with-ldap \
-      --with-libxslt --with-libxml"
+    PGPASSWORD=postgsres
 
-# Hidden ENV PG_CONF=/mnt/data PG_LOGS=/mnt/log
-
-COPY entry /usr/bin/
+COPY entry ${PG_HOME}/bin/
 RUN set -ex \
-  && chmod u+x /usr/bin/entry \
-  && apk add -U build-base wget gnupg ca-certificates \
-                readline-dev zlib-dev libxml2-dev openldap-dev libxslt-dev \
-                glib-lang readline zlib libxml2 openldap \
+  && chmod u+x /usr/local/bin/entry \
+  && apk add --no-cache --virtual .build-deps \
+    wget gnupg ca-certificates openssl build-base coreutils flex \
+    libc-dev libedit-dev libxml2-dev libxslt-dev util-linux-dev zlib-dev \
+    openldap-dev python-dev python3-dev perl-dev \
+  # perl-dev krb5-dev openssl-dev tcl-dev gettext-dev \
 
-  # Grab gosu for easy step-down from root
-  && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
-	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc" \
-	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
-	&& gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
-	&& chmod +x /usr/local/bin/gosu \
-	&& gosu nobody true \
+  && export PG_COMPILE_ARGS="--prefix=${PG_DATA} --exec-prefix=${PG_HOME} \
+      --includedir=${PG_HOME}/include --disable-rpath \
+      --enable-integer-datetimes --enable-thread-safety --enable-tap-tests \ 
+      --with-uuid=e2fs -with-gnu-ld --with-pgport=5432 --with-openssl \
+      --with-includes=/usr/local/include --with-libraries=/usr/local/lib \
+      --with-system-tzdata=/usr/share/zoneinfo --with-libxml -with-libxslt \
+      --with-python --with-ldap" \
+# These make our image abnormally large (at least 100MB larger), 
+#  which seems uncouth for an "Alpine" (ie, "small") variant :)
+#   --with-krb5 --with-perl --enable-nls=zh_CN.UTF-8' \
+#   --with-gssapi  --with-tcl \
+#   --with-pam --enable-debug \
 
   # Wget source package and install postgresql
-  && cd $PG_HOME \
-  && wget -O postgresql.tar.gz https://ftp.postgresql.org/pub/source/v$PG_VERSION/postgresql-$PG_VERSION.tar.gz \
-  && wget -O postgresql.tar.gz.sha256 https://ftp.postgresql.org/pub/source/v$PG_VERSION/postgresql-$PG_VERSION.tar.gz.sha256 \
-  && grep postgresql-$PG_VERSION.tar.gz postgresql-$PG_VERSION.tar.gz.sha256 | sha256sum -c - \
-  && tar -zxf postgresql.tar.gz && mv postgresql-$PG_VERSION postgresql \
+  && cd ${PG_HOME} \
+  && wget https://ftp.postgresql.org/pub/source/v${PG_VERSION}/postgresql-${PG_VERSION}.tar.gz \
+  && wget https://ftp.postgresql.org/pub/source/v${PG_VERSION}/postgresql-${PG_VERSION}.tar.gz.sha256 \
+  && grep postgresql-${PG_VERSION}.tar.gz postgresql-${PG_VERSION}.tar.gz.sha256 | sha256sum -c - \
+  && tar -zxf postgresql-${PG_VERSION}.tar.gz && mv postgresql-${PG_VERSION} postgresql \
   && cd postgresql \
-  && ./configure $PG_COMPILE_ARGS && make world && make install-world \
-  && cd $PG_HOME \
-
+  && awk '$1 == "#define" && $2 == "DEFAULT_PGSOCKET_DIR" && $3 == "\"/tmp\"" { $3 = "\"/var/run/postgresql\""; print; next } { print }' src/include/pg_config_manual.h > src/include/pg_config_manual.h.new \
+  && grep '/var/run/postgresql' src/include/pg_config_manual.h.new \
+  && mv src/include/pg_config_manual.h.new src/include/pg_config_manual.h \
+  && ./configure ${PG_COMPILE_ARGS} \
+  && make -j "$(nproc)" world \
+  && make install-world \
+  && make -C contrib install \
+  && runDeps="$( scanelf --needed --nobanner --recursive /usr/local \
+      | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+      | sort -u \
+      | xargs -r apk info --installed \
+      | sort -u )" \
+  && cd ${PG_HOME} \
   # make the sample config easier to munge (and "correct by default")
-  && sed -ri "s!^#?(listen_addresses)\s*=\s*\S+.*!\1 = '*'!" $PG_DATA/postgresql/postgresql.conf.sample \
-  && sed -ri "s!^#?(data_directory)\s*=\s*\S+.*!\1 = '/mnt/data'!" $PG_DATA/postgresql/postgresql.conf.sample \
-  && sed -ri "s!^#?(hba_file)\s*=\s*\S+.*!\1 = '/mnt/data/pg_hba.conf'!" $PG_DATA/postgresql/postgresql.conf.sample \
-  && sed -ri "s!^#?(ident_file)\s*=\s*\S+.*!\1 = '/mnt/data/pg_ident.conf'!" $PG_DATA/postgresql/postgresql.conf.sample \
-
+  && sed -ri "s!^#?(listen_addresses)\s*=\s*\S+.*!\1 = '*'!" ${PG_DATA}/share/postgresql.conf.sample \
+  && mkdir -p /var/run/postgresql \
+  && chown -R ${PG_GROUP}:${PG_USER} /var/run/postgresql \
+  && chmod g+s /var/run/postgresql \
+  
   ## destructor
-  && apk del build-base wget gnupg ca-certificates \
-             readline-dev zlib-dev libxml2-dev openldap-dev libxslt-dev \
-  && rm -rf "$GNUPGHOME" $PG_HOME/postgresql* /usr/local/bin/gosu.asc /var/cache/apk/* \
-  && mkdir $PGDATA && chown -R $PG_GROUP:$PG_USER $PG_DATA \
-  && eval "gosu $PG_USER initdb -D $PGDATA" \
-  && mv $PG_DATA/postgresql /etc/ \
-  && mv $PG_DATA/* /tmp/
+  && apk del .build-deps \
+  && apk add --no-cache --virtual .postgresql-rundeps ${runDeps} bash su-exec tzdata \
+  && rm -rf "${GNUPGHOME}" /var/cache/apk/* \
+    ${PG_HOME}/postgresql* ${PG_DATA}/share/doc ${PG_DATA}/share/man \
+  && find /usr/local -name '*.a' -delete \
+  && mv ${PG_DATA}/* /tmp/
 
-VOLUME $PG_DATA
+WORKDIR ${PG_HOME}
+VOLUME ${PG_DATA}
 EXPOSE 5432
-
 ENTRYPOINT ["entry"]
 CMD ["postgres"]

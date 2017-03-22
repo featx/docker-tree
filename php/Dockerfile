@@ -13,7 +13,7 @@ ENV PHP_HOME=/usr/local \
     PHP_DATA=/mnt/php \
     PHP_APPS=/mnt/lib \
     PHP_VERSION=7.1.3 \
-#   5.6.30 7.0.16 7.1.1 
+#   5.6.30 7.0.17 7.1.3 
     PHP_EXT=no-debug-non-zts-20160303 \
     #debug-non-zts-20160303 (7.1)\
     #debug-non-zts-20151012 (7.0)\
@@ -21,8 +21,8 @@ ENV PHP_HOME=/usr/local \
     PHP_USER=www \
     PHP_GROUP=www \
     COMPOSER_VERSION=1.4.1 \
-    #XDEBUG_VERSION=2.5.1 \
-    #PHPUNIT_VERSION=6.0.10 \
+#    XDEBUG_VERSION=2.5.1 \
+#    PHPUNIT_VERSION=6.0.10 \
     COMPOSER_MIRROR=https://packagist.phpcomposer.com \
     #5.7.X, 6.1.0
     PHP_COMPILE_ARGS="--enable-fpm --with-fpm-group=$PHP_GROUP --with-fpm-user=$PHP_USER \
@@ -81,11 +81,11 @@ RUN set -x \
 	  && apk add --no-cache --virtual .php-rundeps $runDeps \
     && mv php.ini-development $PHP_DATA/etc/php.ini \
     && composer config -g repo.packagist composer $COMPOSER_MIRROR \
-  #  && cd $PHP_HOME/src \
-  #  && tar -zxf xdebug.tgz && cd xdebug-$XDEBUG_VERSION \
-  #  && $PHP_HOME/bin/phpize \
-  #  && ./configure --with-php-config=$PHP_HOME/bin/php-config \
-  #  && make && make install \
+#    && cd $PHP_HOME/src \
+#    && tar -zxf xdebug.tgz && cd xdebug-$XDEBUG_VERSION \
+#    && $PHP_HOME/bin/phpize \
+#    && ./configure --with-php-config=$PHP_HOME/bin/php-config \
+#    && make && make install \
     && cd $PHP_HOME \
     && mkdir -p /tmp/etc /tmp/lib \
     && mv $PHP_HOME/etc/* /tmp/etc/ && mv $PHP_HOME/lib/php/extensions/$PHP_EXT/* /tmp/lib/ \
@@ -125,6 +125,6 @@ exec "$@"' >> /usr/local/bin/entry \
 EXPOSE 9000 
 #9001
 VOLUME ["/mnt/php"]
-WORKDIR /mnt/php
+WORKDIR $PHP_HOME
 ENTRYPOINT ["entry"]
 CMD ["php-fpm", "-y", "/mnt/php/etc/php-fpm.conf", "-R"]
