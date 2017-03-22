@@ -11,8 +11,8 @@ MAINTAINER palmtale<m@glad.so>
 
 ENV PHP_HOME=/usr/local \
     PHP_DATA=/mnt/php \
-    PHP_APPS=/mnt/app \
-    PHP_VERSION=7.1.1 \
+    PHP_APPS=/mnt/lib \
+    PHP_VERSION=7.1.3 \
 #   5.6.30 7.0.16 7.1.1 
     PHP_EXT=no-debug-non-zts-20160303 \
     #debug-non-zts-20160303 (7.1)\
@@ -20,9 +20,9 @@ ENV PHP_HOME=/usr/local \
     #debug-non-zts-20131226 (5.6)\
     PHP_USER=www \
     PHP_GROUP=www \
-    COMPOSER_VERSION=1.3.2 \
-    XDEBUG_VERSION=2.5.0 \
-    PHPUNIT_VERSION=6.0.8 \
+    COMPOSER_VERSION=1.4.1 \
+    #XDEBUG_VERSION=2.5.1 \
+    #PHPUNIT_VERSION=6.0.10 \
     COMPOSER_MIRROR=https://packagist.phpcomposer.com \
     #5.7.X, 6.1.0
     PHP_COMPILE_ARGS="--enable-fpm --with-fpm-group=$PHP_GROUP --with-fpm-user=$PHP_USER \
@@ -54,7 +54,7 @@ RUN set -x \
 #    && wget -O xdebug.tgz https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz \
 #    && mv composer phpunit $PHP_HOME/bin && chmod u+x $PHP_HOME/bin/* \
     && mv composer $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
-    && echo "b3565b0c1441064eba204821608df1ec7367abff881286898d900c2c2a5ffe70 *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
+    && echo "e4887c2634778e37fd962fbdf5c4a7d32cd708482fe07b448804625570cb0bb0 *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
 	  && export GNUPGHOME=$(mktemp -d) \
     && for key in A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E; do \
 		       gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
