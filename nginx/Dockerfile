@@ -7,7 +7,7 @@ LABEL vendor=Glad.so
 MAINTAINER Palmtale <m@glad.so>
 
 ENV NGX_HOME=/usr/local \
-    NGX_VERSION=1.11.10
+    NGX_VERSION=1.11.11
 
 #  Remember to update the sed  command below!!!
 #   product variable/data would be put in /var   etc=/var/conf logs=/var/logs apps=/var/apps
@@ -21,8 +21,8 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
     && tar -zxf nginx.tar.gz && mv nginx-$NGX_VERSION nginx \
     && cd nginx \
 
-    && sed -i '12s/1011010/1000000/' src/core/nginx.h \
-    && sed -i '13s/1.11.10/Motor/' src/core/nginx.h \
+    && sed -i '12s/1011011/1000000/' src/core/nginx.h \
+    && sed -i '13s/1.11.11/Motor/' src/core/nginx.h \
     && sed -i '14s/nginx/SoGlad/' src/core/nginx.h \
     && sed -i '49s/nginx/SoGlad/' src/http/ngx_http_header_filter_module.c \
     && sed -i '36s/nginx/SoGlad/' src/http/ngx_http_special_response.c \
@@ -56,7 +56,7 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
 \n\
 set -e\n\
 \n\
-mkdir -p /mnt/ngx/log /mnt/ngx/etc\n\
+mkdir -p /mnt/ngx/log /mnt/ngx/etc /mnt/lib\n\
 \n\
 if [ ! -f /mnt/ngx/etc/nginx.conf ]; then\n\
     cp -r /tmp/etc/*  /mnt/ngx/etc/\n\
