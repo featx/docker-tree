@@ -17,7 +17,7 @@ ENV LANG=en_US.utf8 \
     PGDATA=/mnt/postgres/data \
     PGDATABASE=postgres \
     PGUSER=postgres \
-    PGPASSWORD=postgsres
+    PGPASSWORD=postgres
 
 COPY entry ${PG_HOME}/bin/
 RUN set -ex \
