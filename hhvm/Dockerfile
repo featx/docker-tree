@@ -24,7 +24,7 @@
 ## So that it is required to add param --security-opt seccomp:unconfined (docker run)for running container from this image.
 ## It means do not use the default seccomp profile, other words, open all of the forbidden syscalls.
 
-FROM opensuse:42.1
+FROM opensuse:42.2
 LABEL vendor=Glad.so
 MAINTAINER palmtale<m@glad.so>
 
