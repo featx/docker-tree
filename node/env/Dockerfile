@@ -2,7 +2,7 @@
 # Node.js Running app Docker container in Alpine #
 #++++++++++++++++++++++++++++++++++++++++++++++++#
 
-FROM soglad/node
+FROM soglad/node:7.9.0-alpine
 LABEL vendor=Glad.so
 MAINTAINER palmtale<palmtale@glad.so>
 

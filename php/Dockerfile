@@ -12,8 +12,8 @@ MAINTAINER palmtale<m@glad.so>
 ENV PHP_HOME=/usr/local \
     PHP_DATA=/mnt/php \
     PHP_APPS=/mnt/lib \
-    PHP_VERSION=7.1.3 \
-#   5.6.30 7.0.17 7.1.3 
+    PHP_VERSION=7.1.4 \
+#   5.6.30 7.0.17 7.1.4 
     PHP_EXT=no-debug-non-zts-20160303 \
     #debug-non-zts-20160303 (7.1)\
     #debug-non-zts-20151012 (7.0)\
@@ -22,7 +22,7 @@ ENV PHP_HOME=/usr/local \
     PHP_GROUP=www \
     COMPOSER_VERSION=1.4.1 \
 #    XDEBUG_VERSION=2.5.1 \
-#    PHPUNIT_VERSION=6.0.10 \
+#    PHPUNIT_VERSION=6.1.0 \
     COMPOSER_MIRROR=https://packagist.phpcomposer.com \
     #5.7.X, 6.1.0
     PHP_COMPILE_ARGS="--enable-fpm --with-fpm-group=$PHP_GROUP --with-fpm-user=$PHP_USER \
@@ -35,7 +35,7 @@ ENV PHP_HOME=/usr/local \
     --with-freetype-dir=/usr/local --with-jpeg-dir=/usr/local \
     --with-png-dir=/usr/local --with-libxml-dir=/usr/local \
     --with-vpx-dir=/usr/local --with-xpm-dir=/usr/local"
-# --enable-debug
+#   --enable-debug
 
 RUN set -x \
     && apk add --no-cache -U libmemcached \
@@ -52,12 +52,12 @@ RUN set -x \
     && wget -O composer https://getcomposer.org/download/$COMPOSER_VERSION/composer.phar \
 #    && wget -O phpunit https://phar.phpunit.de/phpunit-$PHPUNIT_VERSION.phar \
 #    && wget -O xdebug.tgz https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz \
-#    && mv composer phpunit $PHP_HOME/bin && chmod u+x $PHP_HOME/bin/* \
+#    && mv composer phpunit $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
     && mv composer $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
-    && echo "e4887c2634778e37fd962fbdf5c4a7d32cd708482fe07b448804625570cb0bb0 *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
-	  && export GNUPGHOME=$(mktemp -d) \
+    && echo "71514386adf3e963df087c2044a0b3747900b8b1fc8da3a99f0a0ae9180d300b *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
+	&& export GNUPGHOME=$(mktemp -d) \
     && for key in A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E; do \
-		       gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
+		       gpg --keyserver pgp.mit.edu --recv-keys "$key"; \
 	     done \
 	  && gpg --batch --verify php-$PHP_VERSION.tar.xz.asc php-$PHP_VERSION.tar.xz \
 

@@ -7,7 +7,7 @@ LABEL vendor=Glad.so
 MAINTAINER Palmtale <m@glad.so>
 
 ENV NGX_HOME=/usr/local \
-    NGX_VERSION=1.11.13
+    NGX_VERSION=1.12.0
 
 #  Remember to update the sed  command below!!!
 #   product variable/data would be put in /var   etc=/var/conf logs=/var/logs apps=/var/apps
@@ -21,8 +21,8 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
     && tar -zxf nginx.tar.gz && mv nginx-$NGX_VERSION nginx \
     && cd nginx \
 
-    && sed -i '12s/1011013/1000000/' src/core/nginx.h \
-    && sed -i '13s/1.11.13/Motor/' src/core/nginx.h \
+    && sed -i '12s/1012000/1000000/' src/core/nginx.h \
+    && sed -i '13s/1.12.0/Motor/' src/core/nginx.h \
     && sed -i '14s/nginx/SoGlad/' src/core/nginx.h \
     && sed -i '49s/nginx/SoGlad/' src/http/ngx_http_header_filter_module.c \
     && sed -i '36s/nginx/SoGlad/' src/http/ngx_http_special_response.c \
