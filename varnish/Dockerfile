@@ -6,8 +6,8 @@ FROM alpine
 LABEL vendor=SoGlad
 MAINTAINER Palm Tale <palmtale@glad.so>
 
-ENV VNS_HOME=/usr/local \
-    VNS_VERSION=5.1.1
+ARG VNS_HOME=/usr/local
+ARG VNS_VERSION=5.1.1
 
 RUN set -ex \
     && apk add --no-cache --virtual .build-deps \

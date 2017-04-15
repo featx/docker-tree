@@ -16,6 +16,21 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
                linux-headers \
     && apk add --no-cache --virtual .run-deps \
                 libgcc pcre openssl \
+    # Install luajit    
+    && cd $NGX_HOME/src \ 
+    && wget -O LuaJIT-2.0.4.tar.gz http://luajit.org/download/LuaJIT-2.0.4.tar.gz \
+    && tar -zxvf LuaJIT-2.0.4.tar.gz \
+    && cd LuaJIT-2.0.4 && make && make install \
+    && export LUAJIT_LIB=/usr/local/lib \
+    && export LUAJIT_INC=/usr/local/include/luajit-2.0 \
+    && cd /usr/local/lib && mv libluajit-5.1.so libluajit-5.1.so.2 \
+    
+    # Download nginx modules 
+    && cd $NGX_HOME/src \
+    && wget https://github.com/simpl/ngx_devel_kit/archive/v0.3.0.tar.gz \
+    && git clone https://github.com/openresty/lua-nginx-module.git \
+    && tar -zxvf v0.3.0.tar.gz \
+    #&& tar -zxvf v0.10.8.tar.gz \
     
     # Install Nginx
     && wget http://nginx.org/download/nginx-$NGX_VERSION.tar.gz \
@@ -33,6 +48,7 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
     && sed -i '22s/"NGINX/"SOGLAD/' src/core/nginx.h \
     
     && ./configure --prefix=$NGX_HOME/nginx \
+                   --with-ld-opt="-Wl,-rpath,/usr/local/lib/" \
                    --sbin-path=/usr/sbin/nginx \
                    --conf-path=/mnt/ngx/etc/nginx.conf \
                    --error-log-path=/mnt/ngx/log/error.log \
@@ -48,6 +64,8 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
                    --with-http_secure_link_module \
                    --with-http_stub_status_module \
                    --with-mail --with-mail_ssl_module \
+                   --add-module=$NGX_HOME/src/ngx_devel_kit-0.3.0 \
+                   --add-module=$NGX_HOME/src/lua-nginx-module \
 
     && make && make install \
 

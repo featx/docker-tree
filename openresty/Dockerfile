@@ -1,38 +1,42 @@
-#++++++++++++++++++++++++++++++++++#
-# Nginx Docker container in Alpine #
-#++++++++++++++++++++++++++++++++++#
+#++++++++++++++++++++++++++++++++++++++#
+# Openresty Docker container in Alpine #
+#++++++++++++++++++++++++++++++++++++++#
 
 FROM alpine
 LABEL vendor=Glad.so
 MAINTAINER Palmtale <palmtale@glad.so>
 
-ARG NGX_HOME=/usr/local
-ARG NGX_VERSION=1.12.0
+ARG RESTY_HOME=/usr/local
+ARG NGX_VERSION=1.11.2
+ARG RESTY_SUFVER=.2
 
-RUN set -ex && mkdir -p $NGX_HOME/src \
+RUN set -ex && mkdir -p $RESTY_HOME/src \
     && apk add --no-cache --virtual .build-deps \
                build-base wget tar gnupg git ca-certificates \
                pcre-dev openssl-dev libstdc++ paxctl \
-               linux-headers \
+               linux-headers perl \
     && apk add --no-cache --virtual .run-deps \
                 libgcc pcre openssl \
-    
-    # Install Nginx
-    && wget http://nginx.org/download/nginx-$NGX_VERSION.tar.gz \
-    && wget http://nginx.org/download/nginx-$NGX_VERSION.tar.gz.asc \
-    && gpg --keyserver pgpkeys.mit.edu --recv-key 520A9993A1C052F8 \
-    && gpg --verify nginx-$NGX_VERSION.tar.gz.asc nginx-$NGX_VERSION.tar.gz \
-    && tar -zxf nginx-$NGX_VERSION.tar.gz && mv nginx-$NGX_VERSION nginx \
-    && cd nginx \
 
-    && sed -i '12s/1012000/1100000/' src/core/nginx.h \
-    && sed -i '13s/1.12.0/Motor/' src/core/nginx.h \
-    && sed -i '14s/nginx/SoGlad/' src/core/nginx.h \
-    && sed -i '49s/nginx/SoGlad/' src/http/ngx_http_header_filter_module.c \
-    && sed -i '36s/nginx/SoGlad/' src/http/ngx_http_special_response.c \
-    && sed -i '22s/"NGINX/"SOGLAD/' src/core/nginx.h \
+    && cd $RESTY_HOME/src \
+    && wget https://openresty.org/download/openresty-$NGX_VERSION$RESTY_SUFVER.tar.gz \
+    && wget https://openresty.org/download/openresty-$NGX_VERSION$RESTY_SUFVER.tar.gz.asc \ 
+    && gpg --keyserver pgpkeys.mit.edu --recv-key A0E98066 \
+    && gpg --verify openresty-$NGX_VERSION$RESTY_SUFVER.tar.gz.asc openresty-$NGX_VERSION$RESTY_SUFVER.tar.gz \
+    && tar -zxf openresty-$NGX_VERSION$RESTY_SUFVER.tar.gz \
+    && mv openresty-$NGX_VERSION$RESTY_SUFVER openresty \
+    && cd openresty \
+
+    && sed -i '12s/1011002/1100000/' bundle/nginx-$NGX_VERSION/src/core/nginx.h \
+    && sed -i '13s/1.11.2/Motor/' bundle/nginx-$NGX_VERSION/src/core/nginx.h \
+    && sed -i '14s/openresty/SoGlad/' bundle/nginx-$NGX_VERSION/src/core/nginx.h \
+    && sed -i '14s/".2/".R/' bundle/nginx-$NGX_VERSION/src/core/nginx.h \
+    && sed -i '49s/openresty/SoGlad/' bundle/nginx-$NGX_VERSION/src/http/ngx_http_header_filter_module.c \
+    && sed -i '29s/nginx/SoGlad/' bundle/nginx-$NGX_VERSION/src/http/ngx_http_special_response.c \
+    && sed -i '22s/"NGINX/"SOGLAD/' bundle/nginx-$NGX_VERSION/src/core/nginx.h \
     
-    && ./configure --prefix=$NGX_HOME/nginx \
+    && ./configure --with-luajit \
+                   --prefix=$RESTY_HOME/nginx \
                    --sbin-path=/usr/sbin/nginx \
                    --conf-path=/mnt/ngx/etc/nginx.conf \
                    --error-log-path=/mnt/ngx/log/error.log \
@@ -53,7 +57,7 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
 
     && mkdir -p /tmp/etc && mv /mnt/ngx/etc/* /tmp/etc/ \
     && apk del .build-deps \
-    && rm -rf /var/cache/apk/* $NGX_HOME/src $NGX_HOME/nginx/html $NGX_HOME/nginx/logs \
+    && rm -rf /var/cache/apk/* $RESTY_HOME/src $RESTY_HOME/nginx/html $RESTY_HOME/nginx/logs \
 
     && echo -e '#!/bin/sh\n\
 \n\
