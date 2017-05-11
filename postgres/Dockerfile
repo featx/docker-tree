@@ -8,7 +8,7 @@ MAINTAINER palmtale<m@glad.so>
 
 ENV LANG=en_US.utf8 \
     PG_MAJOR=9.6 \
-    PG_VERSION=9.6.2 \
+    PG_VERSION=9.6.3 \
     PG_HOME=/usr/local \
     PG_GROUP=postgres \
     PG_USER=postgres \

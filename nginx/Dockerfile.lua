@@ -7,7 +7,8 @@ LABEL vendor=Glad.so
 MAINTAINER Palmtale <palmtale@glad.so>
 
 ARG NGX_HOME=/usr/local
-ARG NGX_VERSION=1.12.0
+ARG NGX_VERSION=1.13.0
+ARG LUA_JIT_VERSION=2.0.5
 
 RUN set -ex && mkdir -p $NGX_HOME/src \
     && apk add --no-cache --virtual .build-deps \
@@ -18,9 +19,9 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
                 libgcc pcre openssl \
     # Install luajit    
     && cd $NGX_HOME/src \ 
-    && wget -O LuaJIT-2.0.4.tar.gz http://luajit.org/download/LuaJIT-2.0.4.tar.gz \
-    && tar -zxvf LuaJIT-2.0.4.tar.gz \
-    && cd LuaJIT-2.0.4 && make && make install \
+    && wget -O LuaJIT-$LUA_JIT_VERSION.tar.gz http://luajit.org/download/LuaJIT-$LUA_JIT_VERSION.tar.gz \
+    && tar -zxvf LuaJIT-$LUA_JIT_VERSION.tar.gz \
+    && cd LuaJIT-$LUA_JIT_VERSION && make && make install \
     && export LUAJIT_LIB=/usr/local/lib \
     && export LUAJIT_INC=/usr/local/include/luajit-2.0 \
     && cd /usr/local/lib && mv libluajit-5.1.so libluajit-5.1.so.2 \
@@ -40,8 +41,8 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
     && tar -zxf nginx-$NGX_VERSION.tar.gz && mv nginx-$NGX_VERSION nginx \
     && cd nginx \
 
-    && sed -i '12s/1012000/1100000/' src/core/nginx.h \
-    && sed -i '13s/1.12.0/Motor/' src/core/nginx.h \
+    && sed -i '12s/1013000/1100000/' src/core/nginx.h \
+    && sed -i '13s/1.13.0/Motor/' src/core/nginx.h \
     && sed -i '14s/nginx/SoGlad/' src/core/nginx.h \
     && sed -i '49s/nginx/SoGlad/' src/http/ngx_http_header_filter_module.c \
     && sed -i '36s/nginx/SoGlad/' src/http/ngx_http_special_response.c \

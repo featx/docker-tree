@@ -15,8 +15,9 @@ ENV APP_HOME=/mnt/app \
     #5858 INSPECTOR_PORT=8080
 
 COPY entry /usr/local/bin/
-RUN chmod u+x /usr/local/bin/entry 
+RUN chmod u+x /usr/local/bin/entry \
     # It's not required to expose Debug and inspector ports in production env
+    && apk add -U git 
     #&& apk add -U build-base python2 \
     #&& npm install -g node-inspector \
     #&& apk del build-base python2 
