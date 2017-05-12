@@ -18,6 +18,7 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
                 libgcc pcre openssl \
     
     # Install Nginx
+    && cd $NGX_HOME/src \
     && wget http://nginx.org/download/nginx-$NGX_VERSION.tar.gz \
     && wget http://nginx.org/download/nginx-$NGX_VERSION.tar.gz.asc \
     && gpg --keyserver pgpkeys.mit.edu --recv-key 520A9993A1C052F8 \

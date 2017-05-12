@@ -7,18 +7,19 @@ LABEL vendor=Glad.so
 MAINTAINER Palmtale <palmtale@glad.so>
 
 ENV GOCD_HOME=/usr/local/gocd \
-    GOCD_VERSION=17.2.0 \
+    GOCD_VERSION=17.4.0 \
+    GOCD_GROUP=gocd \
     GOCD_USER=gocd
     
 RUN set -ex \
-    && export GOCD_VERSION=17.2.0 && export GOCD_GROUP=gocd && export DAEMON=Y \
+    && export DAEMON=Y \
     && addgroup -g 1000 ${GOCD_GROUP} && adduser -G ${GOCD_GROUP} -u 1000 -s /sbin/nologin -D ${GOCD_USER} \
     && apk add -U wget ca-certificates openjdk8-jre-base bash git mercurial subversion openssh-client \
     
     && cd /tmp \
     && wget -O go-server.zip \
-       https://download.gocd.io/binaries/${GOCD_VERSION}-4587/generic/go-server-${GOCD_VERSION}-4587.zip \
-    && echo "325fa6a05c716cb8a9064cd286a1a33c5556a85e8951200d888b078ab5e622f7 *go-server.zip" | sha256sum -c - \
+       https://download.gocd.io/binaries/${GOCD_VERSION}-4892/generic/go-server-${GOCD_VERSION}-4892.zip \
+    && echo "18e7da698804d329b8b79b8d49f122e8dbc959d4e9019a0946c671559c872fcd *go-server.zip" | sha256sum -c - \
     && mkdir -p ${GOCD_HOME} \
     && unzip go-server.zip \
     && mv go-server-${GOCD_VERSION}/* ${GOCD_HOME}/ \
