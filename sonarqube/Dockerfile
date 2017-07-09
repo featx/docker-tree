@@ -4,7 +4,7 @@
 
 FROM java:8-jre-alpine
 LABEL vendor=Glad.so
-MAINTAINER palmtale<m@glad.so>
+MAINTAINER palmtale<palmtale@glad.so>
 
 ENV SONAR_VERSION=6.3 \
     SONARQUBE_HOME=/usr/local \

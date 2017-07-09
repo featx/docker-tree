@@ -4,7 +4,7 @@
 
 FROM java:8-jre-alpine
 LABEL vendor=Glad.so
-MAINTAINER palmtale<m@glad.so>
+MAINTAINER palmtale<palmtale@glad.so>
 
 ENV GOSU_VERSION=1.7 \
     NEXUS_DATA=/mnt \

@@ -4,17 +4,20 @@
 
 FROM alpine
 LABEL vendor=Glad.so
-MAINTAINER palmtale<m@glad.so>
+MAINTAINER palmtale<palmtale@glad.so>
 
 ENV GOSU_VERSION=1.7 \
-    MONGO_MAJOR=3.3 \
-    MONGO_VERSION=3.3.15 \
+    MONGO_MAJOR=3.4 \
+    MONGO_VERSION=3.4.5 \
     MONGO_HOME=/usr/local
 
 # Source Tar: https://fastdl.mongodb.org/src/mongodb-src-r$MONGO_VERSION.tar.gz
-#              https://codeload.github.com/mongodb/mongo/tar.gz/r3.3.15
+#              https://codeload.github.com/mongodb/mongo/tar.gz/r3.4.5
 # Binary Tar: https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-$MONGO_VERSION.tgz
 
+#src/third_party/asio-master/asio/include/asio/detail/socket_types.hpp
+#src/mongo/util/net/socket_poll.h
+#src/mongo/util/processinfo_linux.cpp
 COPY entry $MONGO_HOME/bin/
 
 RUN set -ex \

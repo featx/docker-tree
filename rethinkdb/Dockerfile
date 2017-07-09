@@ -4,7 +4,7 @@
 
 FROM alpine
 LABEL vendor=Glad.so
-MAINTAINER palmtale<m@glad.so>
+MAINTAINER palmtale<palmtale@glad.so>
 
 ENV RTHINKDB_VERSION 2.3.5 \
     RTHINKDB_HOME=/usr/local

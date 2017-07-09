@@ -4,7 +4,7 @@
 
 FROM alpine
 LABEL vendor=Glad.so
-MAINTAINER palmtale<m@glad.so>
+MAINTAINER palmtale<palmtale@glad.so>
 
 ENV OLDAP_HOME=/usr/local \
     OLDAP_DATA=/mnt \
