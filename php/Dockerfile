@@ -12,7 +12,7 @@ MAINTAINER palmtale<palmtale@glad.so>
 ENV PHP_HOME=/usr/local \
     PHP_DATA=/mnt/php \
     PHP_APPS=/mnt/lib \
-    PHP_VERSION=7.1.6 \
+    PHP_VERSION=7.1.7 \
 #   5.6.30 7.0.19 7.1.6 
     PHP_EXT=no-debug-non-zts-20160303 \
     #debug-non-zts-20160303 (7.1)\
@@ -22,8 +22,8 @@ ENV PHP_HOME=/usr/local \
     PHP_GROUP=www \
     COMPOSER_VERSION=1.4.2 \
 #    XDEBUG_VERSION=2.5.5 \
-#    PHPUNIT_VERSION=6.2.2 \
-#5.7.21, 6.2.2
+#    PHPUNIT_VERSION=6.2.3 \
+# 5.7.21, 6.2.3
     COMPOSER_MIRROR=https://packagist.phpcomposer.com \
    
     PHP_COMPILE_ARGS="--enable-fpm --with-fpm-group=$PHP_GROUP --with-fpm-user=$PHP_USER \
@@ -36,13 +36,14 @@ ENV PHP_HOME=/usr/local \
     --with-freetype-dir=/usr/local --with-jpeg-dir=/usr/local \
     --with-png-dir=/usr/local --with-libxml-dir=/usr/local \
     --with-vpx-dir=/usr/local --with-xpm-dir=/usr/local"
-#   --enable-debug
+#   --enable-debug"
 
 RUN set -x \
-    && apk add --no-cache -U libmemcached \
-    wget ca-certificates gnupg autoconf g++ gcc make re2c file \
-    libc-dev curl-dev libmcrypt-dev jpeg-dev libxpm-dev gmp-dev postgresql-dev gettext-dev \
-    libedit-dev libxml2-dev libressl-dev libssh2-dev libpng-dev libvpx-dev freetype-dev \
+    && apk add --no-cache --virtual .build-deps \
+        wget ca-certificates gnupg autoconf automake re2c file \
+        build-base curl-dev libressl-dev libssh2-dev libmcrypt-dev gettext-dev \
+        libedit-dev libxml2-dev gmp-dev jpeg-dev libxpm-dev libpng-dev libvpx-dev \
+        freetype-dev postgresql-dev libmemcached-dev \
     #
     && addgroup -g 82 -S $PHP_GROUP && adduser -u 82 -D -S -G $PHP_GROUP $PHP_USER \
     && mkdir -p $PHP_HOME/src $PHP_DATA/etc \
@@ -55,7 +56,7 @@ RUN set -x \
 #    && wget -O xdebug.tgz https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz \
 #    && mv composer phpunit $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
     && mv composer $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
-    && echo "01584dc521ab7ec84b502b61952f573652fe6aa00c18d6d844fb9209f14b245b *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
+    && echo "0d42089729be7b2bb0308cbe189c2782f9cb4b07078c8a235495be5874fff729 *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
 	&& export GNUPGHOME=$(mktemp -d) \
     && for key in A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E; do \
 		       gpg --keyserver pgp.mit.edu --recv-keys "$key"; \
@@ -71,31 +72,35 @@ RUN set -x \
 		--with-config-file-scan-dir=$PHP_DATA/etc/conf.d \
 		$PHP_COMPILE_ARGS \
     && make -j"$(getconf _NPROCESSORS_ONLN)" \
-	  && make install \
+	&& make install \
+    
     && { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
-	  && make clean \
-	  && runDeps="$( scanelf --needed --nobanner --recursive /usr/local \
-			  | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-			  | sort -u \
-			  | xargs -r apk info --installed \
-			  | sort -u )" \
-	  && apk add --no-cache --virtual .php-rundeps $runDeps \
+	&& make clean \
+	&& runDeps="$( scanelf --needed --nobanner --recursive /usr/local \
+        | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+		| sort -u \
+		| xargs -r apk info --installed \
+		| sort -u )" \
     && mv php.ini-development $PHP_DATA/etc/php.ini \
-    && composer config -g repo.packagist composer $COMPOSER_MIRROR \
+    
+# Compile and install xdebug
 #    && cd $PHP_HOME/src \
 #    && tar -zxf xdebug.tgz && cd xdebug-$XDEBUG_VERSION \
 #    && $PHP_HOME/bin/phpize \
 #    && ./configure --with-php-config=$PHP_HOME/bin/php-config \
 #    && make && make install \
+
     && cd $PHP_HOME \
     && mkdir -p /tmp/etc /tmp/lib \
     && mv $PHP_HOME/etc/* /tmp/etc/ && mv $PHP_HOME/lib/php/extensions/$PHP_EXT/* /tmp/lib/ \
     && rm -rf $PHP_HOME/etc $PHP_HOME/lib/php/extensions/$PHP_EXT \
+    
+    && composer config -g repo.packagist composer $COMPOSER_MIRROR \
+    
     # distructor
-    && apk del wget gnupg autoconf g++ gcc make re2c file \
-                libc-dev curl-dev openssl-dev libmcrypt-dev libxml2-dev gmp-dev postgresql-dev \
-                gettext-dev libedit-dev jpeg-dev libxpm-dev libpng-dev libvpx-dev freetype-dev \
-    && rm -rf $GNUPGHOME /var/cache/apk/* $PHP_HOME/src/* \
+    && apk del .build-deps \
+    && apk add --no-cache --virtual .php-rundeps $runDeps \
+    && rm -rf $GNUPGHOME /var/cache/apk/* $PHP_HOME/src \
 
     && echo -e '#!/bin/sh\n\
 \n\
@@ -122,9 +127,7 @@ ln -s $PHP_DATA/lib $PHP_HOME/lib/php/extensions/$PHP_EXT\n\
 exec "$@"' >> /usr/local/bin/entry \
     && chmod u+x /usr/local/bin/entry
 
-
-EXPOSE 9000 
-#9001
+EXPOSE 9000
 VOLUME ["/mnt/php"]
 WORKDIR $PHP_HOME
 ENTRYPOINT ["entry"]
