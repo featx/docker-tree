@@ -1,6 +1,6 @@
-#+++++++++++++++++++++++++++++++++++++++#
-#   Rust Docker container in Alpine    #
-#+++++++++++++++++++++++++++++++++++++++#
+#+++++++++++++++++++++++++++++++++++++#
+#   Rust Docker container in Alpine   #
+#+++++++++++++++++++++++++++++++++++++#
 
 FROM alpine
 LABEL vendor=Glad.so

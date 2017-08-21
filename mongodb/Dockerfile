@@ -8,7 +8,7 @@ MAINTAINER palmtale<palmtale@glad.so>
 
 ENV GOSU_VERSION=1.7 \
     MONGO_MAJOR=3.4 \
-    MONGO_VERSION=3.4.5 \
+    MONGO_VERSION=3.5.10 \
     MONGO_HOME=/usr/local
 
 # Source Tar: https://fastdl.mongodb.org/src/mongodb-src-r$MONGO_VERSION.tar.gz
