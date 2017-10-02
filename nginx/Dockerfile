@@ -7,7 +7,7 @@ LABEL vendor=Glad.so
 MAINTAINER Palmtale <palmtale@glad.so>
 
 ARG NGX_HOME=/usr/local
-ARG NGX_VERSION=1.13.3
+ARG NGX_VERSION=1.13.5
 
 RUN set -ex && mkdir -p $NGX_HOME/src \
     && apk add --no-cache --virtual .build-deps \
@@ -26,8 +26,8 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
     && tar -zxf nginx-$NGX_VERSION.tar.gz && mv nginx-$NGX_VERSION nginx \
     && cd nginx \
 
-    && sed -i '12s/1013003/1100000/' src/core/nginx.h \
-    && sed -i '13s/1.13.3/Motor/' src/core/nginx.h \
+    && sed -i '12s/1013005/1100000/' src/core/nginx.h \
+    && sed -i '13s/1.13.5/Motor/' src/core/nginx.h \
     && sed -i '14s/nginx/SoGlad/' src/core/nginx.h \
     && sed -i '49s/nginx/SoGlad/' src/http/ngx_http_header_filter_module.c \
     && sed -i '36s/nginx/SoGlad/' src/http/ngx_http_special_response.c \
