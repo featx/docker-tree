@@ -14,7 +14,7 @@ ENV PHP_HOME=/usr/local \
     PHP_APPS=/mnt/lib \
     PHP_VERSION=7.1.10 \
 #   5.6.31 7.0.24 7.1.10 7.2.0 
-    PHP_EXT=debug-non-zts-20160303 \
+    PHP_EXT=no-debug-non-zts-20160303 \
     #debug-non-zts-20160303 (7.1)\
     #debug-non-zts-20151012 (7.0)\
     #debug-non-zts-20131226 (5.6)\
@@ -35,8 +35,8 @@ ENV PHP_HOME=/usr/local \
     --with-curl --with-mcrypt --with-mhash --with-gettext \
     --with-freetype-dir=/usr/local --with-jpeg-dir=/usr/local \
     --with-png-dir=/usr/local --with-libxml-dir=/usr/local \
-    --with-vpx-dir=/usr/local --with-xpm-dir=/usr/local --enable-debug"
-
+    --with-vpx-dir=/usr/local --with-xpm-dir=/usr/local"
+# --enable-debug
 RUN set -x \
     && apk add --no-cache --virtual .build-deps \
         wget ca-certificates gnupg autoconf automake re2c file \
@@ -51,11 +51,11 @@ RUN set -x \
     && wget -O php-$PHP_VERSION.tar.xz http://php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror \
     && wget -O php-$PHP_VERSION.tar.xz.asc http://php.net/get/php-$PHP_VERSION.tar.xz.asc/from/this/mirror \
     && wget -O composer https://getcomposer.org/download/$COMPOSER_VERSION/composer.phar \
-    && wget -O phpunit https://phar.phpunit.de/phpunit-$PHPUNIT_VERSION.phar \
-    && wget -O xdebug.tgz https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz \
-    && mv composer phpunit $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
-#    && mv composer $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
-    && echo "8943858738604acb33ecedb865d6c4051eeffe4e2d06f3a3c8f794daccaa2aab *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
+#    && wget -O phpunit https://phar.phpunit.de/phpunit-$PHPUNIT_VERSION.phar \
+#    && wget -O xdebug.tgz https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz \
+#    && mv composer phpunit $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
+    && mv composer $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
+    && echo "2b8efa771a2ead0bb3ae67b530ca505b5b286adc873cca9ce97a6e1d6815c50b *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
 	&& export GNUPGHOME=$(mktemp -d) \
     && for key in A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E; do \
 		       gpg --keyserver pgp.mit.edu --recv-keys "$key"; \
@@ -83,11 +83,11 @@ RUN set -x \
     && mv php.ini-development $PHP_DATA/etc/php.ini \
     
 # Compile and install xdebug
-    && cd $PHP_HOME/src \
-    && tar -zxf xdebug.tgz && cd xdebug-$XDEBUG_VERSION \
-    && $PHP_HOME/bin/phpize \
-    && ./configure --with-php-config=$PHP_HOME/bin/php-config \
-    && make && make install \
+#    && cd $PHP_HOME/src \
+#    && tar -zxf xdebug.tgz && cd xdebug-$XDEBUG_VERSION \
+#    && $PHP_HOME/bin/phpize \
+#    && ./configure --with-php-config=$PHP_HOME/bin/php-config \
+#    && make && make install \
 
     && cd $PHP_HOME \
     && mkdir -p /tmp/etc /tmp/lib \

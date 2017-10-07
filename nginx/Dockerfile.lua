@@ -36,7 +36,7 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
     # Install Nginx
     && wget http://nginx.org/download/nginx-$NGX_VERSION.tar.gz \
     && wget http://nginx.org/download/nginx-$NGX_VERSION.tar.gz.asc \
-    && gpg --keyserver pgpkeys.mit.edu --recv-key 520A9993A1C052F8 \
+    && gpg --keyserver pgp.mit.edu --recv-key 520A9993A1C052F8 \
     && gpg --verify nginx-$NGX_VERSION.tar.gz.asc nginx-$NGX_VERSION.tar.gz \
     && tar -zxf nginx-$NGX_VERSION.tar.gz && mv nginx-$NGX_VERSION nginx \
     && cd nginx \
