@@ -6,11 +6,24 @@ FROM alpine
 LABEL vendor=Glad.so
 MAINTAINER palmtale<palmtale@glad.so>
 
-ENV GOSU_VERSION=1.10
+ENV MONGO_HOME=/usr \
+    GOSU_VERSION=1.10
 
 RUN set -ex \
   && apk add -U gnupg wget mongodb ca-certificates \
   && cp -r /etc/conf.d /tmp/ \
+  && echo -e 'net:\n\
+    bindIp: 0.0.0.0\n\
+    port: 27017\n\
+storage:\n\
+    dbPath: /mnt/db\n\
+systemLog:\n\
+    destination: file\n\
+    path: "/mnt/log/mongod.log"\n\
+    logAppend: true\n\
+storage:\n\
+    journal:\n\
+        enabled: true' >> /tmp/conf.d/mongod.conf \
 
   # Grab gosu for easy step-down from root
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
@@ -33,6 +46,10 @@ if [ ! -d /mnt/etc ]; then\n\
     cp -r /tmp/conf.d/* /mnt/etc/\n\
 fi\n\
 \n\
+if [ ! -f /mnt/etc/mongod.conf ]; then\n\
+    cp /tmp/conf.d/mongod.conf /mnt/etc/\n\
+fi\n\
+\n\
 rm -rf /etc/conf.d/mongodb /etc/conf.d/mongos\n\
 ln -s /mnt/etc/mongodb /etc/conf.d/mongodb\n\
 ln -s /mnt/etc/mongos /etc/conf.d/mongos\n\
@@ -49,6 +66,7 @@ else\n\
 fi\n\' >> /usr/bin/entry \
   && chmod u+x /usr/bin/entry 
 
+WORKDIR $MONGO_HOME
 EXPOSE 27017
 ENTRYPOINT ["entry"]
 CMD ["mongod", "--config", "/mnt/etc/mongod.conf"]
