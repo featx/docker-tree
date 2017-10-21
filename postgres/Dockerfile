@@ -7,8 +7,8 @@ LABEL vendor=Glad.so
 MAINTAINER palmtale<palmtale@glad.so>
 
 ENV LANG=en_US.utf8 \
-    PG_MAJOR=9.6 \
-    PG_VERSION=9.6.5 \
+    PG_MAJOR=10.0 \
+    PG_VERSION=10.0 \
     PG_HOME=/usr/local \
     PG_GROUP=postgres \
     PG_USER=postgres \
@@ -25,7 +25,7 @@ RUN set -ex \
   && apk add --no-cache --virtual .build-deps \
     wget gnupg ca-certificates openssl build-base coreutils flex \
     libc-dev libedit-dev libxml2-dev libxslt-dev util-linux-dev zlib-dev \
-    openldap-dev python-dev python3-dev perl-dev \
+    openldap-dev python-dev python3-dev perl-dev perl-utils perl-ipc-run \
   # perl-dev krb5-dev openssl-dev tcl-dev gettext-dev \
 
   && export PG_COMPILE_ARGS="--prefix=${PG_DATA} --exec-prefix=${PG_HOME} \
