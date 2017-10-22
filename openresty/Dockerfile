@@ -8,7 +8,7 @@ MAINTAINER Palmtale <palmtale@glad.so>
 
 ARG RESTY_HOME=/usr/local
 ARG NGX_VERSION=1.11.2
-ARG RESTY_SUFVER=.2
+ARG RESTY_SUFVER=.5
 
 RUN set -ex && mkdir -p $RESTY_HOME/src \
     && apk add --no-cache --virtual .build-deps \
