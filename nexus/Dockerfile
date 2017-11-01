@@ -1,5 +1,5 @@
 #++++++++++++++++++++++++++++++++++++++#
-# Nexus Docker container in Alpine     #
+#   Nexus Docker container in Alpine   #
 #++++++++++++++++++++++++++++++++++++++#
 
 FROM soglad/java:8u131-jre-alpine
@@ -9,7 +9,7 @@ MAINTAINER palmtale<palmtale@glad.so>
 ENV GOSU_VERSION=1.7 \
     NEXUS_DATA=/mnt \
     NEXUS_HOME=/usr/local/nexus \
-    NEXUS_VERSION=3.5.0-02 \
+    NEXUS_VERSION=3.6.0-02 \
     NEXUS_GROUP=nexus \
     NEXUS_USER=nexus \
     CONTEXT_PATH=/
@@ -22,7 +22,7 @@ RUN set -ex \
     && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
     && wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc" \
     && export GNUPGHOME="$(mktemp -d)" \
-    && gpg --keyserver ha.pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
+    && gpg --keyserver pgp.mit.edu --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
     && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
     && rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
     && chmod +x /usr/local/bin/gosu \
