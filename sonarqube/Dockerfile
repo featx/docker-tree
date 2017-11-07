@@ -6,13 +6,25 @@ FROM java:8-jre-alpine
 LABEL vendor=Glad.so
 MAINTAINER palmtale<palmtale@glad.so>
 
-ENV SONAR_VERSION=6.6 \
+ENV GOSU_VERSION=1.10 \
+    SONAR_VERSION=6.6 \
     SONARQUBE_HOME=/usr/local \
     SONARQUBE_DATA=/mnt/sonarqube 
 
 RUN set -x \
-    && apk add --no-cache gnupg unzip curl \
+    && addgroup -g 1000 sonar && adduser -G sonar -u 1000 -s /sbin/nologin -D -H sonar \
+    && apk add --no-cache gnupg unzip curl wget ca-certificates \
     && mkdir -p $SONARQUBE_HOME/bin $SONARQUBE_HOME/lib $SONARQUBE_HOME/web \
+
+     # Grab gosu for easy step-down from root
+    && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
+    && wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc" \
+    && export GNUPGHOME="$(mktemp -d)" \
+    && gpg --keyserver pgp.mit.edu --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
+    && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
+    && rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
+    && chmod +x /usr/local/bin/gosu \
+    && gosu nobody true \
     
     && cd $SONARQUBE_HOME \
     && curl -o sonarqube.zip -fSL https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-$SONAR_VERSION.zip \
@@ -25,16 +37,17 @@ RUN set -x \
     && mv sonarqube/lib/* ./lib/ \
     && mv sonarqube/web/* ./web/ \
     && mv sonarqube/elasticsearch ./ \
+    && sed -i '1s/bash/sh/' ./elasticsearch/bin/elasticsearch \
     && mkdir -p /tmp/sonarqube/ \
     && mv sonarqube/extensions /tmp/sonarqube/ \
-    && apk del gnupg unzip curl \
+    && apk del gnupg unzip wget ca-certificates \
     && rm -rf sonarqube* /root/.gnupg /var/cache/apk/* \
     && echo -e '#!/bin/sh\n\
 \n\
 set -e\n\
 \n\
-if [ "${1:0:1}" != '-' ]; then\n\
-  exec "$@"\n\
+if [ "${1:0:1}" = '-' ]; then\n\
+    set -- sonar "$@"\n\
 fi\n\
 \n\
 if [ ! -d $SONARQUBE_DATA/extensions ]; then\n\
@@ -59,13 +72,17 @@ ln -s $SONARQUBE_DATA/data $SONARQUBE_HOME/\n\
 ln -s $SONARQUBE_DATA/logs $SONARQUBE_HOME/\n\
 ln -s $SONARQUBE_DATA/temp $SONARQUBE_HOME/\n\
 \n\
-exec java -jar $SONARQUBE_HOME/lib/sonar-application-$SONAR_VERSION.jar\n\
-  -server -Xmx512m -Xms128m -XX:MaxPermSize=160m -XX:+HeapDumpOnOutOfMemoryError\n\
-  -Djava.net.preferIPv4Stack=true\n\
-  "$@"' >> $SONARQUBE_HOME/bin/entry \
+chown -R sonar:sonar $SONARQUBE_HOME $SONARQUBE_DATA\n\
+\n\
+if [ "$1" = './bin/nexus' -a "$(id -u)" = '0' ]; then\n\
+    exec gosu sonar java -jar $SONARQUBE_HOME/lib/sonar-application-$SONAR_VERSION.jar -server -Xmx512m -Xms128m -XX:MaxPermSize=160m -XX:+HeapDumpOnOutOfMemoryError -Djava.net.preferIPv4Stack=true "$@"\n\
+else\n\
+    exec java -jar $SONARQUBE_HOME/lib/sonar-application-$SONAR_VERSION.jar -server -Xmx512m -Xms128m -XX:MaxPermSize=160m -XX:+HeapDumpOnOutOfMemoryError -Djava.net.preferIPv4Stack=true "$@"\n\
+fi' >> $SONARQUBE_HOME/bin/entry \
     && chmod u+x $SONARQUBE_HOME/bin/entry
 
 VOLUME $SONARQUBE_DATA
 WORKDIR $SONARQUBE_HOME
 EXPOSE 9000
+HEALTHCHECK –interval=10s –timeout=3s –retries=3 CMD curl http://127.0.0.1:9000/
 ENTRYPOINT ["./bin/entry"]

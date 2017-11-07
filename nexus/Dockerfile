@@ -6,7 +6,7 @@ FROM soglad/java:8u131-jre-alpine
 LABEL vendor=Glad.so
 MAINTAINER palmtale<palmtale@glad.so>
 
-ENV GOSU_VERSION=1.7 \
+ENV GOSU_VERSION=1.10 \
     NEXUS_DATA=/mnt \
     NEXUS_HOME=/usr/local/nexus \
     NEXUS_VERSION=3.6.0-02 \
