@@ -24,6 +24,7 @@ RUN set -x \
     && mv sonarqube-$SONAR_VERSION sonarqube \
     && mv sonarqube/lib/* ./lib/ \
     && mv sonarqube/web/* ./web/ \
+    && mv sonarqube/elasticsearch ./ \
     && mkdir -p /tmp/sonarqube/ \
     && mv sonarqube/extensions /tmp/sonarqube/ \
     && apk del gnupg unzip curl \
