@@ -22,7 +22,6 @@ RUN set -x \
     && export GNUPGHOME="$(mktemp -d)" \
     && gpg --keyserver pgp.mit.edu --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
     && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
-    && rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
     && chmod +x /usr/local/bin/gosu \
     && gosu nobody true \
     
@@ -41,7 +40,7 @@ RUN set -x \
     && mkdir -p /tmp/sonarqube/ \
     && mv sonarqube/extensions /tmp/sonarqube/ \
     && apk del gnupg unzip wget ca-certificates \
-    && rm -rf sonarqube* /root/.gnupg /var/cache/apk/* \
+    && rm -rf sonarqube* /root/.gnupg /var/cache/apk/* "$GNUPGHOME" /usr/local/bin/gosu.asc \
     && echo -e '#!/bin/sh\n\
 \n\
 set -e\n\

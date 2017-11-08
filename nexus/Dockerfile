@@ -24,7 +24,6 @@ RUN set -ex \
     && export GNUPGHOME="$(mktemp -d)" \
     && gpg --keyserver pgp.mit.edu --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
     && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
-    && rm -r "$GNUPGHOME" /usr/local/bin/gosu.asc \
     && chmod +x /usr/local/bin/gosu \
     && gosu nobody true \
 
@@ -43,7 +42,7 @@ RUN set -ex \
     -e "s|java.io.tmpdir=data/tmp|java.io.tmpdir=$NEXUS_DATA/tmp|g" \
     -i $NEXUS_HOME/bin/nexus.vmoptions \
     && apk del wget gnupg \
-    && rm -rf /var/cache/apk/* nexus-$NEXUS_VERSION nexus.tar.gz \
+    && rm -rf /var/cache/apk/* nexus-$NEXUS_VERSION nexus.tar.gz "$GNUPGHOME" /usr/local/bin/gosu.asc \
     
     && echo -e '#!/bin/sh\n\
 \n\
