@@ -83,5 +83,5 @@ fi' >> $SONARQUBE_HOME/bin/entry \
 VOLUME $SONARQUBE_DATA
 WORKDIR $SONARQUBE_HOME
 EXPOSE 9000
-HEALTHCHECK –interval=10s –timeout=3s –retries=3 CMD curl http://127.0.0.1:9000/
+HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD curl http://127.0.0.1:9000/
 ENTRYPOINT ["./bin/entry"]
