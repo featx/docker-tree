@@ -45,8 +45,8 @@ RUN set -x \
 \n\
 set -e\n\
 \n\
-if [ "${1:0:1}" = '-' ]; then\n\
-    set -- sonar "$@"\n\
+if [ "${1:0:1}" != '-' ]; then\n\
+  exec "$@"\n\
 fi\n\
 \n\
 if [ ! -d $SONARQUBE_DATA/extensions ]; then\n\
@@ -73,11 +73,8 @@ ln -s $SONARQUBE_DATA/temp $SONARQUBE_HOME/\n\
 \n\
 chown -R sonar:sonar $SONARQUBE_HOME $SONARQUBE_DATA\n\
 \n\
-if [ "$1" = './bin/nexus' -a "$(id -u)" = '0' ]; then\n\
-    exec gosu sonar java "$@" -jar $SONARQUBE_HOME/lib/sonar-application-$SONAR_VERSION.jar\n\
-else\n\
-    exec java "$@" -jar $SONARQUBE_HOME/lib/sonar-application-$SONAR_VERSION.jar\n\
-fi' >> $SONARQUBE_HOME/bin/entry \
+exec gosu sonar java -d64 -server -jar $SONARQUBE_HOME/lib/sonar-application-$SONAR_VERSION.jar -Dsonar.web.javaAdditionalOpts="$SONARQUBE_WEB_JVM_OPTS -Djava.security.egd=file:/dev/./urandom" "$@"\n\
+' >> $SONARQUBE_HOME/bin/entry \
     && chmod u+x $SONARQUBE_HOME/bin/entry
 
 VOLUME $SONARQUBE_DATA
@@ -85,4 +82,4 @@ WORKDIR $SONARQUBE_HOME
 EXPOSE 9000
 HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD curl http://127.0.0.1:9000/
 ENTRYPOINT ["./bin/entry"]
-CMD ["-d64", "-server", "-Xmx512m", "-Xms128m", "-XX:MaxPermSize=160m", "-XX:+HeapDumpOnOutOfMemoryError", "-Djava.net.preferIPv4Stack=true"]
+
