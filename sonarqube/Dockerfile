@@ -7,7 +7,7 @@ LABEL vendor=Glad.so
 MAINTAINER palmtale<palmtale@glad.so>
 
 ENV GOSU_VERSION=1.10 \
-    SONAR_VERSION=6.6 \
+    SONAR_VERSION=6.7 \
     SONARQUBE_HOME=/usr/local \
     SONARQUBE_DATA=/mnt/sonarqube 
 
