@@ -13,7 +13,7 @@ ENV GOSU_VERSION=1.10 \
 
 RUN set -ex \
     && addgroup -g 1000 etcd && adduser -G etcd -u 1000 -s /sbin/nologin -D -H etcd \
-    && apk add -U ca-certificates wget git build-base go \
+    && apk add -U ca-certificates wget git build-base go gnupg \
 
     # Grab gosu for easy step-down from root
     && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
@@ -30,7 +30,7 @@ RUN set -ex \
     && make build && mkdir -p ${ETCD_HOME}/bin \
     && mv ./bin/* ${ETCD_HOME}/bin/ \
     && echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf \
-    && apk del ca-certificates git build-base go wget \
+    && apk del ca-certificates git build-base go wget gnupg \
     && rm -rf /var/cache/apk/* ${ETCD_HOME}/etcd "$GNUPGHOME" /usr/local/bin/gosu.asc \
     
     # Entrypoint
