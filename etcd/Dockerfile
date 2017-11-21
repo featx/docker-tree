@@ -50,7 +50,7 @@ fi\n\
 chown -R etcd:etcd ${ETCD_HOME}\n\
 \n\
 if [ "$1" = \'etcd\' -a "$(id -u)" = \'0\' ]; then\n\
-    exec gosu etcd "$@" $(cat ${ETCD_HOME}/etcd/etcd.opt | sed 'N;s/\n/ /')\n\
+    exec gosu etcd "$@" $(cat ${ETCD_HOME}/etcd/etcd.opt | sed \'N;s/\n/ /\')\n\
 else\n\
     exec "$@"\n\
 fi' >> $ETCD_HOME/bin/entry \
