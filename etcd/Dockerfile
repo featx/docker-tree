@@ -38,7 +38,7 @@ RUN set -ex \
 \n\
 set -e\n\
 \n\
-if [ "${1:0:1}" = \'-\' ]; then\n\
+if [ "${1:0:1}" = '-' ]; then\n\
     set -- etcd "$@"\n\
 fi\n\
 \n\
@@ -49,8 +49,8 @@ fi\n\
 \n\
 chown -R etcd:etcd ${ETCD_HOME}\n\
 \n\
-if [ "$1" = \'etcd\' -a "$(id -u)" = \'0\' ]; then\n\
-    exec gosu etcd "$@" $(cat ${ETCD_HOME}/etcd/etcd.opt | sed \'N;s/\n/ /\')\n\
+if [ "$1" = 'etcd' -a "$(id -u)" = '0' ]; then\n\
+    exec gosu etcd "$@" $(cat ${ETCD_HOME}/etcd/etcd.opt | sed 'N;s/\\n/ /')\n\
 else\n\
     exec "$@"\n\
 fi' >> $ETCD_HOME/bin/entry \
