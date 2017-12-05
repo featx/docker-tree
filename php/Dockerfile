@@ -12,8 +12,8 @@ MAINTAINER palmtale<palmtale@glad.so>
 ENV PHP_HOME=/usr/local \
     PHP_DATA=/mnt/php \
     PHP_APPS=/mnt/lib \
-    PHP_VERSION=7.1.10 \
-#   5.6.31 7.0.24 7.1.10 7.2.0 
+    PHP_VERSION=7.2.0 \
+#   5.6.31 7.0.24 7.1.12 7.2.0 
     PHP_EXT=no-debug-non-zts-20160303 \
     #debug-non-zts-20160303 (7.1)\
     #debug-non-zts-20151012 (7.0)\
@@ -55,9 +55,10 @@ RUN set -x \
 #    && wget -O xdebug.tgz https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz \
 #    && mv composer phpunit $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
     && mv composer $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
-    && echo "2b8efa771a2ead0bb3ae67b530ca505b5b286adc873cca9ce97a6e1d6815c50b *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
+    && echo "87572a6b924670a5d4aac276aaa4a94321936283df391d702c845ffc112db095 *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
 	&& export GNUPGHOME=$(mktemp -d) \
-    && for key in A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E; do \
+    && for key in 1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F; do \
+#    && for key in A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E; do \
 		       gpg --keyserver pgp.mit.edu --recv-keys "$key"; \
 	     done \
 	  && gpg --batch --verify php-$PHP_VERSION.tar.xz.asc php-$PHP_VERSION.tar.xz \
