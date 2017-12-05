@@ -9,7 +9,7 @@ MAINTAINER Palmtale <palmtale@glad.so>
 
 ENV GOSU_VERSION=1.10 \
     ETCD_HOME=/usr/local \
-    ETCD_VERSION=3.2.9
+    ETCD_VERSION=3.2.10
 
 RUN set -ex \
     && addgroup -g 1000 etcd && adduser -G etcd -u 1000 -s /sbin/nologin -D -H etcd \
