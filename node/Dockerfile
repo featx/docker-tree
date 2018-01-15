@@ -6,10 +6,9 @@ FROM alpine
 LABEL vendor=SoGlad
 MAINTAINER Palm Tale<palmtale@glad.so>
 
-ENV NODE_VERSION=v9.2.0 \
-#v8.9.1
-    NPM_VERSION=5.4.2 \
-#3.10.10
+ENV NODE_VERSION=v9.4.0 \
+#v8.9.4
+    NPM_VERSION=5.6.0 \
     NODE_HOME=/usr/local
 
 # gpg keys listed at https://github.com/nodejs/node
@@ -17,11 +16,11 @@ RUN set -ex \
   && apk add --no-cache gnupg build-base linux-headers binutils-gold paxctl python curl libgcc libstdc++ \
   && for key in \
     #94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
-    B9AE9905FFD7803F25714661B63B535A4C206CA9 \
+    #B9AE9905FFD7803F25714661B63B535A4C206CA9 \
     #56730D5401028683275BD23C23EFEFE93C4CFFFE \
     #71DCFD284A79C3B38668286BC97EC7A07EDE3FC1 \
     #FD3A5288F042B6850C66B31F09FE44734EB7990E \
-    #C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8 \
+    C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8 \
     #DD8F2338BAE7501E3DD5AC78C273792F7D83545D \
     #0034A06D9D9B0064CE8ADF6BF1747F4AD2306D93 \
     #9554F04D7259F04124DE6B476D5A82AC7E37093B \
@@ -29,7 +28,7 @@ RUN set -ex \
     #114F43EE0176B71C7BC219DD50A3051F888C628D \
     #7937DFD2AB06298B2293C3187D33FF9D0246406D \
   ; do \
-    gpg --keyserver pool.sks-keyservers.net --recv-keys "$key"; \
+    gpg --keyserver pgp.mit.edu --recv-keys "$key"; \
   done \
   && curl -o node-$NODE_VERSION.tar.gz -sSL https://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION.tar.gz \
   && curl -o SHASUMS256.txt.asc -sSL https://nodejs.org/dist/$NODE_VERSION/SHASUMS256.txt.asc \

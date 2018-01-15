@@ -8,7 +8,7 @@ MAINTAINER palmtale<palmtale@glad.so>
 
 ENV OLDAP_HOME=/usr/local \
     OLDAP_DATA=/mnt \
-    OLDAP_VERSION=OPENLDAP_REL_ENG_2_4_44 \
+    OLDAP_VERSION=OPENLDAP_REL_ENG_2_4_45 \
     OLDAP_DOMAIN="dc=glad,dc=so" \
     OLDAP_USER=ldap \
     OLDAP_GROUP=ldap \

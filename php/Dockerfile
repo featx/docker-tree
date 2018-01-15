@@ -12,7 +12,7 @@ MAINTAINER palmtale<palmtale@glad.so>
 ENV PHP_HOME=/usr/local \
     PHP_DATA=/mnt/php \
     PHP_APPS=/mnt/lib \
-    PHP_VERSION=7.2.0 \
+    PHP_VERSION=7.2.1 \
 #   5.6.31 7.0.24 7.1.12 7.2.0 
     PHP_EXT=no-debug-non-zts-20160303 \
     #debug-non-zts-20160303 (7.1)\
@@ -20,9 +20,9 @@ ENV PHP_HOME=/usr/local \
     #debug-non-zts-20131226 (5.6)\
     PHP_USER=www \
     PHP_GROUP=www \
-    COMPOSER_VERSION=1.5.2 \
+    COMPOSER_VERSION=1.6.2 \
     XDEBUG_VERSION=2.5.5 \
-    PHPUNIT_VERSION=6.3.1 \
+    PHPUNIT_VERSION=6.5.5 \
 # 5.7.21, 6.2.3
     COMPOSER_MIRROR=https://packagist.phpcomposer.com \
    
