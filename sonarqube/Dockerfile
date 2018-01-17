@@ -2,12 +2,12 @@
 # SonarQube Docker container in Alpine
 #++++++++++++++++++++++++++++++++++++++
 
-FROM java:8-jre-alpine
+FROM soglad/java:8u151-jre-alpine
 LABEL vendor=Glad.so
-MAINTAINER palmtale<palmtale@glad.so>
+MAINTAINER Excepts <excepts@glad.so>
 
 ENV GOSU_VERSION=1.10 \
-    SONAR_VERSION=6.7 \
+    SONAR_VERSION=6.7.1 \
     SONARQUBE_HOME=/usr/local \
     SONARQUBE_DATA=/mnt/sonarqube 
 

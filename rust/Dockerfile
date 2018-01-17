@@ -4,7 +4,7 @@
 
 FROM alpine
 LABEL vendor=Glad.so
-MAINTAINER palmtale<palmtale@glad.so>
+MAINTAINER Excepts <excepts@glad.so>
 
 #ARG RUST_HOME=/usr/local
 #ARG RUST_VERSION=1.16.0

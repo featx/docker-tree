@@ -2,13 +2,13 @@
 #      Mariadb Docker container in Alpine    #
 #++++++++++++++++++++++++++++++++++++++++++++#
 
-FROM openjdk:8u121-jdk-alpine
+FROM openjdk:8u151-jdk-alpine
 
 LABEL vendor=Glad.so
-MAINTAINER palmtale<palmtale@glad.so>
+MAINTAINER Excepts<excepts@glad.so>
 
 ENV JENKINS_HOME=/var/jenkins_home \
-    JENKINS_VERSION=2.93 \
+    JENKINS_VERSION=2.99 \
     JENKINS_UC=https://updates.jenkins.io \
     JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental \
     JENKINS_SHA=2d71b8f87c8417f9303a73d52901a59678ee6c0eefcf7325efed6035ff39372a \
@@ -16,7 +16,6 @@ ENV JENKINS_HOME=/var/jenkins_home \
     TINI_VERSION=0.14.0 \
     TINI_SHA=6c41ec7d33e857d4779f14d9c74924cab0c7973485d2972419a3b7c7620ff5fd 
     
-
 COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/tcp-slave-agent-port.groovy
 COPY jenkins-support /usr/local/bin/jenkins-support
 COPY jenkins.sh /usr/local/bin/jenkins.sh

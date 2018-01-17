@@ -4,7 +4,7 @@
 
 FROM alpine
 LABEL vendor=Glad.so
-MAINTAINER Palmtale <palmtale@glad.so>
+MAINTAINER Excepts <excepts@glad.so>
 
 ARG RESTY_HOME=/usr/local
 ARG NGX_VERSION=1.11.2

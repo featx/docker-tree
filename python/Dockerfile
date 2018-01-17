@@ -4,7 +4,7 @@
 
 FROM alpine
 LABEL vendor=Glad.so
-MAINTAINER Palmtale <palmtale@glad.so>
+MAINTAINER Excepts <excepts@glad.so>
 
 ENV LANG=C.UTF-8 \
     PY_HOME=/usr/local \

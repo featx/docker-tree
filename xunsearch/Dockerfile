@@ -4,7 +4,7 @@
 
 FROM alpine
 LABEL vendor=Glad.so
-MAINTAINER palmtale<palmtale@glad.so>
+MAINTAINER Excepts <excepts@glad.so>
 
 ENV XUNS_VERSION=1.4.10 \
     XUNS_HOME=/usr/local \

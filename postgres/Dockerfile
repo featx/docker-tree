@@ -4,7 +4,7 @@
 
 FROM alpine
 LABEL vendor=Glad.so
-MAINTAINER palmtale<palmtale@glad.so>
+MAINTAINER Excepts <excepts@glad.so>
 
 ENV LANG=en_US.utf8 \
     PG_MAJOR=10.0 \

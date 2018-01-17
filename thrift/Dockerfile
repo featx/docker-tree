@@ -4,7 +4,7 @@
 
 FROM alpine
 LABEL vendor=Glad.so
-MAINTAINER Palmtale <palmtale@glad.so>
+MAINTAINER Excepts <excepts@glad.so>
 
 ARG TRFT_HOME=/usr/local
 ARG TRFT_VERSION=0.10.0

@@ -3,8 +3,8 @@
 #++++++++++++++++++++++++++++++++++++++
 
 FROM alpine
-LABEL vendor=SoGlad
-MAINTAINER Palm Tale <palmtale@glad.so>
+LABEL vendor=Glad.so
+MAINTAINER Excepts <excepts@glad.so>
 
 ARG VNS_HOME=/usr/local
 ARG VNS_VERSION=5.1.1

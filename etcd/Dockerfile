@@ -27,7 +27,7 @@ RUN set -ex \
     && cd ${ETCD_HOME}/ \
     && git clone https://github.com/coreos/etcd.git \
     && cd etcd && git checkout v${ETCD_VERSION} \
-    && make build && mkdir -p ${ETCD_HOME}/bin \
+    && GO_BUILD_FLAGS="-v" ./build && mkdir -p ${ETCD_HOME}/bin \
     && mv ./bin/* ${ETCD_HOME}/bin/ \
     && echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf \
     && apk del ca-certificates git build-base go wget gnupg \

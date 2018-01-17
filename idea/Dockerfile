@@ -3,8 +3,8 @@
 #+++++++++++++++++++++++++++++++++#
 
 FROM alpine
-LABEL vendor=SoGlad
-MAINTAINER Palm Tale<palmtale@glad.so>
+LABEL vendor=Glad.so
+MAINTAINER Excepts <excepts@glad.so>
 
 ADD ideals /usr/local/bin/
 EXPOSE 41017

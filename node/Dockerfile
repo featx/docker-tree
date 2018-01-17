@@ -3,8 +3,8 @@
 #++++++++++++++++++++++++++++++++++++++
 
 FROM alpine
-LABEL vendor=SoGlad
-MAINTAINER Palm Tale<palmtale@glad.so>
+LABEL vendor=Glad.so
+MAINTAINER Excepts <excepts@glad.so>
 
 ENV NODE_VERSION=v9.4.0 \
 #v8.9.4

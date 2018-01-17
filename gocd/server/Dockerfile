@@ -4,7 +4,7 @@
 
 FROM alpine
 LABEL vendor=Glad.so
-MAINTAINER Palmtale <palmtale@glad.so>
+MAINTAINER Excepts <excepts@glad.so>
 
 ENV GOCD_HOME=/usr/local/gocd \
     GOCD_VERSION=17.4.0 \

@@ -4,7 +4,7 @@
 
 FROM alpine
 LABEL vendor=Glad.so
-MAINTAINER palmtale<palmtale@glad.so>
+MAINTAINER Excepts <excepts@glad.so>
 
 # Required info below:
 # http://php.net/downloads.php
@@ -14,7 +14,7 @@ ENV PHP_HOME=/usr/local \
     PHP_APPS=/mnt/lib \
     PHP_VERSION=7.2.1 \
 #   5.6.31 7.0.24 7.1.12 7.2.0 
-    PHP_EXT=no-debug-non-zts-20160303 \
+    PHP_EXT=no-debug-non-zts-20170718 \
     #debug-non-zts-20160303 (7.1)\
     #debug-non-zts-20151012 (7.0)\
     #debug-non-zts-20131226 (5.6)\
@@ -58,8 +58,10 @@ RUN set -x \
     && echo "6c6cf82fda6660ed963821eb0525214bb3547e8e29f447b9c15b2d8e6efd8822 *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
 	&& export GNUPGHOME=$(mktemp -d) \
     && for key in 1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F; do \
-#    && for key in A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E; do \
-		       gpg --keyserver pgp.mit.edu --recv-keys "$key"; \
+#7.1    && for key in A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E; do \
+#7.0    && for key in 1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3; do \
+#5.6    && for key in 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3 0BD78B5F97500D450838F95DFE857D9A90D90EC1; do \
+		       gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
 	     done \
 	  && gpg --batch --verify php-$PHP_VERSION.tar.xz.asc php-$PHP_VERSION.tar.xz \
 

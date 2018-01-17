@@ -2,14 +2,14 @@
 #   Nexus Docker container in Alpine   #
 #++++++++++++++++++++++++++++++++++++++#
 
-FROM soglad/java:8u131-jre-alpine
+FROM soglad/java:8u151-jre-alpine
 LABEL vendor=Glad.so
-MAINTAINER palmtale<palmtale@glad.so>
+MAINTAINER Excepts <excepts@glad.so>
 
 ENV GOSU_VERSION=1.10 \
     NEXUS_DATA=/mnt \
     NEXUS_HOME=/usr/local/nexus \
-    NEXUS_VERSION=3.6.0-02 \
+    NEXUS_VERSION=3.7.1-02 \
     NEXUS_GROUP=nexus \
     NEXUS_USER=nexus \
     CONTEXT_PATH=/
