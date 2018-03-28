@@ -12,7 +12,7 @@ MAINTAINER Excepts <excepts@glad.so>
 ENV PHP_HOME=/usr/local \
     PHP_DATA=/mnt/php \
     PHP_APPS=/mnt/lib \
-    PHP_VERSION=7.2.1 \
+    PHP_VERSION=7.2.3 \
 #   5.6.31 7.0.24 7.1.12 7.2.0 
     PHP_EXT=no-debug-non-zts-20170718 \
     #debug-non-zts-20160303 (7.1)\
@@ -20,15 +20,15 @@ ENV PHP_HOME=/usr/local \
     #debug-non-zts-20131226 (5.6)\
     PHP_USER=www \
     PHP_GROUP=www \
-    COMPOSER_VERSION=1.6.2 \
-    XDEBUG_VERSION=2.5.5 \
-    PHPUNIT_VERSION=6.5.5 \
-# 5.7.21, 6.2.3
-    COMPOSER_MIRROR=https://packagist.phpcomposer.com \
-   
+    COMPOSER_VERSION=1.6.3 \
+    XDEBUG_VERSION=2.6.0 \
+#  5.x  2.5.5    
+    PHPUNIT_VERSION=7.0.3 \
+#  5.7.21, 6.2.3
+    COMPOSER_MIRROR=https://packagist.phpcomposer.com \   
     PHP_COMPILE_ARGS="--enable-fpm --with-fpm-group=$PHP_GROUP --with-fpm-user=$PHP_USER \
     --enable-xml --enable-zip --enable-soap --enable-pdo \
-    --enable-bcmath --enable-mbstring --enable-mbregex \
+    --enable-bcmath --enable-mbstring --enable-mbregex --enable-embed \
     --enable-mysqlnd --enable-sockets --enable-gd-native-ttf \
     --with-mysql --with-mysqli --with-pdo-mysql --with-pgsql --with-pdo-pgsql \
     --with-iconv --with-gmp --with-openssl --with-gd --with-libedit  --with-zlib \
@@ -37,6 +37,7 @@ ENV PHP_HOME=/usr/local \
     --with-png-dir=/usr/local --with-libxml-dir=/usr/local \
     --with-vpx-dir=/usr/local --with-xpm-dir=/usr/local"
 # --enable-debug
+
 RUN set -x \
     && apk add --no-cache --virtual .build-deps \
         wget ca-certificates gnupg autoconf automake re2c file \
@@ -55,7 +56,7 @@ RUN set -x \
 #    && wget -O xdebug.tgz https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz \
 #    && mv composer phpunit $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
     && mv composer $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
-    && echo "6c6cf82fda6660ed963821eb0525214bb3547e8e29f447b9c15b2d8e6efd8822 *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
+    && echo "b3a94f1b562f413c0b96f54bc309706d83b29ac65d9b172bc7ed9fb40a5e651f *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
 	&& export GNUPGHOME=$(mktemp -d) \
     && for key in 1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F; do \
 #7.1    && for key in A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E; do \
@@ -64,7 +65,6 @@ RUN set -x \
 		       gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
 	     done \
 	  && gpg --batch --verify php-$PHP_VERSION.tar.xz.asc php-$PHP_VERSION.tar.xz \
-
     # Unpackage
     && tar -Jxf php-$PHP_VERSION.tar.xz && mv php-$PHP_VERSION php \
     # Compile and install
@@ -75,7 +75,6 @@ RUN set -x \
 		$PHP_COMPILE_ARGS \
     && make -j"$(getconf _NPROCESSORS_ONLN)" \
 	&& make install \
-    
     && { find /usr/local/bin /usr/local/sbin -type f -perm +0111 -exec strip --strip-all '{}' + || true; } \
 	&& make clean \
 	&& runDeps="$( scanelf --needed --nobanner --recursive /usr/local \
@@ -83,27 +82,22 @@ RUN set -x \
 		| sort -u \
 		| xargs -r apk info --installed \
 		| sort -u )" \
-    && mv php.ini-development $PHP_DATA/etc/php.ini \
-    
+    && mv php.ini-development $PHP_DATA/etc/php.ini \    
 # Compile and install xdebug
 #    && cd $PHP_HOME/src \
 #    && tar -zxf xdebug.tgz && cd xdebug-$XDEBUG_VERSION \
 #    && $PHP_HOME/bin/phpize \
 #    && ./configure --with-php-config=$PHP_HOME/bin/php-config \
 #    && make && make install \
-
     && cd $PHP_HOME \
     && mkdir -p /tmp/etc /tmp/lib \
     && mv $PHP_HOME/etc/* /tmp/etc/ && mv $PHP_HOME/lib/php/extensions/$PHP_EXT/* /tmp/lib/ \
-    && rm -rf $PHP_HOME/etc $PHP_HOME/lib/php/extensions/$PHP_EXT \
-    
-    && composer config -g repo.packagist composer $COMPOSER_MIRROR \
-    
+    && rm -rf $PHP_HOME/etc $PHP_HOME/lib/php/extensions/$PHP_EXT \    
+    && composer config -g repo.packagist composer $COMPOSER_MIRROR \   
     # distructor
     && apk del .build-deps \
     && apk add --no-cache --virtual .php-rundeps $runDeps \
     && rm -rf $GNUPGHOME /var/cache/apk/* $PHP_HOME/src \
-
     && echo -e '#!/bin/sh\n\
 \n\
 set -e\n\

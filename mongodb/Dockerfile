@@ -4,21 +4,16 @@
 
 FROM alpine
 LABEL vendor=Glad.so
-MAINTAINER palmtale<palmtale@glad.so>
+MAINTAINER Excepts <excepts@glad.so>
 
-ENV GOSU_VERSION=1.7 \
-    MONGO_MAJOR=3.4 \
-    MONGO_VERSION=3.5.10 \
+ENV GOSU_VERSION=1.10 \
+    MONGO_MAJOR=3.6 \
+    MONGO_VERSION=3.6.2 \
     MONGO_HOME=/usr/local
-
-# Source Tar: https://fastdl.mongodb.org/src/mongodb-src-r$MONGO_VERSION.tar.gz
-#              https://codeload.github.com/mongodb/mongo/tar.gz/r3.4.5
-# Binary Tar: https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-$MONGO_VERSION.tgz
 
 #src/third_party/asio-master/asio/include/asio/detail/socket_types.hpp
 #src/mongo/util/net/socket_poll.h
 #src/mongo/util/processinfo_linux.cpp
-COPY entry $MONGO_HOME/bin/
 
 RUN set -ex \
   && addgroup -g 1000 mongodb && adduser -G mongodb -u 1000 -s /sbin/nologin -D -H mongodb \
@@ -35,6 +30,9 @@ RUN set -ex \
   && gosu nobody true \
 
   && mkdir -p $MONGO_HOME/bin \
+# Source Tar: https://fastdl.mongodb.org/src/mongodb-src-r$MONGO_VERSION.tar.gz
+#              https://codeload.github.com/mongodb/mongo/tar.gz/r3.4.5
+# Binary Tar: https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-$MONGO_VERSION.tgz
   && wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-$MONGO_VERSION.tgz \
   && wget -o mongodb.sha256sum https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-$MONGO_VERSION.tgz.sha256 \
 # && gpg --verify mongodb.tgz.sha256sum.asc \
@@ -44,8 +42,26 @@ RUN set -ex \
 
   && apk del ca-certificates wget gnupg \
   && rm -rf mongodb.sha256sum mongodb-linux-x86_64-$MONGO_VERSIO* /var/cache/apk/* \
-  && chmod u+x -R $MONGO_HOME/bin
+  && chmod u+x -R $MONGO_HOME/bin \
+
+  && echo -e '#!/bin/sh\n\
+\n\
+set -e\n\
+\n\
+if [ "${1:0:1}" = '-' ]; then\n\
+  set -- mongod "$@"\n\
+fi\n\
+\n\
+if [ "$1" = 'mongod' -a "$(id -u)" = '0' ]; then\n\
+  chown -R mongodb /mnt\n\
+  exec gosu mongodb "$@"\n\
+else\n\
+  exec "$@"\n\
+fi' >> /usr/bin/entry \
+    && chmod u+x /usr/bin/entry
 
 EXPOSE 27017
-VOLUME /mnt
+VOLUME /mnt/mongodb
+#HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD curl http://127.0.0.1:27017/
+ENTRYPOINT ["/usr/bin/entry"]
 CMD ["mongod"]
