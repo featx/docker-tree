@@ -7,8 +7,8 @@ LABEL vendor=Glad.so
 MAINTAINER Excepts <excepts@glad.so>
 
 ENV LANG=en_US.utf8 \
-    PG_MAJOR=10.1 \
-    PG_VERSION=10.1 \
+    PG_MAJOR=10.4 \
+    PG_VERSION=10.4 \
     PG_HOME=/usr/local \
     PG_GROUP=postgres \
     PG_USER=postgres \

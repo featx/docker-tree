@@ -12,7 +12,7 @@ MAINTAINER Excepts <excepts@glad.so>
 ENV PHP_HOME=/usr/local \
     PHP_DATA=/mnt/php \
     PHP_APPS=/mnt/lib \
-    PHP_VERSION=7.2.3 \
+    PHP_VERSION=7.2.5 \
 #   5.6.31 7.0.24 7.1.12 7.2.0 
     PHP_EXT=no-debug-non-zts-20170718 \
     #debug-non-zts-20160303 (7.1)\
@@ -20,10 +20,10 @@ ENV PHP_HOME=/usr/local \
     #debug-non-zts-20131226 (5.6)\
     PHP_USER=www \
     PHP_GROUP=www \
-    COMPOSER_VERSION=1.6.3 \
+    COMPOSER_VERSION=1.6.5 \
     XDEBUG_VERSION=2.6.0 \
 #  5.x  2.5.5    
-    PHPUNIT_VERSION=7.0.3 \
+    PHPUNIT_VERSION=7.1.5 \
 #  5.7.21, 6.2.3
     COMPOSER_MIRROR=https://packagist.phpcomposer.com \   
     PHP_COMPILE_ARGS="--enable-fpm --with-fpm-group=$PHP_GROUP --with-fpm-user=$PHP_USER \
@@ -56,7 +56,7 @@ RUN set -x \
 #    && wget -O xdebug.tgz https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz \
 #    && mv composer phpunit $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
     && mv composer $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
-    && echo "b3a94f1b562f413c0b96f54bc309706d83b29ac65d9b172bc7ed9fb40a5e651f *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
+    && echo "af70a33b3f7a51510467199b39af151333fbbe4cc21923bad9c7cf64268cddb2 *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
 	&& export GNUPGHOME=$(mktemp -d) \
     && for key in 1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F; do \
 #7.1    && for key in A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E; do \

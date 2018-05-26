@@ -8,7 +8,7 @@ MAINTAINER Excepts <excepts@glad.so>
 
 ENV OLDAP_HOME=/usr/local \
     OLDAP_DATA=/mnt \
-    OLDAP_VERSION=OPENLDAP_REL_ENG_2_4_45 \
+    OLDAP_VERSION=OPENLDAP_REL_ENG_2_4_46 \
     OLDAP_DOMAIN="dc=glad,dc=so" \
     OLDAP_USER=ldap \
     OLDAP_GROUP=ldap \
@@ -38,7 +38,7 @@ RUN set -x \
     && cd $OLDAP_HOME \
     && apk del build-base m4 wget ca-certificates gnupg db-dev openssl-dev cyrus-sasl-dev unixodbc-dev \
     && rm -rf /var/cache/apk/* openldap.tar.gz openldap-$OLDAP_VERSION libtool-2.4.6.tar.gz \
-    && mv $OLDAP_DATA/* /tmp/
+    && mv $OLDAP_DATA/* /tmp/ \
 
     && echo -e '#!/bin/sh\n\
 \n\

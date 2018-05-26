@@ -8,7 +8,7 @@ LABEL vendor=Glad.so
 MAINTAINER Excepts<excepts@glad.so>
 
 ENV JENKINS_HOME=/var/jenkins_home \
-    JENKINS_VERSION=2.99 \
+    JENKINS_VERSION=2.124 \
     JENKINS_UC=https://updates.jenkins.io \
     JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental \
     JENKINS_SHA=2d71b8f87c8417f9303a73d52901a59678ee6c0eefcf7325efed6035ff39372a \
