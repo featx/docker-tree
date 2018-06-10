@@ -6,9 +6,9 @@ FROM alpine
 LABEL vendor=Glad.so
 MAINTAINER Excepts <excepts@glad.so>
 
-ENV NODE_VERSION=v10.2.1 \
+ENV NODE_VERSION=v10.4.0 \
 #v8.11.2
-    NPM_VERSION=5.8.0 \
+    NPM_VERSION=6.1.0 \
     NODE_HOME=/usr/local
 
 # gpg keys listed at https://github.com/nodejs/node
