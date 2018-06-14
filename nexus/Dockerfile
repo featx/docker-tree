@@ -9,14 +9,14 @@ MAINTAINER Excepts <excepts@glad.so>
 ENV GOSU_VERSION=1.10 \
     NEXUS_DATA=/mnt \
     NEXUS_HOME=/usr/local/nexus \
-    NEXUS_VERSION=3.12.0-01 \
+    NEXUS_VERSION=3.12.1-01 \
     NEXUS_GROUP=nexus \
     NEXUS_USER=nexus \
     CONTEXT_PATH=/
 
 RUN set -ex \
     && addgroup -g 1000 $NEXUS_GROUP && adduser -G $NEXUS_GROUP -u 1000 -s /sbin/nologin -D -H $NEXUS_USER \
-    && apk add -U wget gnupg \
+    && apk add -U wget gnupg curl \
 
     # Grab gosu for easy step-down from root
     && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
@@ -70,5 +70,6 @@ fi' >> /usr/local/bin/entry \
 WORKDIR $NEXUS_HOME
 VOLUME $NEXUS_DATA
 EXPOSE 8081
+HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD curl http://127.0.0.1:8081/
 ENTRYPOINT ["entry"]
 CMD ./bin/nexus run

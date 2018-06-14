@@ -7,7 +7,7 @@ LABEL vendor=Glad.so
 MAINTAINER Excepts <excepts@glad.so>
 
 ARG SBT_HOME=/usr/local
-ARG SBT_VERSION=1.1.5
+ARG SBT_VERSION=1.1.6
 
 RUN set -ex \
     && apk add --no-cache --virtual .build-deps tar wget \
