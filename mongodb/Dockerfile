@@ -18,6 +18,7 @@ ENV GOSU_VERSION=1.10 \
 RUN set -ex \
   && addgroup -g 1000 mongodb && adduser -G mongodb -u 1000 -s /sbin/nologin -D -H mongodb \
   && apk add -U --no-cache ca-certificates wget gnupg \
+  && apk add --virtual build-base git linux-headers curl-dev libffi-dev libconfig-dev \
 
   # Grab gosu for easy step-down from root
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
