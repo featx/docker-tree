@@ -6,14 +6,16 @@ FROM alpine
 LABEL vendor=Glad.so
 MAINTAINER Excepts <excepts@glad.so>
 
-ENV NODE_VERSION=v10.6.0 \
-#v8.11.2
-    NPM_VERSION=6.1.0 \
-    NODE_HOME=/usr/local
-
+ENV NODE_VERSION=v10.9.0 \
+#v8.11.4
+    NPM_VERSION=6.2.0 \
+    NODE_HOME=/usr/local \
+    NODE_PATH=/usr/local/lib/node_modules
 # gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
-  && apk add --no-cache gnupg build-base linux-headers binutils-gold paxctl python curl libgcc libstdc++ \
+  && apk add --no-cache --virtual .build-deps \
+   gnupg build-base linux-headers binutils-gold paxctl \
+   python curl libgcc libstdc++ \
   && for key in \
     #94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
     #B9AE9905FFD7803F25714661B63B535A4C206CA9 \
@@ -21,13 +23,13 @@ RUN set -ex \
     #71DCFD284A79C3B38668286BC97EC7A07EDE3FC1 \
     #FD3A5288F042B6850C66B31F09FE44734EB7990E \
     #C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8 \
-    #DD8F2338BAE7501E3DD5AC78C273792F7D83545D \
+    DD8F2338BAE7501E3DD5AC78C273792F7D83545D \
     #0034A06D9D9B0064CE8ADF6BF1747F4AD2306D93 \
     #9554F04D7259F04124DE6B476D5A82AC7E37093B \
     #93C7E9E91B49E432C2F75674B0A78B0A6C481CF6 \
     #114F43EE0176B71C7BC219DD50A3051F888C628D \
     #7937DFD2AB06298B2293C3187D33FF9D0246406D \
-    8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600 \
+    #8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600 \
   ; do \
     gpg --keyserver pgp.mit.edu --recv-keys "$key"; \
   done \
@@ -43,12 +45,18 @@ RUN set -ex \
   && paxctl -cm out/Release/mksnapshot \
   && make -j${NPROC} && make install \
   && paxctl -cm $NODE_HOME/bin/node \
+  && runDeps="$( scanelf --needed --nobanner --recursive ${NODE_HOME} \
+        | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+    | sort -u \
+    | xargs -r apk info --installed \
+    | sort -u )" \
   && cd / \
   && if [ -x $NODE_HOME/bin/npm ]; \
      then npm install -g npm@$NPM_VERSION \
   && find $NODE_HOME/lib/node_modules/npm -name test -o -name .bin -type d | xargs rm -rf; \
      fi \
-  && apk del gnupg binutils-gold paxctl python curl \
+  && apk del .build-deps \
+  && apk add --no-cache --virtual .node-rundeps $runDeps \
   && rm -rf /etc/ssl /node-$NODE_VERSION.tar.gz /SHASUMS256.txt.asc /node-$NODE_VERSION /usr/include/* \
       $NODE_HOME/share/man /tmp/* /var/cache/apk/* /root/.npm /root/.node-gyp /root/.gnupg \
       $NODE_HOME/lib/node_modules/npm/man $NODE_HOME/lib/node_modules/npm/doc $NODE_HOME/lib/node_modules/npm/html
