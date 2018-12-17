@@ -3,8 +3,8 @@
 #++++++++++++++++++++++++++++++++++#
 
 FROM alpine
-LABEL vendor=Glad.so
-MAINTAINER Excepts <excepts@glad.so>
+LABEL vendor=Featx
+MAINTAINER Excepts <excepts@aliyun.com>
 
 ARG TRFT_HOME=/usr/local
 ARG TRFT_VERSION=0.10.0

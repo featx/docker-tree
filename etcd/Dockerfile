@@ -4,12 +4,12 @@
 
 
 FROM alpine
-LABEL vendor=Glad.so
-MAINTAINER Excepts <excepts@glad.so>
+LABEL vendor=Featx
+MAINTAINER Excepts <excepts@aliyun.com>
 
 ENV GOSU_VERSION=1.10 \
     ETCD_HOME=/usr/local \
-    ETCD_VERSION=3.3.5
+    ETCD_VERSION=3.3.10
 
 RUN set -ex \
     && addgroup -g 1000 etcd && adduser -G etcd -u 1000 -s /sbin/nologin -D -H etcd \

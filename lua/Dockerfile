@@ -3,8 +3,8 @@
 #++++++++++++++++++++++++++++++++++#
 
 FROM alpine
-LABEL vendor=Glad.so
-MAINTAINER Excepts <excepts@glad.so>
+LABEL vendor=Featx
+MAINTAINER Excepts <excepts@aliyun.com>
 
 ENV LUA_HOME=/usr/local \
     LUA_VERSION=5.3.5 \

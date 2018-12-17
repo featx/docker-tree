@@ -3,8 +3,8 @@
 #+++++++++++++++++++++++++++++++++++++#
 
 FROM alpine
-LABEL vendor=Glad.so
-MAINTAINER Excepts <excepts@glad.so>
+LABEL vendor=Featx
+MAINTAINER Excepts <excepts@aliyun.com>
 
 # A few problems with compiling Java from source:
 #  1. Oracle.  Licensing prevents us from redistributing the official JDK.

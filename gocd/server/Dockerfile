@@ -3,8 +3,8 @@
 #++++++++++++++++++++++++++++++++++++++++#
 
 FROM alpine
-LABEL vendor=Glad.so
-MAINTAINER Excepts <excepts@glad.so>
+LABEL vendor=Featx
+MAINTAINER Excepts <excepts@aliyun.com>
 
 ENV GOCD_HOME=/usr/local/gocd \
     GOCD_VERSION=17.4.0 \

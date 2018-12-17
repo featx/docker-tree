@@ -3,12 +3,12 @@
 #+++++++++++++++++++++++++++++++++++++#
 
 FROM alpine
-LABEL vendor=Glad.so
-MAINTAINER Excepts <excepts@glad.so>
+LABEL vendor=Featx
+MAINTAINER Excepts <excepts@aliyun.com>
 
 ENV LANG=en_US.utf8 \
-    PG_MAJOR=10.4 \
-    PG_VERSION=10.4 \
+    PG_MAJOR=11beta3 \
+    PG_VERSION=11beta3 \
     PG_HOME=/usr/local \
     PG_GROUP=postgres \
     PG_USER=postgres \

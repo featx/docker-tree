@@ -3,8 +3,8 @@
 #++++++++++++++++++++++++++++++++++++++++++++#
 
 FROM alpine
-LABEL vendor=Glad.so
-MAINTAINER palmtale<palmtale@glad.so>
+LABEL vendor=Featx
+MAINTAINER Excepts <excepts@aliyun.com>
 
 ENV MYSQL_VERSION=10.1.19 \
     MYSQL_HOME=/usr/mysql \

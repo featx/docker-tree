@@ -2,13 +2,12 @@
 #      Mariadb Docker container in Alpine    #
 #++++++++++++++++++++++++++++++++++++++++++++#
 
-FROM openjdk:8u151-jdk-alpine
-
-LABEL vendor=Glad.so
-MAINTAINER Excepts<excepts@glad.so>
+FROM openjdk:8u181-jdk-alpine3.8
+LABEL vendor=Featx
+MAINTAINER Excepts <excepts@aliyun.com>
 
 ENV JENKINS_HOME=/var/jenkins_home \
-    JENKINS_VERSION=2.124 \
+    JENKINS_VERSION=2.155 \
     JENKINS_UC=https://updates.jenkins.io \
     JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental \
     JENKINS_SHA=2d71b8f87c8417f9303a73d52901a59678ee6c0eefcf7325efed6035ff39372a \

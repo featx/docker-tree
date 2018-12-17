@@ -3,8 +3,8 @@
 #+++++++++++++++++++++++++++++++++#
 
 FROM alpine
-LABEL vendor=Glad.so
-MAINTAINER Excepts <excepts@glad.so>
+LABEL vendor=Featx
+MAINTAINER Excepts <excepts@aliyun.com>
 
 #ARG RUST_HOME=/usr/local
 #ARG RUST_VERSION=1.16.0
@@ -19,8 +19,8 @@ RUN set -ex \
      && apk update \
      && apk add -U rust cargo
 
-#    && apk add --no-cache --virtual .build-deps \
-#               build-base gnupg cmake curl \
+    && apk add --no-cache --virtual .build-deps \
+               build-base gnupg cmake curl \
 #    && apk add --no-cache --virtual .run-deps \
 #               file python libc6-compat \
 #    && export DOWNLOAD_URL=https://static.rust-lang.org/dist/rustc-$RUST_VERSION-src.tar.gz \

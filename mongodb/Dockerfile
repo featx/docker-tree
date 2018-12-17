@@ -3,8 +3,8 @@
 #+++++++++++++++++++++++++++++++++++++++#
 
 FROM alpine
-LABEL vendor=Glad.so
-MAINTAINER Excepts <excepts@glad.so>
+LABEL vendor=Featx
+MAINTAINER Excepts <excepts@aliyun.com>
 
 ENV GOSU_VERSION=1.10 \
     MONGO_MAJOR=3.6 \

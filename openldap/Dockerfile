@@ -3,8 +3,8 @@
 #++++++++++++++++++++++++++++++++++++++
 
 FROM alpine
-LABEL vendor=Glad.so
-MAINTAINER Excepts <excepts@glad.so>
+LABEL vendor=Featx
+MAINTAINER Excepts <excepts@aliyun.com>
 
 ENV OLDAP_HOME=/usr/local \
     OLDAP_DATA=/mnt \

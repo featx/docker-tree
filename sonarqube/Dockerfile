@@ -3,8 +3,9 @@
 #++++++++++++++++++++++++++++++++++++++
 
 FROM soglad/java:8u151-jre-alpine
-LABEL vendor=Glad.so
-MAINTAINER Excepts <excepts@glad.so>
+#8u181-jre-alpine3.8
+LABEL vendor=Featx
+MAINTAINER Excepts <excepts@aliyun.com>
 
 ENV GOSU_VERSION=1.10 \
     SONAR_VERSION=7.1 \

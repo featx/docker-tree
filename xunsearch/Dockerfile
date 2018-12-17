@@ -3,8 +3,8 @@
 #++++++++++++++++++++++++++++++++++++++#
 
 FROM alpine
-LABEL vendor=Glad.so
-MAINTAINER Excepts <excepts@glad.so>
+LABEL vendor=Featx
+MAINTAINER Excepts <excepts@aliyun.com>
 
 ENV XUNS_VERSION=1.4.10 \
     XUNS_HOME=/usr/local \

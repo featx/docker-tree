@@ -3,11 +3,12 @@
 #++++++++++++++++++++++++++++++++++#
 
 FROM openjdk:8-jre-alpine
-LABEL vendor=Glad.so
-MAINTAINER Excepts <excepts@glad.so>
+#8u181-jre-alpine3.8
+LABEL vendor=Featx
+MAINTAINER Excepts <excepts@aliyun.com>
 
 ENV SBT_HOME=/usr/local \
-    SBT_VERSION=1.2.1
+    SBT_VERSION=1.2.4
 
 RUN set -ex \
     && apk add --no-cache --virtual .build-deps tar wget \

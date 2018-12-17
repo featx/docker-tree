@@ -2,9 +2,9 @@
 # Node.js Running app Docker container in Alpine #
 #++++++++++++++++++++++++++++++++++++++++++++++++#
 
-FROM soglad/node:7.9.0-alpine
-LABEL vendor=Glad.so
-MAINTAINER palmtale<palmtale@glad.so>
+FROM featx/node:10.14.2-alpine
+LABEL vendor=Featx
+MAINTAINER Excepts <excepts@aliyun.com>
 
 ENV APP_HOME=/mnt/app \
     APP_ENV=dev \
