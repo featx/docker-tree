@@ -12,18 +12,19 @@ MAINTAINER Excepts <excepts@aliyun.com>
 ENV PHP_HOME=/usr/local \
     PHP_DATA=/mnt/php \
     PHP_APPS=/mnt/lib \
-    PHP_VERSION=7.2.5 \
-#   5.6.31 7.0.24 7.1.12 7.2.0 
-    PHP_EXT=no-debug-non-zts-20170718 \
+    PHP_VERSION=7.3.0 \
+#   5.6.31 7.0.24 7.1.12 7.2.13
+    PHP_EXT=no-debug-non-zts-20180731 \
+    #debug-non-zts-20170718 (7.2) \
     #debug-non-zts-20160303 (7.1)\
     #debug-non-zts-20151012 (7.0)\
     #debug-non-zts-20131226 (5.6)\
     PHP_USER=www \
     PHP_GROUP=www \
-    COMPOSER_VERSION=1.6.5 \
-    XDEBUG_VERSION=2.6.0 \
+    COMPOSER_VERSION=1.8.0 \
+    XDEBUG_VERSION=2.6.1 \
 #  5.x  2.5.5    
-    PHPUNIT_VERSION=7.1.5 \
+    PHPUNIT_VERSION=7.5.1 \
 #  5.7.21, 6.2.3
     COMPOSER_MIRROR=https://packagist.phpcomposer.com \   
     PHP_COMPILE_ARGS="--enable-fpm --with-fpm-group=$PHP_GROUP --with-fpm-user=$PHP_USER \
@@ -43,7 +44,7 @@ RUN set -x \
         wget ca-certificates gnupg autoconf automake re2c file \
         build-base curl-dev libressl-dev libssh2-dev libmcrypt-dev gettext-dev \
         libedit-dev libxml2-dev gmp-dev jpeg-dev libxpm-dev libpng-dev libvpx-dev \
-        freetype-dev postgresql-dev libmemcached-dev \
+        freetype-dev postgresql-dev libmemcached-dev libzip-dev \
     #
     && addgroup -g 82 -S $PHP_GROUP && adduser -u 82 -D -S -G $PHP_GROUP $PHP_USER \
     && mkdir -p $PHP_HOME/src $PHP_DATA/etc \
@@ -56,9 +57,10 @@ RUN set -x \
 #    && wget -O xdebug.tgz https://xdebug.org/files/xdebug-$XDEBUG_VERSION.tgz \
 #    && mv composer phpunit $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
     && mv composer $PHP_HOME/bin/ && chmod u+x $PHP_HOME/bin/* \
-    && echo "af70a33b3f7a51510467199b39af151333fbbe4cc21923bad9c7cf64268cddb2 *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
+    && echo "7d195cad55af8b288c3919c67023a14ff870a73e3acc2165a6d17a4850a560b5 *php-$PHP_VERSION.tar.xz" | sha256sum -c - \
 	&& export GNUPGHOME=$(mktemp -d) \
-    && for key in 1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F; do \
+    && for key in CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D; do \
+#7.2    && for key in 1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F; do \
 #7.1    && for key in A917B1ECDA84AEC2B568FED6F50ABC807BD5DCD0 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E; do \
 #7.0    && for key in 1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3; do \
 #5.6    && for key in 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3 0BD78B5F97500D450838F95DFE857D9A90D90EC1; do \
