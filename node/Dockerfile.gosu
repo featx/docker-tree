@@ -1,6 +1,6 @@
-#++++++++++++++++++++++++++++++++++++++
-# Node.js Docker container in Alpine
-#++++++++++++++++++++++++++++++++++++++
+#++++++++++++++++++++++++++++++++++++#
+# Node.js Docker container in Alpine #
+#++++++++++++++++++++++++++++++++++++#
 
 FROM alpine
 LABEL vendor=Featx
@@ -10,12 +10,14 @@ ENV NODE_VERSION=v11.9.0 \
 #v10.14.2 6.5.0
     NPM_VERSION=6.7.0 \
     NODE_HOME=/usr/local \
-    NODE_PATH=/usr/local/lib/node_modules
+    NODE_PATH=/usr/local/lib/node_modules \
+    GOSU_VERSION=1.11
 # gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
+  && addgroup -g 1000 feat && adduser -G feat -u 1000 -s /sbin/nologin -D -H feat \
   && apk add --no-cache --virtual .build-deps \
    gnupg build-base linux-headers binutils-gold paxctl \
-   python curl libgcc libstdc++ \
+   python curl libgcc libstdc++ wget ca-certificates \
   && for key in \
     #4ED778F539E3634C779C87C6D7062848A1AB005C \
     #94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
@@ -53,9 +55,19 @@ RUN set -ex \
      then npm install -g npm@$NPM_VERSION \
   && find $NODE_HOME/lib/node_modules/npm -name test -o -name .bin -type d | xargs rm -rf; \
      fi \
+  # Grab gosu for easy step-down from root
+  && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
+  && wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc" \
+  && export GNUPGHOME="$(mktemp -d)" \
+  && gpg --keyserver pgp.mit.edu --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
+  && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
+  && chmod +x /usr/local/bin/gosu \
+  && gosu nobody true \
+  && echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf \
   && apk del .build-deps \
   && apk add --no-cache --virtual .node-rundeps $runDeps \
   && rm -rf /etc/ssl /node-$NODE_VERSION.tar.gz /SHASUMS256.txt.asc /node-$NODE_VERSION /usr/include/* \
+      "$GNUPGHOME" /usr/local/bin/gosu.asc \
       $NODE_HOME/share/man /tmp/* /var/cache/apk/* /root/.npm /root/.node-gyp /root/.gnupg \
       $NODE_HOME/lib/node_modules/npm/man $NODE_HOME/lib/node_modules/npm/doc $NODE_HOME/lib/node_modules/npm/html
 CMD ["node", "-v"]
