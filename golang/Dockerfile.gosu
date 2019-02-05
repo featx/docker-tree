@@ -17,7 +17,7 @@ RUN set -ex \
   && apk add --no-cache ca-certificates \
   # Build dep
   && apk add --no-cache --virtual .build-deps \
-    build-base go openssl \
+    bash gcc musl-dev go openssl \
   # Build env
   && export GOROOT_BOOTSTRAP="$(go env GOROOT)" \
     GOOS="$(go env GOOS)" \
