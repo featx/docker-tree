@@ -53,6 +53,6 @@ RUN set -ex \
   && apk del .build-deps \
   && rm -rf /var/cache/apk/* "$GNUPGHOME" /usr/local/bin/gosu.asc \
     /usr/local/go/pkg/bootstrap /usr/local/go/pkg/obj \
-    /usr/local/go/doc /usr/local/go/src /usr/local/go/api /usr/local/go/test
+    /usr/local/go/doc /usr/local/go/api /usr/local/go/test
 
 CMD ["go", "version"]
