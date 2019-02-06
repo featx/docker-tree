@@ -8,7 +8,9 @@ LABEL vendor=Featx
 MAINTAINER Excepts <excepts@aliyun.com>
 
 ENV GOLANG_VERSION=1.11.5 \
-    GOSU_VERSION=1.11 
+    GOSU_VERSION=1.11 \
+    GOPATH=/usr/local \
+    PATH=/usr/local/go/bin:$PATH
 
 RUN set -ex \
   # User create
@@ -50,6 +52,7 @@ RUN set -ex \
   # Dispose 
   && apk del .build-deps \
   && rm -rf /var/cache/apk/* "$GNUPGHOME" /usr/local/bin/gosu.asc \
-    /usr/local/go/pkg/bootstrap /usr/local/go/pkg/obj \ 
-  && export PATH="/usr/local/go/bin:$PATH"
+    /usr/local/go/pkg/bootstrap /usr/local/go/pkg/obj \
+    /usr/local/go/doc /usr/local/go/src /usr/local/go/api /usr/local/go/test
+
 CMD ["go", "version"]
