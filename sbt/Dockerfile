@@ -2,13 +2,13 @@
 #  SBT Docker container in Alpine  #
 #++++++++++++++++++++++++++++++++++#
 
-FROM openjdk:8-jre-alpine
+FROM openjdk:8-jdk-alpine
 #8u181-jre-alpine3.8
 LABEL vendor=Featx
 MAINTAINER Excepts <excepts@aliyun.com>
 
 ENV SBT_HOME=/usr/local \
-    SBT_VERSION=1.2.4
+    SBT_VERSION=1.2.8
 
 RUN set -ex \
     && apk add --no-cache --virtual .build-deps tar wget \
