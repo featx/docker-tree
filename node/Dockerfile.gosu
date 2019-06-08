@@ -4,11 +4,11 @@
 
 FROM alpine
 LABEL vendor=Featx
-MAINTAINER Excepts <excepts@aliyun.com>
+MAINTAINER Excepts <excepts@featx.org>
 
-ENV NODE_VERSION=v11.9.0 \
-#v10.14.2 6.5.0
-    NPM_VERSION=6.7.0 \
+ENV NODE_VERSION=v12.4.0 \
+#v10.16.0 6.5.0
+    NPM_VERSION=6.9.0 \
     NODE_HOME=/usr/local \
     NODE_PATH=/usr/local/lib/node_modules \
     GOSU_VERSION=1.11

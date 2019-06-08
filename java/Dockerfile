@@ -4,7 +4,7 @@
 
 FROM alpine
 LABEL vendor=Featx
-MAINTAINER Excepts <excepts@aliyun.com>
+MAINTAINER Excepts <excepts@featx.org>
 
 # A few problems with compiling Java from source:
 #  1. Oracle.  Licensing prevents us from redistributing the official JDK.

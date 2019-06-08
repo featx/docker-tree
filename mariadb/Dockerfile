@@ -4,7 +4,7 @@
 
 FROM alpine
 LABEL vendor=Featx
-MAINTAINER Excepts <excepts@aliyun.com>
+MAINTAINER Excepts <excepts@featx.org>
 
 ENV MYSQL_VERSION=10.1.19 \
     MYSQL_HOME=/usr/mysql \

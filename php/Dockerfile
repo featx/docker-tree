@@ -4,7 +4,7 @@
 
 FROM alpine
 LABEL vendor=Featx
-MAINTAINER Excepts <excepts@aliyun.com>
+MAINTAINER Excepts <excepts@featx.org>
 
 # Required info below:
 # http://php.net/downloads.php
@@ -12,8 +12,8 @@ MAINTAINER Excepts <excepts@aliyun.com>
 ENV PHP_HOME=/usr/local \
     PHP_DATA=/mnt/php \
     PHP_APPS=/mnt/lib \
-    PHP_VERSION=7.3.0 \
-#   5.6.31 7.0.24 7.1.12 7.2.13
+    PHP_VERSION=7.3.6 \
+#   5.6.31 7.0.24 7.1.30 7.2.19
     PHP_EXT=no-debug-non-zts-20180731 \
     #debug-non-zts-20170718 (7.2) \
     #debug-non-zts-20160303 (7.1)\

@@ -4,7 +4,7 @@
 
 FROM alpine
 LABEL vendor=Featx
-MAINTAINER Excepts <excepts@aliyun.com>
+MAINTAINER Excepts <excepts@featx.org>
 
 ENV LUA_HOME=/usr/local \
     LUA_VERSION=5.3.5 \

@@ -4,10 +4,10 @@
 
 FROM alpine
 LABEL vendor=Featx
-MAINTAINER Excepts <excepts@aliyun.com>
+MAINTAINER Excepts <excepts@featx.org>
 
 ARG RESTY_HOME=/usr/local
-ARG NGX_VERSION=1.11.2
+ARG NGX_VERSION=1.17.0
 ARG RESTY_SUFVER=.5
 
 RUN set -ex && mkdir -p $RESTY_HOME/src \
@@ -27,8 +27,8 @@ RUN set -ex && mkdir -p $RESTY_HOME/src \
     && mv openresty-$NGX_VERSION$RESTY_SUFVER openresty \
     && cd openresty \
 
-    && sed -i '12s/1011002/1100000/' bundle/nginx-$NGX_VERSION/src/core/nginx.h \
-    && sed -i '13s/1.11.2/Motor/' bundle/nginx-$NGX_VERSION/src/core/nginx.h \
+    && sed -i '12s/1017000/1100000/' bundle/nginx-$NGX_VERSION/src/core/nginx.h \
+    && sed -i '13s/1.17.0/Motor/' bundle/nginx-$NGX_VERSION/src/core/nginx.h \
     && sed -i '14s/openresty/SoGlad/' bundle/nginx-$NGX_VERSION/src/core/nginx.h \
     && sed -i '14s/".2/".R/' bundle/nginx-$NGX_VERSION/src/core/nginx.h \
     && sed -i '49s/openresty/SoGlad/' bundle/nginx-$NGX_VERSION/src/http/ngx_http_header_filter_module.c \

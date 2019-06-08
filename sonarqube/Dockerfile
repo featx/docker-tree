@@ -2,13 +2,13 @@
 # SonarQube Docker container in Alpine
 #++++++++++++++++++++++++++++++++++++++
 
-FROM soglad/java:8u151-jre-alpine
-#8u181-jre-alpine3.8
-LABEL vendor=Featx
-MAINTAINER Excepts <excepts@aliyun.com>
+FROM soglad/java:8-jre-alpine
 
-ENV GOSU_VERSION=1.10 \
-    SONAR_VERSION=7.1 \
+LABEL vendor=Featx
+MAINTAINER Excepts <excepts@featx.org>
+
+ENV GOSU_VERSION=1.11 \
+    SONAR_VERSION=7.7 \
     SONARQUBE_HOME=/usr/local \
     SONARQUBE_DATA=/mnt/sonarqube 
 

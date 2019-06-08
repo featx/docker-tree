@@ -4,7 +4,7 @@
 
 FROM alpine
 LABEL vendor=Featx
-MAINTAINER Excepts <excepts@aliyun.com>
+MAINTAINER Excepts <excepts@featx.org>
 
 ENV OLDAP_HOME=/usr/local \
     OLDAP_DATA=/mnt \

@@ -5,9 +5,9 @@
 
 FROM alpine
 LABEL vendor=Featx
-MAINTAINER Excepts <excepts@aliyun.com>
+MAINTAINER Excepts <excepts@featx.org>
 
-ENV GOLANG_VERSION=1.12.1 \
+ENV GOLANG_VERSION=1.12.5 \
     GOSU_VERSION=1.12 \
     GOPATH=/usr/local \
     PATH=/usr/local/go/bin:$PATH

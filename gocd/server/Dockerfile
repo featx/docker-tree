@@ -4,7 +4,7 @@
 
 FROM alpine
 LABEL vendor=Featx
-MAINTAINER Excepts <excepts@aliyun.com>
+MAINTAINER Excepts <excepts@featx.org>
 
 ENV GOCD_HOME=/usr/local/gocd \
     GOCD_VERSION=17.4.0 \

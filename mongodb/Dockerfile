@@ -4,11 +4,11 @@
 
 FROM alpine
 LABEL vendor=Featx
-MAINTAINER Excepts <excepts@aliyun.com>
+MAINTAINER Excepts <excepts@featx.org>
 
-ENV GOSU_VERSION=1.10 \
-    MONGO_MAJOR=3.6 \
-    MONGO_VERSION=3.6.2 \
+ENV GOSU_VERSION=1.11 \
+    MONGO_MAJOR=4.2 \
+    MONGO_VERSION=4.2.13 \
     MONGO_HOME=/usr/local
 
 #src/third_party/asio-master/asio/include/asio/detail/socket_types.hpp

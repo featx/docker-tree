@@ -2,9 +2,9 @@
 #      Mariadb Docker container in Alpine    #
 #++++++++++++++++++++++++++++++++++++++++++++#
 
-FROM openjdk:8u181-jdk-alpine3.8
+FROM openjdk:8-jdk-alpine
 LABEL vendor=Featx
-MAINTAINER Excepts <excepts@aliyun.com>
+MAINTAINER Excepts <excepts@featx.org>
 
 ENV JENKINS_HOME=/var/jenkins_home \
     JENKINS_VERSION=2.155 \

@@ -2,9 +2,9 @@
 # Node.js Running app Docker container in Alpine #
 #++++++++++++++++++++++++++++++++++++++++++++++++#
 
-FROM featx/node:10.14.2-alpine
+FROM featx/node:10.16.0-alpine
 LABEL vendor=Featx
-MAINTAINER Excepts <excepts@aliyun.com>
+MAINTAINER Excepts <excepts@featx.org>
 
 ENV APP_HOME=/mnt/app \
     APP_ENV=dev \

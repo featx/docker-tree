@@ -2,21 +2,23 @@
 #  SBT Docker container in Alpine  #
 #++++++++++++++++++++++++++++++++++#
 
-FROM openjdk:8-jdk-alpine
-#8u181-jre-alpine3.8
+FROM openjdk:11-jdk-alpine
+#8-jdk-alpine
+
 LABEL vendor=Featx
-MAINTAINER Excepts <excepts@aliyun.com>
+MAINTAINER Excepts <excepts@featx.org
 
 ENV SBT_HOME=/usr/local \
     SBT_VERSION=1.2.8
 
 RUN set -ex \
-    && apk add --no-cache --virtual .build-deps tar wget \
-    && apk add -U bash \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends wget \
     && wget -O- "https://sbt-downloads.cdnedge.bluemix.net/releases/v${SBT_VERSION}/sbt-${SBT_VERSION}.tgz" \
     | tar xzf - -C ${SBT_HOME} --strip-components=1 \
     && sbt version \
-    && apk del --no-cache .build-deps \
+    && apt-get remove -y wget \
+    && rm -rf /var/lib/apt/lists/* \
     && echo "/usr/bin/java -Dsbt.main.class=sbt.ScriptMain -Dsbt.boot.directory=/root/.sbt/boot -jar ${SBT_HOME}/bin/sbt-launch.jar \"\$@\"" \
        > ${SBT_HOME}/bin/scalas \
     && echo "/usr/bin/java -Dsbt.main.class=sbt.ConsoleMain -Dsbt.boot.directory=/root/.sbt/boot -jar ${SBT_HOME}/bin/sbt-launch.jar \"\$@\"" \

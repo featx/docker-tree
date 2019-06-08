@@ -4,11 +4,11 @@
 
 FROM alpine
 LABEL vendor=Featx
-MAINTAINER Excepts <excepts@aliyun.com>
+MAINTAINER Excepts <excepts@featx.org>
 
 ENV LANG=en_US.utf8 \
-    PG_MAJOR=11beta3 \
-    PG_VERSION=11beta3 \
+    PG_MAJOR=11.3 \
+    PG_VERSION=11.3 \
     PG_HOME=/usr/local \
     PG_GROUP=postgres \
     PG_USER=postgres \
