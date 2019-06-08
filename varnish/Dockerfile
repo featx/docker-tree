@@ -4,10 +4,10 @@
 
 FROM alpine
 LABEL vendor=Featx
-MAINTAINER Excepts <excepts@aliyun.com>
+MAINTAINER Excepts <excepts@featx.org>
 
 ARG VNS_HOME=/usr/local
-ARG VNS_VERSION=5.1.1
+ARG VNS_VERSION=6.2.0
 
 RUN set -ex \
     && apk add --no-cache --virtual .build-deps \
