@@ -12,7 +12,7 @@ ARG NGX_VERSION=1.17.0
 RUN set -ex && mkdir -p $NGX_HOME/src \
     && apk add --no-cache --virtual .build-deps \
                build-base wget tar gnupg git ca-certificates \
-               pcre-dev openssl-dev libstdc++ paxctl \
+               pcre-dev openssl-dev libstdc++ paxctl zlib-dev \
                linux-headers \
     && apk add --no-cache --virtual .run-deps \
                 libgcc pcre openssl \    
