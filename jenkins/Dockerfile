@@ -2,17 +2,17 @@
 #      Mariadb Docker container in Alpine    #
 #++++++++++++++++++++++++++++++++++++++++++++#
 
-FROM openjdk:8-jdk-alpine
+FROM openjdk:8-jre-alpine
 LABEL vendor=Featx
 MAINTAINER Excepts <excepts@featx.org>
 
 ENV JENKINS_HOME=/var/jenkins_home \
-    JENKINS_VERSION=2.155 \
+    JENKINS_VERSION=2.187 \
     JENKINS_UC=https://updates.jenkins.io \
     JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental \
     JENKINS_SHA=2d71b8f87c8417f9303a73d52901a59678ee6c0eefcf7325efed6035ff39372a \
     JENKINS_SLAVE_AGENT_PORT=50000 \
-    TINI_VERSION=0.14.0 \
+    TINI_VERSION=0.18.0 \
     TINI_SHA=6c41ec7d33e857d4779f14d9c74924cab0c7973485d2972419a3b7c7620ff5fd 
     
 COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/tcp-slave-agent-port.groovy
