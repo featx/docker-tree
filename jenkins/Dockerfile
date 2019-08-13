@@ -14,6 +14,11 @@ ENV JENKINS_HOME=/var/jenkins_home \
     JENKINS_HTTP_PORT=8080 \
     JENKINS_SLAVE_AGENT_PORT=50000
 
+COPY jenkins-support /usr/local/bin/jenkins-support
+COPY jenkins.sh /usr/local/bin/jenkins.sh
+COPY plugins.sh /usr/local/bin/plugins.sh
+COPY install-plugins.sh /usr/local/bin/install-plugins.sh
+
 RUN set -e \
     && export JENKINS_URL=https://repo.jenkins-ci.org/public/org/jenkins-ci/main/jenkins-war/${JENKINS_VERSION}/jenkins-war-${JENKINS_VERSION}.war \ 
     && export COPY_REFERENCE_FILE_LOG=$JENKINS_HOME/copy_reference_file.log \
@@ -23,17 +28,13 @@ RUN set -e \
     && mkdir -p /usr/share/jenkins/ref/init.groovy.d ${JENKINS_HOME} \
     && curl -fsSL ${JENKINS_URL} -o /usr/share/jenkins/jenkins.war \
     && echo "${JENKINS_SHA}  /usr/share/jenkins/jenkins.war" | sha256sum -c - \
-    && chown -R jenkins:jenkins ${JENKINS_HOME} /usr/share/jenkins/ref \
+    && chown -R jenkins:jenkins ${JENKINS_HOME} /usr/share/jenkins/ref /usr/local/bin/*.sh \
     && apk del tzdata \
     && rm -rf /var/cache/apk/* 
 
 USER jenkins
 # http://mirrors.jenkins.io/war/2.189/jenkins.war.sha256
 # see https://github.com/docker/docker/issues/8331  
-COPY jenkins-support /usr/local/bin/jenkins-support
-COPY jenkins.sh /usr/local/bin/jenkins.sh
-COPY plugins.sh /usr/local/bin/plugins.sh
-COPY install-plugins.sh /usr/local/bin/install-plugins.sh
 
 WORKDIR ${JENKINS_HOME}
 VOLUME ${JENKINS_HOME}
