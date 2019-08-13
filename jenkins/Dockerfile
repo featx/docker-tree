@@ -26,7 +26,7 @@ RUN set -e \
     && addgroup -g 1000 jenkins && adduser -G jenkins -u 1000 -s /sbin/nologin -D -H jenkins \
     && apk add --no-cache git openssh-client curl unzip bash ttf-dejavu coreutils tini tzdata docker \
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-    && mkdir -p /usr/share/jenkins/ref/init.groovy.d \
+    && mkdir -p /usr/share/jenkins/ref/init.groovy.d ${JENKINS_HOME} \
     && curl -fsSL ${JENKINS_URL} -o /usr/share/jenkins/jenkins.war \
     && echo "${JENKINS_SHA}  /usr/share/jenkins/jenkins.war" | sha256sum -c - \
     && chown -R jenkins:jenkins ${JENKINS_HOME} /usr/share/jenkins/ref \
