@@ -1,5 +1,5 @@
 #++++++++++++++++++++++++++++++++++++++++++++#
-#      Mariadb Docker container in Alpine    #
+#     Jenkins Docker container in Alpine     #
 #++++++++++++++++++++++++++++++++++++++++++++#
 
 FROM openjdk:8-jre-alpine
@@ -13,12 +13,6 @@ ENV JENKINS_HOME=/var/jenkins_home \
     JENKINS_SHA=59a6476c7d02bb03bfac36920856a12268f35bdc9b40ef235b14f2f6504b67ea \
     JENKINS_HTTP_PORT=8080 \
     JENKINS_SLAVE_AGENT_PORT=50000
-# http://mirrors.jenkins.io/war/2.189/jenkins.war.sha256
-# see https://github.com/docker/docker/issues/8331  
-COPY jenkins-support /usr/local/bin/jenkins-support
-COPY jenkins.sh /usr/local/bin/jenkins.sh
-COPY plugins.sh /usr/local/bin/plugins.sh
-COPY install-plugins.sh /usr/local/bin/install-plugins.sh
 
 RUN set -e \
     && export JENKINS_URL=https://repo.jenkins-ci.org/public/org/jenkins-ci/main/jenkins-war/${JENKINS_VERSION}/jenkins-war-${JENKINS_VERSION}.war \ 
@@ -34,6 +28,13 @@ RUN set -e \
     && rm -rf /var/cache/apk/* 
 
 USER jenkins
+# http://mirrors.jenkins.io/war/2.189/jenkins.war.sha256
+# see https://github.com/docker/docker/issues/8331  
+COPY jenkins-support /usr/local/bin/jenkins-support
+COPY jenkins.sh /usr/local/bin/jenkins.sh
+COPY plugins.sh /usr/local/bin/plugins.sh
+COPY install-plugins.sh /usr/local/bin/install-plugins.sh
+
 WORKDIR ${JENKINS_HOME}
 VOLUME ${JENKINS_HOME}
 EXPOSE ${JENKINS_HTTP_PORT} ${JENKINS_SLAVE_AGENT_PORT}
