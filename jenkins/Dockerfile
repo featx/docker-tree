@@ -28,7 +28,8 @@ RUN set -e \
     && mkdir -p /usr/share/jenkins/ref/init.groovy.d ${JENKINS_HOME} \
     && curl -fsSL ${JENKINS_URL} -o /usr/share/jenkins/jenkins.war \
     && echo "${JENKINS_SHA}  /usr/share/jenkins/jenkins.war" | sha256sum -c - \
-    && chown -R jenkins:jenkins ${JENKINS_HOME} /usr/share/jenkins/ref /usr/local/bin/*.sh \
+    && chown -R jenkins:jenkins ${JENKINS_HOME} /usr/share/jenkins/ref \
+    && chmod +x /usr/local/bin/*.sh \
     && apk del tzdata \
     && rm -rf /var/cache/apk/* 
 
