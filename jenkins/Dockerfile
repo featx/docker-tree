@@ -10,10 +10,10 @@ ENV JENKINS_HOME=/var/jenkins_home \
     JENKINS_VERSION=2.189 \
     JENKINS_UC=https://updates.jenkins.io \
     JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental \
-    JENKINS_SHA=2d71b8f87c8417f9303a73d52901a59678ee6c0eefcf7325efed6035ff39372a \
+    JENKINS_SHA=59a6476c7d02bb03bfac36920856a12268f35bdc9b40ef235b14f2f6504b67ea \
     JENKINS_HTTP_PORT=8080 \
     JENKINS_SLAVE_AGENT_PORT=50000
-    
+  #http://mirrors.jenkins.io/war/2.189/jenkins.war.sha256  
 COPY jenkins-support /usr/local/bin/jenkins-support
 COPY jenkins.sh /usr/local/bin/jenkins.sh
 COPY tini-shim.sh /bin/tini
