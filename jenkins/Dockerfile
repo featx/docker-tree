@@ -2,7 +2,7 @@
 #     Jenkins Docker container in Alpine     #
 #++++++++++++++++++++++++++++++++++++++++++++#
 
-FROM openjdk:8-jre-alpine
+FROM openjdk:8-jdk-alpine
 LABEL vendor=Featx
 MAINTAINER Excepts <excepts@featx.org>
 
