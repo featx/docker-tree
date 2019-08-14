@@ -22,7 +22,7 @@ COPY install-plugins.sh /usr/local/bin/install-plugins.sh
 RUN set -e \
     && export JENKINS_URL=https://repo.jenkins-ci.org/public/org/jenkins-ci/main/jenkins-war/${JENKINS_VERSION}/jenkins-war-${JENKINS_VERSION}.war \ 
     && export COPY_REFERENCE_FILE_LOG=$JENKINS_HOME/copy_reference_file.log \
-    && addgroup -g 1000 jenkins && adduser -G jenkins -u 1000 -s /sbin/nologin -D -H jenkins \
+    && addgroup -g 1000 jenkins && adduser -G jenkins -u 1000 -D jenkins \
     && apk add --no-cache git openssh-client curl unzip bash ttf-dejavu coreutils tini tzdata docker \
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && mkdir -p /usr/share/jenkins/ref/init.groovy.d ${JENKINS_HOME} \
