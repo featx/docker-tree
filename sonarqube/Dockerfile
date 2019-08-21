@@ -2,7 +2,7 @@
 # SonarQube Docker container in Alpine
 #++++++++++++++++++++++++++++++++++++++
 
-FROM java:8-jre-alpine
+FROM openjdk:14-alpine
 
 LABEL vendor=Featx
 MAINTAINER Excepts <excepts@featx.org>
