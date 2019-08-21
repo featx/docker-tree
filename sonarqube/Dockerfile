@@ -14,12 +14,12 @@ ENV GOSU_VERSION=1.11 \
 
 RUN set -x \
     && addgroup -g 1000 sonar && adduser -G sonar -u 1000 -s /sbin/nologin -D -H sonar \
-    && apk add --no-cache gnupg unzip curl wget ca-certificates \
+    && apk add --no-cache gnupg unzip curl ca-certificates \
     && mkdir -p $SONARQUBE_HOME/bin $SONARQUBE_HOME/lib $SONARQUBE_HOME/web \
 
      # Grab gosu for easy step-down from root
-    && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
-    && wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc" \
+    && curl -o /usr/local/bin/gosu -fSL https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64 \
+    && curl -o /usr/local/bin/gosu.asc -fSL https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc \
     && export GNUPGHOME="$(mktemp -d)" \
     && gpg --keyserver pgp.mit.edu --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
     && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
@@ -30,7 +30,13 @@ RUN set -x \
     && curl -o sonarqube.zip -fSL https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-$SONAR_VERSION.zip \
     && curl -o sonarqube.zip.asc \
             -fSL https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-$SONAR_VERSION.zip.asc\
-    && gpg --keyserver pgp.mit.edu --recv-keys F1182E81C792928921DBCAB4CFCA4A29D26468DE \
+    && for server in $(shuf -e ha.pool.sks-keyservers.net \
+                            hkp://p80.pool.sks-keyservers.net:80 \
+                            keyserver.ubuntu.com \
+                            hkp://keyserver.ubuntu.com:80 \
+                            pgp.mit.edu) ; do \
+        gpg --batch --keyserver "$server" --recv-keys F1182E81C792928921DBCAB4CFCA4A29D26468DE && break || : ; \
+    done \
     && gpg --batch --verify sonarqube.zip.asc sonarqube.zip \
     && unzip sonarqube.zip \
     && mv sonarqube-$SONAR_VERSION sonarqube \
@@ -40,7 +46,7 @@ RUN set -x \
     && sed -i '1s/bash/sh/' ./elasticsearch/bin/elasticsearch \
     && mkdir -p /tmp/sonarqube/ \
     && mv sonarqube/extensions /tmp/sonarqube/ \
-    && apk del gnupg unzip wget ca-certificates \
+    && apk del gnupg unzip ca-certificates \
     && rm -rf sonarqube* /root/.gnupg /var/cache/apk/* "$GNUPGHOME" /usr/local/bin/gosu.asc \
     && echo -e '#!/bin/sh\n\
 \n\
@@ -83,4 +89,3 @@ WORKDIR $SONARQUBE_HOME
 EXPOSE 9000
 HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD curl http://127.0.0.1:9000/
 ENTRYPOINT ["./bin/entry"]
-
