@@ -16,12 +16,17 @@ RUN set -x \
     && addgroup -g 1000 sonar && adduser -G sonar -u 1000 -s /sbin/nologin -D -H sonar \
     && apk add --no-cache gnupg unzip curl ca-certificates \
     && mkdir -p $SONARQUBE_HOME/bin $SONARQUBE_HOME/lib $SONARQUBE_HOME/web \
-
+    && export GNUPGHOME="$(mktemp -d)" \
+    && for server in $(shuf -e ha.pool.sks-keyservers.net \
+                            hkp://p80.pool.sks-keyservers.net:80 \
+                            keyserver.ubuntu.com \
+                            hkp://keyserver.ubuntu.com:80 \
+                            pgp.mit.edu) ; do \
+        gpg --batch --keyserver "$server" --recv-keys F1182E81C792928921DBCAB4CFCA4A29D26468DE && gpg --batch --keyserver "$server" --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 && break || : ; \
+    done \
      # Grab gosu for easy step-down from root
     && curl -o /usr/local/bin/gosu -fSL https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64 \
     && curl -o /usr/local/bin/gosu.asc -fSL https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc \
-    && export GNUPGHOME="$(mktemp -d)" \
-    && gpg --keyserver pgp.mit.edu --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
     && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
     && chmod +x /usr/local/bin/gosu \
     && gosu nobody true \
@@ -30,13 +35,6 @@ RUN set -x \
     && curl -o sonarqube.zip -fSL https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-$SONAR_VERSION.zip \
     && curl -o sonarqube.zip.asc \
             -fSL https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-$SONAR_VERSION.zip.asc\
-    && for server in $(shuf -e ha.pool.sks-keyservers.net \
-                            hkp://p80.pool.sks-keyservers.net:80 \
-                            keyserver.ubuntu.com \
-                            hkp://keyserver.ubuntu.com:80 \
-                            pgp.mit.edu) ; do \
-        gpg --batch --keyserver "$server" --recv-keys F1182E81C792928921DBCAB4CFCA4A29D26468DE && break || : ; \
-    done \
     && gpg --batch --verify sonarqube.zip.asc sonarqube.zip \
     && unzip sonarqube.zip \
     && mv sonarqube-$SONAR_VERSION sonarqube \
