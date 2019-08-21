@@ -78,7 +78,7 @@ ln -s $SONARQUBE_DATA/temp $SONARQUBE_HOME/\n\
 \n\
 chown -R sonar:sonar $SONARQUBE_HOME $SONARQUBE_DATA\n\
 \n\
-exec gosu sonar java -d64 -server -jar $SONARQUBE_HOME/lib/sonar-application-$SONAR_VERSION.jar -Dsonar.web.javaAdditionalOpts="$SONARQUBE_WEB_JVM_OPTS -Djava.security.egd=file:/dev/./urandom" "$@"\n\
+exec gosu sonar java -server -jar $SONARQUBE_HOME/lib/sonar-application-$SONAR_VERSION.jar -Dsonar.web.javaAdditionalOpts="$SONARQUBE_WEB_JVM_OPTS -Djava.security.egd=file:/dev/./urandom" "$@"\n\
 ' >> $SONARQUBE_HOME/bin/entry \
     && chmod u+x $SONARQUBE_HOME/bin/entry
 
