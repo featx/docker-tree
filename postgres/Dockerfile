@@ -7,8 +7,8 @@ LABEL vendor=Featx
 MAINTAINER Excepts <excepts@featx.org>
 
 ENV LANG=en_US.utf8 \
-    PG_MAJOR=11.3 \
-    PG_VERSION=11.3 \
+    PG_MAJOR=11.5 \
+    PG_VERSION=11.5 \
     PG_HOME=/usr/local \
     PG_GROUP=postgres \
     PG_USER=postgres \
