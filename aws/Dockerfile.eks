@@ -15,7 +15,7 @@ RUN set -ex &&\
     # build kubernetes
     cd $GOPATH/src/k8s.io &&\
     git clone https://github.com/kubernetes/kubernetes.git &&\
-    cd kubernetes && git checkout release-$KUBE_VERSION && make 
+    cd kubernetes && git checkout release-$KUBE_VERSION && make &&\
     # build helm
     go get github.com/Masterminds/glide &&\
     cd $GOPATH/src/k8s.io &&\
@@ -39,6 +39,6 @@ RUN set -ex &&\
     pip install awscli --upgrade --user &&\
     curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator &&\
     curl -o aws-iam-authenticator.sha256 https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator.sha256 &&\
-    chmod +x aws-iam-authenticator && mv aws-iam-authenticator /usr/local/bin/ &&\
+    chmod +x aws-iam-authenticator && mv aws-iam-authenticator /usr/local/bin/
 
 CMD ["aws-iam-authenticator", "help"]
