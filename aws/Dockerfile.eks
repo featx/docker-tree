@@ -10,7 +10,7 @@ ENV KUBE_VERSION=1.14 \
     EKS_VERSION=0.7
 
 RUN set -ex &&\
-    apk add -U git tar build-base bash &&\
+    apk add -U git tar build-base bash rsync &&\
     mkdir -p $GOPATH/src/k8s.io $GOPATH/src/github.com/weaveworks &&\
     # build kubernetes
     cd $GOPATH/src/k8s.io &&\
