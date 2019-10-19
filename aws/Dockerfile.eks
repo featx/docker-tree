@@ -1,0 +1,44 @@
+#+++++++++++++++++++++++++++++++++++++++++++++#
+#   AWS-EKS Suit Docker container in Alpine   #
+#+++++++++++++++++++++++++++++++++++++++++++++#
+
+FROM golang:alpine AS builder
+LABEL vendor=Featx
+MAINTAINER Excepts <excepts@featx.org>
+ENV KUBE_VERSION=1.14 \
+    HELM_VERSION=2.15 \
+    EKS_VERSION=0.7
+
+RUN set -ex &&\
+    apk add -U git tar build-base &&\
+    mkdir -p $GOPATH/src/k8s.io $GOPATH/src/github.com/weaveworks &&\
+    # build kubernetes
+    cd $GOPATH/src/k8s.io &&\
+    git clone https://github.com/kubernetes/kubernetes.git &&\
+    cd kubernetes && git checkout release-$KUBE_VERSION && make 
+    # build helm
+    go get github.com/Masterminds/glide &&\
+    cd $GOPATH/src/k8s.io &&\
+    git clone https://github.com/helm/helm.git &&\ 
+    cd helm && git checkout release-$HELM_VERSION && make &&\
+    # build eksctl
+    cd $GOPATH/src/github.com/weaveworks &&\
+    git clone https://github.com/weaveworks/eksctl.git &&\
+    cd eksctl && git checkout release-$EKS_VERSION && make
+
+FROM python:3-alpine
+LABEL vendor=Featx
+MAINTAINER Excepts <excepts@featx.org>
+
+COPY --from=builder --chown=1000:1000 /go/bin/* /usr/local/bin/
+
+RUN set -ex &&\
+    apk add -U curl &&\ 
+    addgroup -g 1000 -S featx &&\
+    adduser -u 1000 -D -S -G featx featx &&\
+    pip install awscli --upgrade --user &&\
+    curl -o aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator &&\
+    curl -o aws-iam-authenticator.sha256 https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator.sha256 &&\
+    chmod +x aws-iam-authenticator && mv aws-iam-authenticator /usr/local/bin/ &&\
+
+CMD ["aws-iam-authenticator", "help"]
