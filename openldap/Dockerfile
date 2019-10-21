@@ -21,7 +21,7 @@ RUN set -x &&\
     addgroup -g 101 -S $OLDAP_GROUP && adduser -u 100 -D -S -G $OLDAP_GROUP $OLDAP_USER &&\
     apk add -U build-base m4 wget ca-certificates gnupg db-dev openssl-dev cyrus-sasl-dev unixodbc-dev \
                db openssl groff cyrus-sasl unixodbc &&\
-    wget http://ftpmirror.gnu.org/libtool/libtool-2.4.6.tar.gz &&\
+    wget https://mirrors.ustc.edu.cn/gnu/libtool/libtool-2.4.6.tar.gz &&\
     tar -zxf libtool-2.4.6.tar.gz &&\
     cd libtool-2.4.6 && ./configure --prefix=/usr && make && make install &&\
     cd libltdl && ./configure --prefix=/usr && make && make install &&\
