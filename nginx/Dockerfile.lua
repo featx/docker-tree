@@ -7,7 +7,7 @@ LABEL vendor=Featx
 MAINTAINER Excepts <excepts@featx.org>
 
 ARG NGX_HOME=/usr/local
-ARG NGX_VERSION=1.17.3
+ARG NGX_VERSION=1.17.4
 ARG LUA_JIT_VERSION=2.0.5
 
 RUN set -ex && mkdir -p $NGX_HOME/src \
@@ -38,8 +38,8 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
     && gpg --verify nginx-$NGX_VERSION.tar.gz.asc nginx-$NGX_VERSION.tar.gz \
     && tar -zxf nginx-$NGX_VERSION.tar.gz && mv nginx-$NGX_VERSION nginx \
     && cd nginx \
-    && sed -i '12s/1017003/1100000/' src/core/nginx.h \
-    && sed -i '13s/1.17.3/Motor/' src/core/nginx.h \
+    && sed -i '12s/1017004/1100000/' src/core/nginx.h \
+    && sed -i '13s/1.17.4/Motor/' src/core/nginx.h \
     && sed -i '14s/nginx/FeatX/' src/core/nginx.h \
     && sed -i '49s/nginx/FeatX/' src/http/ngx_http_header_filter_module.c \
     && sed -i '36s/nginx/FeatX/' src/http/ngx_http_special_response.c \
