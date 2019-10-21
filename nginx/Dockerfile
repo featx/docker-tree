@@ -7,7 +7,7 @@ LABEL vendor=Featx
 MAINTAINER Excepts <excepts@featx.org>
 
 ARG NGX_HOME=/usr/local
-ARG NGX_VERSION=1.17.3
+ARG NGX_VERSION=1.17.4
 
 RUN set -ex && mkdir -p $NGX_HOME/src \
     && apk add --no-cache --virtual .build-deps \
@@ -15,7 +15,7 @@ RUN set -ex && mkdir -p $NGX_HOME/src \
                pcre-dev openssl-dev libstdc++ paxctl zlib-dev \
                linux-headers \
     && apk add --no-cache --virtual .run-deps \
-                libgcc pcre openssl \    
+                libgcc pcre openssl \
     # Install Nginx
     && cd $NGX_HOME/src \
     && wget http://nginx.org/download/nginx-$NGX_VERSION.tar.gz \
