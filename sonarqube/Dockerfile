@@ -30,7 +30,7 @@ RUN set -x \
     && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
     && chmod +x /usr/local/bin/gosu \
     && gosu nobody true \
-
+    # Download and create sonarqube
     && cd $SONARQUBE_HOME \
     && curl -o sonarqube.zip -fSL https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-$SONAR_VERSION.zip \
     && curl -o sonarqube.zip.asc \
@@ -41,11 +41,11 @@ RUN set -x \
     && mv sonarqube/lib/* ./lib/ \
     && mv sonarqube/web/* ./web/ \
     && mv sonarqube/elasticsearch ./ \
-    && sed -i '1s/bash/sh/' ./elasticsearch/bin/elasticsearch \
     && mkdir -p /tmp/sonarqube/ \
     && mv sonarqube/extensions /tmp/sonarqube/ \
     && apk del gnupg unzip ca-certificates \
     && rm -rf sonarqube* /root/.gnupg /var/cache/apk/* "$GNUPGHOME" /usr/local/bin/gosu.asc \
+    && apk add -U bash \
     && echo -e '#!/bin/sh\n\
 \n\
 set -e\n\
