@@ -8,7 +8,7 @@ LABEL vendor=Featx
 MAINTAINER Excepts <excepts@featx.org>
 
 ENV GOSU_VERSION=1.11 \
-    SONAR_VERSION=7.9.1 \
+    SONAR_VERSION=8.3.1.34397 \
     SONARQUBE_HOME=/usr/local \
     SONARQUBE_DATA=/mnt/sonarqube 
 
@@ -30,7 +30,7 @@ RUN set -x \
     && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
     && chmod +x /usr/local/bin/gosu \
     && gosu nobody true \
-    
+
     && cd $SONARQUBE_HOME \
     && curl -o sonarqube.zip -fSL https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-$SONAR_VERSION.zip \
     && curl -o sonarqube.zip.asc \
