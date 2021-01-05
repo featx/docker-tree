@@ -7,8 +7,8 @@ FROM alpine
 LABEL vendor=Featx
 MAINTAINER Excepts <excepts@featx.org>
 
-ENV GOLANG_VERSION=1.13.3 \
-    GOSU_VERSION=1.13 \
+ENV GOLANG_VERSION=1.15.6 \
+    GOSU_VERSION=1.12 \
     GOPATH=/usr/local \
     PATH=/usr/local/go/bin:$PATH
 
@@ -33,7 +33,7 @@ RUN set -ex \
     esac \
   # Download src bundle and veryfied, unzip, delete .zip	
   && wget -O go.tgz "https://golang.org/dl/go$GOLANG_VERSION.src.tar.gz" \
-  && echo 'bc1ef02bb1668835db1390a2e478dcbccb5dd16911691af9d75184bbe5aa943e *go.tgz' | sha256sum -c - \
+  && echo '890bba73c5e2b19ffb1180e385ea225059eb008eb91b694875dd86ea48675817 *go.tgz' | sha256sum -c - \
   && tar -C /usr/local -xzf go.tgz \
   && rm go.tgz \
   # Go to src to build 
@@ -43,7 +43,7 @@ RUN set -ex \
   && wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64" \
   && wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc" \
   && export GNUPGHOME="$(mktemp -d)" \
-  && gpg --keyserver pgp.mit.edu --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
+  && gpg --keyserver keyserver.ubuntu.com --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
   && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
   && chmod +x /usr/local/bin/gosu \
   && gosu nobody true \
