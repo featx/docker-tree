@@ -4,11 +4,11 @@
 
 FROM alpine
 LABEL vendor=Featx
-MAINTAINER Excepts <excepts@featx.org>
+MAINTAINER Excepts <ex7ept@featx.org>
 
 ENV LANG=en_US.utf8 \
-    PG_MAJOR=11.5 \
-    PG_VERSION=11.5 \
+    PG_MAJOR=13.3 \
+    PG_VERSION=13.3 \
     PG_HOME=/usr/local \
     PG_GROUP=postgres \
     PG_USER=postgres \
@@ -21,11 +21,12 @@ ENV LANG=en_US.utf8 \
 
 COPY entry ${PG_HOME}/bin/
 RUN set -ex \
+  && addgroup -g 1000 ${PG_GROUP} && adduser -G ${PG_GROUP} -u 1000 -s /sbin/nologin -D -H ${PG_USER} \
   && chmod u+x /usr/local/bin/entry \
   && apk add --no-cache --virtual .build-deps \
-    wget gnupg ca-certificates openssl build-base coreutils flex \
+    wget gnupg ca-certificates openssl build-base coreutils flex linux-headers \
     libc-dev libedit-dev libxml2-dev libxslt-dev util-linux-dev zlib-dev \
-    openldap-dev python-dev python3-dev perl-dev perl-utils perl-ipc-run \
+    openldap-dev python2-dev python3-dev perl-dev perl-utils perl-ipc-run \
   # perl-dev krb5-dev openssl-dev tcl-dev gettext-dev \
 
   && export PG_COMPILE_ARGS="--prefix=${PG_DATA} --exec-prefix=${PG_HOME} \

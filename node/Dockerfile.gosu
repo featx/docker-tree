@@ -4,11 +4,11 @@
 
 FROM alpine
 LABEL vendor=Featx
-MAINTAINER Excepts <excepts@featx.org>
+MAINTAINER Excepts <ex7ept@featx.org>
 
-ENV NODE_VERSION=v12.11.0 \
-#v10.16.0 6.5.0
-    NPM_VERSION=6.9.0 \
+ENV NODE_VERSION=v16.2.0 \
+#v14.17.0
+    NPM_VERSION=7.14.0 \
     NODE_HOME=/usr/local \
     NODE_PATH=/usr/local/lib/node_modules \
     GOSU_VERSION=1.11
@@ -17,7 +17,8 @@ RUN set -ex \
   && addgroup -g 1000 feat && adduser -G feat -u 1000 -s /sbin/nologin -D -H feat \
   && apk add --no-cache --virtual .build-deps \
    gnupg build-base linux-headers binutils-gold paxctl \
-   python curl libgcc libstdc++ ca-certificates \  
+   python3 curl libgcc libstdc++ ca-certificates \ 
+  && ln -s /usr/bin/python3 /usr/bin/python \  
   # Grab gosu for easy step-down from root
   && curl -o /usr/local/bin/gosu -sSL https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64 \
   && curl -o /usr/local/bin/gosu.asc -sSL https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-amd64.asc \
@@ -34,10 +35,10 @@ RUN set -ex \
     #77984A986EBC2AA786BC0F66B01FBB92821C587A \
     #71DCFD284A79C3B38668286BC97EC7A07EDE3FC1 \
     #FD3A5288F042B6850C66B31F09FE44734EB7990E \
-    #8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600 \
+    8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600 \
     #C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8 \
     #DD8F2338BAE7501E3DD5AC78C273792F7D83545D \
-    A48C2BEE680E841632CD4E44F07496B3EB3C1762 \
+    #A48C2BEE680E841632CD4E44F07496B3EB3C1762 \
     #B9E2F5981AA6E0CD28160D9FF13993A75599653C \
   ; do \
     gpg --keyserver pgp.mit.edu --recv-keys "$key"; \
